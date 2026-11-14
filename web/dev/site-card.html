@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Site card dev</title>
+    <style>
+      html, body { height: auto; }
+      body { display: block; padding: 16px; }
+      .dev-bar {
+        display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+        margin-bottom: 16px; font-size: 13px; color: var(--muted);
+      }
+      .dev-bar h1 { margin: 0; font-size: 16px; color: var(--text); }
+      .dev-bar select {
+        font: inherit; color: var(--text); background: var(--surface-2);
+        border: 1px solid var(--border); border-radius: var(--radius); padding: 4px 8px;
+      }
+      .dev-cols { display: flex; flex-wrap: wrap; gap: 24px; align-items: flex-start; }
+      .dev-col { flex: none; }
+      .dev-col-label { font-size: 12px; color: var(--muted); margin-bottom: 6px; }
+      /* Same box as the app's .panel: surface background, 16px padding. */
+      .dev-panel {
+        background: var(--surface); border: 1px solid var(--border);
+        padding: 16px; overflow-x: auto;
+      }
+      .dev-ok { color: #3ccf91; }
+      .dev-bad { color: #ff8589; }
+    </style>
+  </head>
+  <body>
+    <div class="dev-bar">
+      <h1>Site card (F11)</h1>
+      <label>Variant
+        <select id="variant">
+          <option value="fixture">Fixture: Jezero, base_construction weights</option>
+          <option value="gaps">Partial data, NaN values, P10 to P90</option>
+          <option value="moon">Moon target (Apollo 17), no bulk density</option>
+          <option value="few">Only two weighted dimensions</option>
+        </select>
+      </label>
+      <span id="status"></span>
+    </div>
+    <div class="dev-cols">
+      <div class="dev-col">
+        <div class="dev-col-label">340 px column</div>
+        <div class="dev-panel" id="col-340" style="width: 340px"></div>
+      </div>
+      <div class="dev-col">
+        <div class="dev-col-label">320 px column</div>
+        <div class="dev-panel" id="col-320" style="width: 320px"></div>
+      </div>
+    </div>
+    <script type="module" src="./site-card.js"></script>
+  </body>
+</html>

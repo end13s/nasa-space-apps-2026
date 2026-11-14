@@ -84,6 +84,9 @@ export function createScorer(dataUrl, body = 'earth') {
       return r.arrayBuffer();
     })
     .then((buf) => new Uint32Array(buf));
+  // Callers that await index see the error; this only stops the browser from
+  // also reporting it as an unhandled rejection when nobody has awaited yet.
+  index.catch(() => {});
 
   return {
     ready,

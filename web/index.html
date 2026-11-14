@@ -33,7 +33,20 @@
         </div>
       </section>
       <aside id="panel" class="panel" aria-label="Controls">
-        <p class="panel-empty">Pick a target to light up Earth.</p>
+        <nav class="tabs" role="tablist" aria-label="Panel">
+          <button type="button" role="tab" data-tab="explore" aria-selected="true">Explore</button>
+          <button type="button" role="tab" data-tab="site" aria-selected="false" disabled>Site</button>
+          <button type="button" role="tab" data-tab="validation" aria-selected="false">Validation</button>
+          <button type="button" role="tab" data-tab="discoveries" aria-selected="false">Discoveries</button>
+        </nav>
+        <div class="tab-panels">
+          <section role="tabpanel" data-panel="explore" id="explore">
+            <p class="hint">Loading data...</p>
+          </section>
+          <section role="tabpanel" data-panel="site" id="site" hidden></section>
+          <section role="tabpanel" data-panel="validation" id="validation" hidden></section>
+          <section role="tabpanel" data-panel="discoveries" id="discoveries" hidden></section>
+        </div>
       </aside>
     </main>
 
