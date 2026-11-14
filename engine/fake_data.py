@@ -338,8 +338,7 @@ def main() -> None:
     # packable as a real one, even when the targets are real.
     (out / "earth_grid.parquet.SYNTHETIC").write_text(
         "Written by engine/fake_data.py. Delete this file only if the parquet "
-        "beside it is real data.
-", encoding="utf-8")
+        "beside it is real data.\n", encoding="utf-8")
 
     targets = build_targets(args.seed)
     targets_path = out / "targets.json"
