@@ -153,37 +153,46 @@ TARGETS = [
 # exact 16-30 km squares there). Format (lat, lon): planetocentric,
 # east-positive, -180..180. While a centre is None the region is skipped.
 #
-# Source of the five centres below: NASA Moon Trek layer "Artemis III Candidate
-# Landing Regions, S Pole" (A3_Named_regions_SP.geojson). That layer still
-# holds the 2022 set of 13; these five regions kept the same names in the
-# Oct 2024 list of nine. Sofia: please confirm against the 2024 outlines.
-# Still missing (new in 2024, not in Moon Trek): Peak near Cabeus B, Mons
-# Mouton Plateau, Mons Mouton, Slater Plain -> USGS data release
-# doi:10.5066/P1MEQ6UK (2024 outlines from LROC QuickMap).
+# Two sources:
+#  - MOON_TREK_2022: NASA Moon Trek layer "Artemis III Candidate Landing
+#    Regions, S Pole" (A3_Named_regions_SP.geojson). It still holds the 2022
+#    set of 13; these five regions kept the same names in the Oct 2024 list.
+#  - USGS_2024: the regions new in 2024, from the USGS release of the
+#    down-selected regions (outlines from LROC QuickMap). Centre = mean of the
+#    1 km grid-cell centres, converted from the file's projection (Moon 2015
+#    sphere, south polar stereographic, k0 0.994, false E/N 500 km).
+# Cross-check: the 2024 "Mons Mouton" centre lands within ~1 km of the 2022
+# Moon Trek "Leibnitz Beta Plateau" centre - the same place under its new IAU
+# name, from two independent files and two different conversions.
+# Still missing: Mons Mouton Plateau (its USGS files are too big to upload;
+# the 1 km .dbf alone is enough).
 MOON_TREK_2022 = ("centre: centroid of the region outline in the NASA Moon Trek layer "
                   "'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)")
+USGS_2024 = ("centre: centre of the region's 1 km grid in USGS 'Down Selected Artemis III Candidate "
+             "Landing Site Navigational Grids' (McClernan 2024, doi:10.5066/P1MEQ6UK; outlines from LROC QuickMap)")
 ARTEMIS = [
     # (id,                                 name,                  (lat, lon),             source)
-    ("moon_artemis_peak_near_cabeus_b",   "Peak near Cabeus B",  None,                   None),
+    ("moon_artemis_peak_near_cabeus_b",   "Peak near Cabeus B",  (-83.6514, -68.7263),   USGS_2024),
     ("moon_artemis_haworth",              "Haworth",             (-86.7639, -22.7770),   MOON_TREK_2022),
     ("moon_artemis_malapert_massif",      "Malapert Massif",     (-85.9948, -0.2358),    MOON_TREK_2022),
     ("moon_artemis_mons_mouton_plateau",  "Mons Mouton Plateau", None,                   None),
-    ("moon_artemis_mons_mouton",          "Mons Mouton",         None,                   None),
+    ("moon_artemis_mons_mouton",          "Mons Mouton",         (-85.4218, 31.6755),    USGS_2024),
     ("moon_artemis_nobile_rim_1",         "Nobile Rim 1",        (-85.4381, 37.3667),    MOON_TREK_2022),
     ("moon_artemis_nobile_rim_2",         "Nobile Rim 2",        (-83.9540, 58.8221),    MOON_TREK_2022),
     ("moon_artemis_de_gerlache_rim_2",    "de Gerlache Rim 2",   (-88.2300, -64.6284),   MOON_TREK_2022),
-    ("moon_artemis_slater_plain",         "Slater Plain",        None,                   None),
+    ("moon_artemis_slater_plain",         "Slater Plain",        (-87.1697, 125.4596),   USGS_2024),
 ]
 for _tid, _name, _centre, _src in ARTEMIS:
     TARGETS.append(
         {
             "id": _tid,
             "body": "moon",
-            "name": f"Artemis III candidate region: {_name}",
+            "name": f"Artemis candidate landing region: {_name}",
             "lat": None if _centre is None else _centre[0],
             "lon": None if _centre is None else _centre[1],
             "tags": ["polar", "artemis", "permanent-base"],
-            "blurb": f"{_name}, one of NASA's nine Artemis III candidate landing regions near the lunar south pole.",
+            "blurb": f"{_name}, one of NASA's nine candidate crew landing regions near the lunar south pole "
+                     "(announced for Artemis III, Oct 2024).",
             "coord_source": _src,
         }
     )

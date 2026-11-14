@@ -242,9 +242,50 @@
     "blurb": "Crater at the lunar south pole: near-permanently lit rim around a permanently shadowed floor."
   },
   {
+    "id": "moon_artemis_peak_near_cabeus_b",
+    "body": "moon",
+    "name": "Artemis candidate landing region: Peak near Cabeus B",
+    "lat": -83.6514,
+    "lon": -68.7263,
+    "radius_km": 15,
+    "synthetic": false,
+    "features": {
+      "relief_km": 4.4446,
+      "slope_med_deg": 16.6976,
+      "slope_p90_deg": 24.3614,
+      "hypso_int": 0.4798,
+      "flat_frac": 0.0244,
+      "steep_frac": 0.0754,
+      "rough_2km": 84.1566,
+      "rough_10km": 115.8162,
+      "precip_mm": 0.0,
+      "ndvi_max": 0.0
+    },
+    "sd": {
+      "relief_km": 0.2637,
+      "slope_med_deg": 0.6101,
+      "slope_p90_deg": 0.4271,
+      "hypso_int": 0.0194,
+      "flat_frac": 0.0105,
+      "steep_frac": 0.0127,
+      "rough_2km": 4.1577,
+      "rough_10km": 5.0296
+    },
+    "tags": [
+      "polar",
+      "artemis",
+      "permanent-base"
+    ],
+    "sources": [
+      "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
+      "centre: centre of the region's 1 km grid in USGS 'Down Selected Artemis III Candidate Landing Site Navigational Grids' (McClernan 2024, doi:10.5066/P1MEQ6UK; outlines from LROC QuickMap)"
+    ],
+    "blurb": "Peak near Cabeus B, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
+  },
+  {
     "id": "moon_artemis_haworth",
     "body": "moon",
-    "name": "Artemis III candidate region: Haworth",
+    "name": "Artemis candidate landing region: Haworth",
     "lat": -86.7639,
     "lon": -22.777,
     "radius_km": 15,
@@ -280,12 +321,12 @@
       "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
       "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)"
     ],
-    "blurb": "Haworth, one of NASA's nine Artemis III candidate landing regions near the lunar south pole."
+    "blurb": "Haworth, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   },
   {
     "id": "moon_artemis_malapert_massif",
     "body": "moon",
-    "name": "Artemis III candidate region: Malapert Massif",
+    "name": "Artemis candidate landing region: Malapert Massif",
     "lat": -85.9948,
     "lon": -0.2358,
     "radius_km": 15,
@@ -321,12 +362,53 @@
       "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
       "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)"
     ],
-    "blurb": "Malapert Massif, one of NASA's nine Artemis III candidate landing regions near the lunar south pole."
+    "blurb": "Malapert Massif, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
+  },
+  {
+    "id": "moon_artemis_mons_mouton",
+    "body": "moon",
+    "name": "Artemis candidate landing region: Mons Mouton",
+    "lat": -85.4218,
+    "lon": 31.6755,
+    "radius_km": 15,
+    "synthetic": false,
+    "features": {
+      "relief_km": 3.9961,
+      "slope_med_deg": 11.0759,
+      "slope_p90_deg": 21.0079,
+      "hypso_int": 0.6528,
+      "flat_frac": 0.1833,
+      "steep_frac": 0.0011,
+      "rough_2km": 65.739,
+      "rough_10km": 78.92,
+      "precip_mm": 0.0,
+      "ndvi_max": 0.0
+    },
+    "sd": {
+      "relief_km": 0.8069,
+      "slope_med_deg": 1.6357,
+      "slope_p90_deg": 1.3325,
+      "hypso_int": 0.0207,
+      "flat_frac": 0.0526,
+      "steep_frac": 0.0294,
+      "rough_2km": 9.5395,
+      "rough_10km": 11.4476
+    },
+    "tags": [
+      "polar",
+      "artemis",
+      "permanent-base"
+    ],
+    "sources": [
+      "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
+      "centre: centre of the region's 1 km grid in USGS 'Down Selected Artemis III Candidate Landing Site Navigational Grids' (McClernan 2024, doi:10.5066/P1MEQ6UK; outlines from LROC QuickMap)"
+    ],
+    "blurb": "Mons Mouton, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   },
   {
     "id": "moon_artemis_nobile_rim_1",
     "body": "moon",
-    "name": "Artemis III candidate region: Nobile Rim 1",
+    "name": "Artemis candidate landing region: Nobile Rim 1",
     "lat": -85.4381,
     "lon": 37.3667,
     "radius_km": 15,
@@ -362,12 +444,12 @@
       "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
       "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)"
     ],
-    "blurb": "Nobile Rim 1, one of NASA's nine Artemis III candidate landing regions near the lunar south pole."
+    "blurb": "Nobile Rim 1, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   },
   {
     "id": "moon_artemis_nobile_rim_2",
     "body": "moon",
-    "name": "Artemis III candidate region: Nobile Rim 2",
+    "name": "Artemis candidate landing region: Nobile Rim 2",
     "lat": -83.954,
     "lon": 58.8221,
     "radius_km": 15,
@@ -403,12 +485,12 @@
       "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
       "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)"
     ],
-    "blurb": "Nobile Rim 2, one of NASA's nine Artemis III candidate landing regions near the lunar south pole."
+    "blurb": "Nobile Rim 2, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   },
   {
     "id": "moon_artemis_de_gerlache_rim_2",
     "body": "moon",
-    "name": "Artemis III candidate region: de Gerlache Rim 2",
+    "name": "Artemis candidate landing region: de Gerlache Rim 2",
     "lat": -88.23,
     "lon": -64.6284,
     "radius_km": 15,
@@ -444,6 +526,47 @@
       "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
       "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)"
     ],
-    "blurb": "de Gerlache Rim 2, one of NASA's nine Artemis III candidate landing regions near the lunar south pole."
+    "blurb": "de Gerlache Rim 2, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
+  },
+  {
+    "id": "moon_artemis_slater_plain",
+    "body": "moon",
+    "name": "Artemis candidate landing region: Slater Plain",
+    "lat": -87.1697,
+    "lon": 125.4596,
+    "radius_km": 15,
+    "synthetic": false,
+    "features": {
+      "relief_km": 1.6432,
+      "slope_med_deg": 7.6722,
+      "slope_p90_deg": 16.8561,
+      "hypso_int": 0.6288,
+      "flat_frac": 0.3047,
+      "steep_frac": 0.0,
+      "rough_2km": 63.0725,
+      "rough_10km": 41.3193,
+      "precip_mm": 0.0,
+      "ndvi_max": 0.0
+    },
+    "sd": {
+      "relief_km": 0.1957,
+      "slope_med_deg": 0.5156,
+      "slope_p90_deg": 0.573,
+      "hypso_int": 0.0215,
+      "flat_frac": 0.0326,
+      "steep_frac": 0.0,
+      "rough_2km": 3.7127,
+      "rough_10km": 2.9619
+    },
+    "tags": [
+      "polar",
+      "artemis",
+      "permanent-base"
+    ],
+    "sources": [
+      "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
+      "centre: centre of the region's 1 km grid in USGS 'Down Selected Artemis III Candidate Landing Site Navigational Grids' (McClernan 2024, doi:10.5066/P1MEQ6UK; outlines from LROC QuickMap)"
+    ],
+    "blurb": "Slater Plain, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   }
 ]
