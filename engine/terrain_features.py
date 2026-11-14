@@ -1,15 +1,28 @@
-"""Shared terrain feature definitions - numpy reference (Section 7.3).
+"""The single shared definition of every terrain feature.
 
-**Critical rule from the plan:** Clara's Earth (GEE) code and Michal's planetary
-(rasterio) code must compute the same numbers from the same DEM. This file is
-the definition. Michal calls it directly. Clara reimplements it in Earth Engine
-and then proves the two agree on one test tile with ``compare_tile`` below -
-a 0.25 degree cell over Meteor Crater is the agreed tile.
+**Owner: Sofia** (task S1). Scaffolded by Eduard so that the engine, the fake
+data generator and the tests have something to run against from the first
+hour - Sofia replaces or extends the internals, keeps the signatures.
 
-If these drift apart, every cross-body similarity score is comparing apples to
-oranges and no amount of good UI saves the project.
+Why one module: terrain feeds every similarity score, and it is the part most
+likely to break silently if the Earth code and the Moon/Mars code compute
+things slightly differently. Michal imports this (do not rewrite it); Sofia
+reimplements the same definitions in Earth Engine for the global Earth export
+and proves both versions agree on the test tiles (S4). If they drift, every
+cross-body score is comparing apples to oranges and the UI cannot show it.
 
-AI-assisted: scaffolded with Claude, reviewed by Eduard.
+Main entry point
+----------------
+    compute(dem_m, px_m, nodata=None, baselines=("rough_2km", "rough_10km"))
+
+``dem_m`` must already be in a **local metric projection** (equal-distance,
+centred on the cell or target circle) - never a lat/lon grid. At 85 S a degree
+of longitude is 9 km, and roughness measured "per degree" means nothing.
+
+Returns a dict whose keys are feature ids from
+contract/feature_dictionary.yaml: relief_km, slope_med_deg, slope_p90_deg,
+hypso_int, flat_frac, steep_frac and one entry per requested roughness
+baseline.
 """
 
 from __future__ import annotations
@@ -17,8 +30,9 @@ from __future__ import annotations
 import numpy as np
 from scipy.ndimage import gaussian_filter
 
-# Gravity-scaled roughness baselines, metres. Must match
-# contract/body_constants.json -> gravity_scaled_baselines_m.
+# Roughness baselines in metres. The gravity-scaled ones correspond to the
+# 2 km and 10 km planetary baselines under 1/g landform scaling; they must
+# match contract/body_constants.json -> gravity_scaled_baselines_m.
 BASELINES_M = {
     "rough_2km": 2000.0,
     "rough_10km": 10000.0,
@@ -29,6 +43,17 @@ BASELINES_M = {
 }
 
 SLOPE_BASELINE_M = 400.0
+
+# Buildability thresholds (dimension C). Finn's expert call (F4) may move
+# these - if it does, change them HERE ONLY, tell Eduard, and both the Earth
+# export and the planetary fingerprints stay consistent.
+FLAT_MAX_DEG = 5.0
+STEEP_MIN_DEG = 25.0
+
+
+# ---------------------------------------------------------------------------
+# Individual features
+# ---------------------------------------------------------------------------
 
 
 def relief_km(dem_m: np.ndarray) -> float:
@@ -49,60 +74,101 @@ def hypsometric_integral(dem_m: np.ndarray) -> float:
     return float((v.mean() - lo) / (hi - lo))
 
 
-def slope_deg(dem_m: np.ndarray, pixel_m: float) -> np.ndarray:
+def slope_deg(dem_m: np.ndarray, px_m: float) -> np.ndarray:
     """Slope magnitude in degrees from a projected (equal-distance) DEM."""
-    gy, gx = np.gradient(dem_m, pixel_m, pixel_m)
+    gy, gx = np.gradient(dem_m, px_m, px_m)
     return np.degrees(np.arctan(np.hypot(gx, gy)))
 
 
-def slope_stats(dem_m: np.ndarray, pixel_m: float) -> tuple[float, float]:
-    """(median slope, 90th-percentile slope) at the 400 m baseline.
+def slope_field_400m(dem_m: np.ndarray, px_m: float) -> np.ndarray:
+    """Slope at the agreed 400 m baseline.
 
-    The DEM is box-averaged to ~400 m first, so that the slope means the same
+    The DEM is block-averaged to ~400 m first, so the slope means the same
     thing whether the source was 30 m Copernicus or 200 m MOLA-HRSC.
     """
-    factor = max(1, int(round(SLOPE_BASELINE_M / pixel_m)))
+    factor = max(1, int(round(SLOPE_BASELINE_M / px_m)))
     coarse = _block_mean(dem_m, factor)
-    s = slope_deg(coarse, pixel_m * factor)
+    return slope_deg(coarse, px_m * factor)
+
+
+def slope_stats(dem_m: np.ndarray, px_m: float) -> tuple[float, float]:
+    """(median slope, 90th-percentile slope) at the 400 m baseline."""
+    s = slope_field_400m(dem_m, px_m)
     v = s[np.isfinite(s)]
     if v.size < 4:
         return float("nan"), float("nan")
     return float(np.median(v)), float(np.percentile(v, 90))
 
 
-def roughness_permille(dem_m: np.ndarray, pixel_m: float, baseline_m: float) -> float:
+def buildability(dem_m: np.ndarray, px_m: float) -> tuple[float, float]:
+    """(flat_frac, steep_frac) - dimension C, the construction MVP features.
+
+    flat_frac  share of the area with slope < FLAT_MAX_DEG  (buildable)
+    steep_frac share of the area with slope > STEEP_MIN_DEG (no-build)
+    Both at the same 400 m baseline as the other slope features, so a site
+    card can state them next to slope_med_deg without a caveat.
+    """
+    s = slope_field_400m(dem_m, px_m)
+    v = s[np.isfinite(s)]
+    if v.size < 4:
+        return float("nan"), float("nan")
+    return float((v < FLAT_MAX_DEG).mean()), float((v > STEEP_MIN_DEG).mean())
+
+
+def roughness_permille(dem_m: np.ndarray, px_m: float, baseline_m: float) -> float:
     """std(DEM - Gaussian(DEM, L)) / L * 1000, the detrended roughness.
 
     Normalising by the baseline makes the number behave like a slope, which is
-    what lets the gravity-scaled comparison in Section 5.3 mean anything.
+    what lets the gravity-scaled comparison mean anything.
     """
-    sigma_px = baseline_m / pixel_m
+    sigma_px = baseline_m / px_m
     if sigma_px < 0.5 or dem_m.shape[0] < 3 * sigma_px:
         return float("nan")
     filled = np.where(np.isfinite(dem_m), dem_m, np.nanmean(dem_m))
-    smooth = gaussian_filter(filled, sigma=sigma_px, mode="nearest")
+    smooth = gaussian_filter(filled, sigma=sigma_px, mode="reflect")
     resid = filled - smooth
     return float(np.std(resid) / baseline_m * 1000.0)
 
 
-def terrain_features(dem_m: np.ndarray, pixel_m: float, which: list[str] | None = None) -> dict:
-    """All terrain features for one cell or target circle.
+# ---------------------------------------------------------------------------
+# Entry point
+# ---------------------------------------------------------------------------
 
-    dem_m     2-D elevation array in metres, already in an equal-distance
-              projection centred on the cell (so ``pixel_m`` is isotropic).
-    pixel_m   ground sample distance in metres.
+
+def compute(
+    dem_m: np.ndarray,
+    px_m: float,
+    nodata: float | None = None,
+    baselines: tuple[str, ...] = ("rough_2km", "rough_10km"),
+) -> dict[str, float]:
+    """All terrain + buildability features for one cell or target circle.
+
+    dem_m     2-D elevation array in metres, in a local metric projection.
+    px_m      ground sample distance in metres (isotropic).
+    nodata    sentinel value to mask out, if the raster uses one.
+    baselines which roughness baselines to compute (keys of BASELINES_M).
     """
-    which = which or ["rough_2km", "rough_10km"]
-    med, p90 = slope_stats(dem_m, pixel_m)
+    dem = np.asarray(dem_m, dtype=np.float64)
+    if nodata is not None:
+        dem = np.where(dem == nodata, np.nan, dem)
+
+    med, p90 = slope_stats(dem, px_m)
+    flat, steep = buildability(dem, px_m)
     out = {
-        "relief_km": relief_km(dem_m),
+        "relief_km": relief_km(dem),
         "slope_med_deg": med,
         "slope_p90_deg": p90,
-        "hypso_int": hypsometric_integral(dem_m),
+        "hypso_int": hypsometric_integral(dem),
+        "flat_frac": flat,
+        "steep_frac": steep,
     }
-    for key in which:
-        out[key] = roughness_permille(dem_m, pixel_m, BASELINES_M[key])
+    for key in baselines:
+        out[key] = roughness_permille(dem, px_m, BASELINES_M[key])
     return out
+
+
+# Back-compat alias; `compute` is the name in Sofia's task description.
+terrain_features = compute
 
 
 def _block_mean(a: np.ndarray, factor: int) -> np.ndarray:
@@ -117,10 +183,11 @@ def _block_mean(a: np.ndarray, factor: int) -> np.ndarray:
 
 
 def compare_tile(mine: dict, theirs: dict, tol_rel: float = 0.15) -> dict:
-    """Clara vs Michal on the shared test tile.
+    """Cross-check helper for S4: numpy vs GEE, or Earth vs planetary code.
 
-    Returns {feature: (mine, theirs, relative difference, pass/fail)}. Anything
-    failing goes into #data before either pipeline exports for real.
+    Returns {feature: (mine, theirs, relative difference, ok/MISMATCH)}.
+    Sofia's agreed tolerances: relief and slope within 10 %, roughness within
+    20 %. Anything failing goes in #data before either pipeline exports.
     """
     report = {}
     for k in sorted(set(mine) | set(theirs)):

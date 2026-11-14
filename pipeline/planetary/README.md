@@ -9,6 +9,7 @@ the coarse global grids for click-anywhere on Sunday morning.
 | File | Task | Purpose |
 |---|---|---|
 | `download.sh` | M1 | The exact product URLs, so anyone can reproduce the build. |
+| `../../contract/lithology_classes.yaml` | M2 | You write it, Sofia reviews it. |
 | `moon_features.py` | M4 | LOLA / Diviner / LROC / LEND → features per target region. |
 | `mars_features.py` | M3 | MOLA-HRSC / TES / SWIM / MCD → features per target. |
 | `ti_classes.py` | M6 | Thermal-inertia class thresholds per body, with the justification paragraph Sofia needs. |
@@ -16,10 +17,20 @@ the coarse global grids for click-anywhere on Sunday morning.
 
 ## Non-negotiables
 
-- **Terrain code is shared.** Import from `engine/terrain_features.py`; do not
-  re-derive relief, slope or roughness. Clara reimplements the same definitions
-  in Earth Engine and the two are compared on the Meteor Crater test tile. If
-  they drift, every cross-body score is meaningless.
+- **Terrain code is shared and it is Sofia's.** Import
+  `engine/terrain_features.compute(dem_m, px_m, nodata)`; do not re-derive
+  relief, slope, roughness or the buildability pair. Sofia reimplements the
+  same definitions in Earth Engine for the whole Earth and cross-checks both
+  against your output on the test tiles (S4). If they drift, every cross-body
+  score is meaningless and nothing in the UI shows it.
+- **The lunar south pole is a hand-off, not a solo task** (M4): you reproject
+  the LOLA polar clips to a local equidistant projection, Sofia runs the
+  terrain module on them and writes the terrain fields into `targets.json`.
+  Agree who edits the file when, so you do not overwrite each other.
+- **Construction features come with the terrain pass**: `flat_frac` and
+  `steep_frac` fall out of `compute()` for free. `bulk_density` and
+  `rock_abund` you fill from `construction/regolith_constants.json` (Julia)
+  and Diviner / TES rock abundance.
 - **Coordinates**: planetocentric latitude, longitude **east-positive,
   −180…+180**. Mars products published in 0–360°E must be converted
   (`lon -= 360 if lon > 180`). Getting this wrong puts Jezero in the wrong
@@ -42,7 +53,8 @@ the coarse global grids for click-anywhere on Sunday morning.
   "body": "mars",
   "name": "Jezero crater",
   "lat": 18.4, "lon": 77.5, "radius_km": 15,
-  "features": {"relief_km": 0.62, "slope_med_deg": 2.1},
+  "features": {"relief_km": 0.62, "slope_med_deg": 2.1,
+               "flat_frac": 0.78, "steep_frac": 0.02, "bulk_density": 1.3},
   "sd":       {"relief_km": 0.10, "slope_med_deg": 0.6},
   "tags": ["sedimentary", "astrobiology"],
   "sources": ["MOLA-HRSC blended DEM 200 m", "TES TI (Putzig & Mellon 2007)"],

@@ -41,6 +41,8 @@ def _target(**overrides) -> dict:
         "ice_idx": 0.1,
         "precip_mm": 0.0,
         "ndvi_max": 0.0,
+        "flat_frac": 0.65,
+        "steep_frac": 0.05,
     }
     base.update(overrides)
     return base
@@ -63,10 +65,11 @@ def test_one_dead_dimension_drags_the_score_down():
     """The geometric mean must punish a single hopeless dimension.
 
     Note for the Sunday sigma meeting: the plan's DoD says "S < 0.1" for this
-    case, but with the plan's own formula (eps = 0.01) five dimensions with one
-    at zero give S ~ 0.40. The behaviour is right - one dead dimension costs
-    far more than it would under an arithmetic mean - the number in the DoD
-    just assumed a smaller eps. Both are asserted below so the choice is
+    case, but with the plan's own formula (eps = 0.01) and the six MVP
+    dimensions (T, H, M, W, B, C) one dead dimension gives S ~ 0.46. The
+    behaviour is right - one dead dimension costs far more than it would under
+    an arithmetic mean, which would still read 0.83 - the number in the DoD
+    just assumed a much smaller eps. Both are asserted below so the choice is
     explicit rather than accidental.
     """
     t = _target()
@@ -77,10 +80,10 @@ def test_one_dead_dimension_drags_the_score_down():
     r = score_grid(grid, t, CONTRACT, tiers=("mvp",))
     arithmetic = float(np.nanmean([v[0] for v in r.dims.values()]))
     assert r.dims["B"][0] < 0.001
-    assert r.overall[0] < 0.45
+    assert r.overall[0] < 0.50
     assert r.overall[0] < arithmetic - 0.3
 
-    harsh = load_contract(eps=1e-6)
+    harsh = load_contract(eps=1e-8)
     r2 = score_grid(grid, t, harsh, tiers=("mvp",))
     assert r2.overall[0] < 0.1
 
@@ -139,6 +142,17 @@ def test_hotspots_respect_the_separation_radius():
 def test_haversine_sanity():
     d = haversine_km(0.0, 0.0, 0.0, 1.0)
     assert 111.0 < d < 112.0
+
+
+def test_construction_dimension_is_scored():
+    """Dimension C must be present and must react to buildability."""
+    t = _target()
+    rows = [dict(t), dict(t, flat_frac=0.05, steep_frac=0.60)]
+    r = score_grid(_grid_from(rows), t, CONTRACT, tiers=("mvp",))
+    assert "C" in r.dims
+    assert abs(r.dims["C"][0] - 1.0) < 1e-9
+    assert r.dims["C"][1] < 0.2
+    assert r.overall[1] < r.overall[0]
 
 
 def test_verdict_thresholds():

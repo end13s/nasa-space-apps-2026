@@ -1,4 +1,4 @@
-# web/ — Julia
+# web/ — Finn (Julia: copy, About modal, CSS polish)
 
 Vite + CesiumJS dual-globe app. `src/worker/` is Eduard's — treat it as an API,
 and tell him in `#web` if you need the protocol changed rather than editing it.
@@ -25,7 +25,7 @@ worker.postMessage({ type: 'init', dataUrl: 'data/', body: 'earth' });
 worker.postMessage({
   type: 'score',
   target,                                  // one entry of targets.json
-  weights: { T: 1, H: 1, M: 1, W: 1, B: 1, A: 0, I: 0 },
+  weights: { T: 1, H: 1, M: 1, W: 1, B: 1, C: 1, A: 0, I: 0 },
   gravityScaling: false,
   body: 'moon',                            // which gravity-scaled column to swap in
   filters: { noveltyKm: 100, maxTravelMin: 600, excludeProtected: true },
@@ -68,6 +68,6 @@ not hit the 300 ms budget. Alpha 0 below S = 0.2 so the globe shows through.
 ## Still to scaffold (J1)
 
 `package.json`, `vite.config.js`, `index.html`, `src/main.js`, `src/globes.js`,
-`src/heatmap.js`, `src/ui/`. The GitHub Pages workflow in
+`src/heatmap.js`, `src/ui/` (F1). The GitHub Pages workflow in
 `.github/workflows/pages.yml` builds `web/` automatically as soon as a
 `package.json` exists; until then it publishes the data bundle only.

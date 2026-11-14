@@ -4,11 +4,11 @@
 Permanent Moon Base Locations and Mars"**
 
 Pick a site on the Moon or Mars. Analog Atlas computes a physical fingerprint of
-that site — terrain, thermal, surface material, water/ice, aridity/biology — and
-scores every land cell on Earth against it, then shows you not only where the
+that site — terrain, thermal, surface material, water/ice, aridity/biology and
+buildability — and scores every land cell on Earth against it, then shows you not only where the
 analogy holds but **where it breaks**.
 
-Team: Eduard · Clara · Michal · Julia · Sofia
+Team: Eduard · Clara · Michal · Sofia · Finn · Julia
 
 > Status: scaffold. The engine, the contract and the packing pipeline run today
 > on synthetic data. Real Earth / Moon / Mars data lands as Clara's and Michal's
@@ -74,21 +74,23 @@ grids. There is no backend to host, to pay for, or to fall over during judging.
 | Path | Owner | What |
 |---|---|---|
 | `contract/feature_dictionary.yaml` | Eduard | **The source of truth.** Every feature id, unit, quantization range, σ and data source. Frozen v1 Saturday 14:30; changes go through Eduard in `#data`. |
-| `contract/lithology_classes.yaml` | Michal + Sofia | 5 lithology classes, the GLiM/USGS mappings and the similarity matrix. |
+| `contract/lithology_classes.yaml` | Michal (Sofia reviews) | 5 lithology classes, the GLiM/USGS mappings and the similarity matrix. |
 | `contract/body_constants.json` | Michal | Gravity, pressure, obliquity, day length, temperature ranges — drives the always-on "where it breaks" lines. |
 | `contract/targets.json` | Michal | Moon/Mars target fingerprints (M5). |
 | `engine/score.py` | Eduard | Reference implementation of the score. |
-| `engine/terrain_features.py` | Eduard | **Shared** terrain definitions — Clara and Michal must produce identical numbers from this. |
+| `engine/terrain_features.py` | **Sofia** | The one shared definition of every terrain and buildability feature. Michal imports it; Sofia reimplements it in GEE and proves the two agree. |
 | `engine/illumination.py` | Eduard | Analytic sun geometry, shared across bodies. |
 | `engine/fake_data.py` | Eduard | Synthetic grid + targets so nobody is blocked. |
 | `engine/pack_web.py` | Eduard | parquet → `.bin` + `meta.json` for the browser. |
 | `engine/validate.py` | Eduard | Validation protocol and ablation table (E9). |
 | `engine/tests/` | Eduard | Unit tests + Python↔JS parity. |
-| `pipeline/earth/` | Clara | Google Earth Engine feature extraction. |
+| `pipeline/earth/gee_features.py` | Clara | Earth Engine extraction of the non-terrain layers: thermal, albedo, lithology, ice, water, vegetation, soil, logistics. |
+| `pipeline/earth/gee_terrain.py` | Sofia | Earth Engine terrain export on the same grid, from the shared definitions. |
+| `construction/` | Finn (criteria), Clara (soil), Julia (constants) | The Construction dimension: what a builder checks, mapped to features. |
 | `pipeline/planetary/` | Michal | LRO / MGS / Odyssey / MRO products → grids and fingerprints. |
-| `science/` | Sofia | Known analogs, calibration sites, mission profiles, breaks text, deep dives. |
-| `web/` | Julia | CesiumJS dual-globe app. `web/src/worker/` is Eduard's. |
-| `demo/` | Sofia + Julia | Script, recordings, backup slides. |
+| `science/` | Julia (content), Sofia (deep dives) | Known analogs, calibration sites, mission profiles, breaks text, deep dives. |
+| `web/` | Finn (Julia: copy, About, polish) | CesiumJS dual-globe app. `web/src/worker/` is Eduard's. |
+| `demo/` | Julia | Script, recordings, video, backup slides. |
 
 ### Git rules
 

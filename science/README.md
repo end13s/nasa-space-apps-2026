@@ -1,4 +1,4 @@
-# science/ - Sofia's folder
+# science/ - Julia's folder (deep dives: Sofia)
 
 Everything in here is **content**, not code, and all of it is read by the app
 at runtime or by `engine/validate.py`. Eduard put placeholder files in place so
@@ -6,11 +6,11 @@ that the pipeline runs end to end today; replace them, keep the schema.
 
 | File | Task | What it must become |
 |---|---|---|
-| `known_analogs.csv` | S2 | At least 15 rows, **every coordinate checked on Worldview**, `verified` set to `yes`, a real `reference_url` on each row. This file is the validation ground truth and also drives novelty mode, so a wrong coordinate quietly corrupts both. |
-| `calibration_sites.geojson` | S3 | 10+ polygons of 10-30 km with a known TI class and lithology, for Clara's ATI binning. |
-| `missions.json` | S5 | 5-6 mission profiles. The weights are per dimension (T, H, M, W, B, A, I). |
-| `breaks_text.json` | S6 | The sentences that turn a number into understanding. Plain language, 30 words max per line. |
-| `deep_dives/*.md` | S10 | One file per discovery site; Julia renders them in the Discoveries tab. |
+| `known_analogs.csv` | J2 | At least 15 rows, **every coordinate checked on Worldview**, `verified` set to `yes`, a real `reference_url` on each row. This file is the validation ground truth and also drives novelty mode, so a wrong coordinate quietly corrupts both. |
+| `calibration_sites.geojson` | J3 | 10+ polygons of 10-30 km with a known TI class and lithology, for Clara's ATI binning. |
+| `missions.json` | J5 | 5-6 mission profiles. The weights are per dimension (T, H, M, W, B, **C**, A, I). The Base-construction profile is the one that exercises dimension C. |
+| `breaks_text.json` | J5 | The sentences that turn a number into understanding. Plain language, 30 words max per line. |
+| `deep_dives/*.md` | S9 (Sofia) | One file per discovery site; Finn renders them in the Discoveries tab. |
 
 ## known_analogs.csv columns
 

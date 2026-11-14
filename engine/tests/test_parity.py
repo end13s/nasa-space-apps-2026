@@ -71,7 +71,7 @@ def build_job(contract, rng):
         ],
         "litho_matrix": contract.litho_matrix.tolist(),
     }
-    weights = {"T": 1.0, "H": 1.0, "M": 1.0, "W": 1.0, "B": 1.0, "A": 0.0, "I": 0.0}
+    weights = {"T": 1.0, "H": 1.0, "M": 1.0, "W": 1.0, "B": 1.0, "C": 1.0, "A": 0.0, "I": 0.0}
     return meta, codes, all_specs, target_features, weights
 
 

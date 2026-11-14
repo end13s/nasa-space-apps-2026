@@ -1,0 +1,34 @@
+{
+  "_comment": "Moon and Mars upper-regolith constants for the Construction dimension. Owner: Julia (task J4). PLACEHOLDER values scaffolded by Eduard so the pipeline runs - every entry is \"verified\": false and must be replaced with a cited value before anything is shown to a judge. Start with the Lunar Sourcebook soil-mechanics chapter and the Phoenix / InSight soil papers.",
+  "version": 1,
+  "moon": {
+    "bulk_density_g_cm3": {
+      "min": 1.3, "typical": 1.5, "max": 1.9,
+      "depth_note": "top ~15 cm; density increases with depth",
+      "citation": "TODO (Lunar Sourcebook, soil mechanics chapter)",
+      "verified": false
+    },
+    "regolith_thickness_m": {
+      "mare": 4.0, "highland": 12.0,
+      "citation": "TODO",
+      "verified": false
+    },
+    "cohesion_kpa": {"min": 0.1, "typical": 1.0, "max": 3.0, "citation": "TODO", "verified": false},
+    "friction_angle_deg": {"min": 30, "typical": 42, "max": 50, "citation": "TODO", "verified": false}
+  },
+  "mars": {
+    "bulk_density_g_cm3": {
+      "min": 1.1, "typical": 1.3, "max": 1.6,
+      "depth_note": "drift and crust-cloddy soils vary widely by site",
+      "citation": "TODO (Phoenix / InSight / MER soil studies)",
+      "verified": false
+    },
+    "regolith_thickness_m": {"typical": 5.0, "citation": "TODO", "verified": false},
+    "cohesion_kpa": {"min": 0.5, "typical": 2.0, "max": 5.0, "citation": "TODO", "verified": false},
+    "friction_angle_deg": {"min": 25, "typical": 35, "max": 45, "citation": "TODO", "verified": false}
+  },
+  "usage": {
+    "bulk_density": "Michal copies the 'typical' value into the bulk_density feature of each target in targets.json.",
+    "others": "Shown on the construction panel as context, not scored."
+  }
+}

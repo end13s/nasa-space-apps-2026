@@ -38,7 +38,7 @@ CONTRACT_DIR = Path(__file__).resolve().parent.parent / "contract"
 #   eps = 1e-6  -> same case                          => S ~ 0.06
 DEFAULT_EPS = 0.01
 
-DIM_ORDER = ["T", "H", "M", "W", "B", "A", "I"]
+DIM_ORDER = ["T", "H", "M", "W", "B", "C", "A", "I"]
 
 
 # ---------------------------------------------------------------------------

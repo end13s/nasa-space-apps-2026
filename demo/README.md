@@ -1,4 +1,4 @@
-# demo/ — Sofia + Julia
+# demo/ — Julia
 
 Submission rules that decide eligibility, not taste:
 
@@ -13,6 +13,6 @@ Submission rules that decide eligibility, not taste:
 - Any AI-generated image or video needs a **visible watermark**.
 - The project page accepts images up to 10 MB — not videos, not documents.
 
-What lands in this folder: `script.md`, the raw screen recordings (J15), the
-final cut, and the backup 7-slide deck (S12). Keep the recordings out of git if
+What lands in this folder: `script.md`, the raw screen recordings (J9), the
+final cut, and the backup 7-slide deck (J11). Keep the recordings out of git if
 they are large — Drive link in `#science` instead.

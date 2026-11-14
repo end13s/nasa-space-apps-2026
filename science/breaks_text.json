@@ -1,6 +1,6 @@
 {
-  "_comment": "Site-card language. Owner: Sofia (task S6). Eduard's placeholder so the UI renders; Sofia rewrites every string. {site} and {target} are substituted by the UI. Keep each line under 30 words.",
-  "version": 1,
+  "_comment": "Site-card language. Owner: Julia (task J5). Eduard's placeholder so the UI renders; Julia rewrites every string, Sofia reviews the science and Finn the construction lines. {site} and {target} are substituted by the UI. Keep each line under 30 words.",
+  "version": 2,
   "dimensions": {
     "T": {
       "why": "Terrain decides where a lander can touch down and where a rover can drive.",
@@ -31,6 +31,12 @@
       "strong": "Almost no vegetation, as at {target}.",
       "partial": "Sparse vegetation - usable, but biology is present.",
       "breaks": "This is a living landscape; {target} is not."
+    },
+    "C": {
+      "why": "Buildability decides whether a permanent base can be founded, excavated and landed on at all.",
+      "strong": "Flat, firm ground at {site} matches what a builder would face at {target}.",
+      "partial": "Buildable in places, but the ground differs from {target} in firmness or flatness.",
+      "breaks": "This ground could not stand in for {target}: the slopes or the soil behave differently."
     },
     "A": {
       "why": "Dust loading and wind shape visibility, solar power and equipment wear.",
@@ -63,6 +69,10 @@
     ],
     "earth_side": [
       "Earth biology is everywhere, so any site is a contamination source for biosignature tests."
+    ],
+    "construction_note": [
+      "Earth gravity means foundation loads, excavation forces and dust settling all differ from 1/6 g or 3/8 g.",
+      "No Earth site reproduces vacuum welding, regolith abrasiveness or the thermal cycling a lunar structure sees."
     ]
   }
 }

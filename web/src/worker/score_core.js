@@ -12,7 +12,7 @@
  */
 
 export const MISSING = 255;
-export const DIM_ORDER = ['T', 'H', 'M', 'W', 'B', 'A', 'I'];
+export const DIM_ORDER = ['T', 'H', 'M', 'W', 'B', 'C', 'A', 'I'];
 
 /** uint8 code -> physical value. NaN where the code is the missing marker. */
 export function decode(code, lo, hi, scale = 'linear') {

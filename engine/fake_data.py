@@ -129,6 +129,20 @@ def build_grid(seed: int = SEED) -> pd.DataFrame:
     protected = np.clip(_noise(rng, 4.0) * 0.35 + 0.12, 0.0, 1.0)
     viirs = np.clip(np.exp(-remoteness * 3.0) * 60.0 + rng.random((NROWS, NCOLS)) * 0.2, 0.0, None)
 
+    # ---- construction / buildability (dimension C) -------------------------
+    # flat_frac and steep_frac really come from Sofia's terrain module; here
+    # they are smooth functions of the synthetic slope field so that the
+    # construction panel has monotone, plausible numbers to render.
+    flat_frac = np.clip(1.0 / (1.0 + np.exp((slope_med - 5.0) / 2.0)), 0.0, 1.0)
+    steep_frac = np.clip(1.0 / (1.0 + np.exp((25.0 - slope_p90) / 4.0)), 0.0, 1.0)
+    bulk_density = np.clip(
+        1.15 + 0.35 * aridity - 0.30 * ice + _noise(rng, 4.0) * 0.08, 0.5, 2.2
+    )
+    sand_frac = np.clip(25.0 + 55.0 * aridity + _noise(rng, 4.0) * 8.0, 0.0, 100.0)
+    bedrock_depth = np.clip(
+        40.0 * (1.0 - np.clip(slope_med / 20.0, 0, 1)) + _noise(rng, 5.0) * 8.0, 0.1, 200.0
+    )
+
     # ---- gravity-scaled roughness (shorter baseline -> a bit rougher) ------
     rough2_gM = np.clip(rough2 * 1.35 + _noise(rng, 5.0) * 0.5, 0.2, 75.0)
     rough10_gM = np.clip(rough10 * 1.25 + _noise(rng, 5.0) * 0.4, 0.2, 75.0)
@@ -166,6 +180,11 @@ def build_grid(seed: int = SEED) -> pd.DataFrame:
             "precip_mm": precip[sel],
             "soil_moist": soil_moist[sel],
             "ndvi_max": ndvi[sel],
+            "flat_frac": flat_frac[sel],
+            "steep_frac": steep_frac[sel],
+            "bulk_density": bulk_density[sel],
+            "sand_frac": sand_frac[sel],
+            "bedrock_depth_m": bedrock_depth[sel],
             "aod_p90": aod[sel],
             "wind_p95": wind[sel],
             "lowsun_frac": lowsun[sel],
@@ -188,6 +207,9 @@ def build_grid(seed: int = SEED) -> pd.DataFrame:
         ("ice_idx", 0.15),
         ("precip_mm", 0.20),
         ("ndvi_max", 0.12),
+        ("flat_frac", 0.15),
+        ("steep_frac", 0.20),
+        ("bulk_density", 0.10),
     ]:
         df[col + "__sd"] = (df[col].abs() * frac).astype(np.float32)
 
@@ -268,6 +290,12 @@ def build_targets(seed: int = SEED) -> list[dict]:
             "precip_mm": 0.0,
             "soil_moist": 0.0,
             "ndvi_max": 0.0,
+            # construction: flat/steep follow the slope, regolith density from
+            # Julia's construction/regolith_constants.json once it exists
+            "flat_frac": float(np.clip(1.0 / (1.0 + np.exp((slope - 5.0) / 2.0)), 0.0, 1.0)),
+            "steep_frac": float(np.clip(1.0 / (1.0 + np.exp((25.0 - min(slope * 2.2 + 1.0, 58.0)) / 4.0)), 0.0, 1.0)),
+            "bulk_density": 1.5 if body == "moon" else 1.3,
+            "rock_abund": 8.0 if body == "moon" else 6.0,
             "aod_p90": 0.0 if body == "moon" else 0.35,
             "wind_p95": 0.0 if body == "moon" else 6.0,
             "lowsun_frac": float(lowsun_frac(lat, OBLIQUITY_DEG[body])),
