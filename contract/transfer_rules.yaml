@@ -18,196 +18,373 @@
 # Keep every note under about 30 words - it is rendered on the card verbatim.
 # ============================================================================
 
+version: 1# ============================================================================
+# Analog Atlas - TRANSFER RULES
+# Owner: Julia. Physics review: Sofia. Schema integration: Eduard.
+#
+# Statuses:
+# transferable: supports the explicitly stated comparison.
+# conditional: requires the stated correction or validation.
+# not_transferable: does not support the proposed physical inference.
+# not_applicable: excluded for the stated reason.
+#
+# Missing rules mean unassessed. Display them as unassessed.
+# Every rule requires a rationale.
+# Keep each rationale and correction under 30 words.
+#
+# Draft for review. The experiments section proposes explicit rule references.
+# Eduard must reconcile these with missions.json and the consuming code.
+# ============================================================================
+
 version: 1
 
 feature_labels:
   relief_km: Elevation range
   slope_med_deg: Median slope
-  slope_p90_deg: Steep slope (90th pct)
+  slope_p90_deg: Steep slope (90th percentile)
   rough_2km: Roughness at 2 km
   rough_10km: Roughness at 10 km
   hypso_int: Hypsometric integral
   ti_class: Thermal inertia class
-  tmin_k: Coldest temperature
-  tmax_k: Warmest temperature
-  diurnal_amp_k: Day-night swing
-  albedo: Surface brightness
-  litho_class: Rock type
-  ice_idx: Near-surface ice
+  tmin_k: Minimum surface temperature
+  tmax_k: Maximum surface temperature
+  diurnal_amp_k: Day-night temperature range
+  albedo: Surface reflectivity
+  litho_class: Rock class
+  ice_near_surface: Near-surface ice evidence
+  ice_shadow_frac: Ice-related shadow fraction
+  ice_model: Modeled ice evidence
   precip_mm: Precipitation
   soil_moist: Soil moisture
-  ndvi_max: Vegetation cover
-  flat_frac: Buildable flat ground
-  steep_frac: Steep, non-buildable ground
-  bulk_density: Soil / regolith density
-  aod_p90: Dust loading
+  ndvi_max: Vegetation index
+  flat_frac: Flat-ground fraction
+  steep_frac: Steep-ground fraction
+  bulk_density: Soil or regolith bulk density
+  aod_p90: Atmospheric optical depth
   wind_p95: Wind speed
   lowsun_frac: Low-sun fraction of the year
   shadow_frac_lowsun: Terrain shadowing at low sun
+  day_length: Solar-day duration
+  biological_contamination: Biological contamination
 
 rules:
 
-  # ---- terrain: geometry transfers, the processes that made it do not ----
   relief_km:
-    moon: {status: transferable}
-    mars: {status: transferable}
+    moon:
+      status: transferable
+      rationale: "Elevation range supports geometric comparisons when footprint, resolution, and processing match. It does not establish mechanical performance."
+    mars:
+      status: transferable
+      rationale: "Elevation range supports geometric comparisons when footprint, resolution, and processing match. It does not establish mechanical performance."
+
   slope_med_deg:
     moon:
       status: conditional
-      correction: "Geometry transfers, but slope stability does not - the same angle
-                   is far more stable at 1/6 g."
+      rationale: "Slope geometry is comparable, but stability and mobility also depend on material properties, loading, and gravity."
+      correction: "Match map resolution and evaluate stability using lunar gravity, cohesion, friction, and loading."
     mars:
       status: conditional
-      correction: "Geometry transfers; slope stability differs at 3/8 g."
+      rationale: "Slope geometry is comparable, but stability and mobility also depend on material properties, loading, and gravity."
+      correction: "Match map resolution and evaluate stability using Martian gravity, cohesion, friction, and loading."
+
   slope_p90_deg:
-    moon: {status: conditional, correction: "As median slope: geometry transfers, stability does not."}
-    mars: {status: conditional, correction: "As median slope: geometry transfers, stability does not."}
+    moon:
+      status: conditional
+      rationale: "Matching steep-slope statistics does not establish equal failure thresholds or rover performance."
+      correction: "Match resolution and slope definitions, then assess lunar stability and mobility using material properties and loading."
+    mars:
+      status: conditional
+      rationale: "Matching steep-slope statistics does not establish equal failure thresholds or rover performance."
+      correction: "Match resolution and slope definitions, then assess Martian stability and mobility using material properties and loading."
+
   rough_2km:
     moon:
       status: conditional
-      correction: "Comparable only at the Moon-gravity-scaled baseline of 330 m.
-                   Landform size scales roughly as 1/g; this ignores material
-                   strength and erosion history."
+      rationale: "The primary geometric comparison uses a shared 2 km baseline. Gravity-scaled results are a separate sensitivity analysis."
+      correction: "Match resolution, filtering, and normalization at 2 km. Display any gravity-scaled comparison separately and document its assumptions."
     mars:
       status: conditional
-      correction: "Comparable only at the Mars-gravity-scaled baseline of 760 m."
-  rough_10km:
-    moon: {status: conditional, correction: "Compare at the scaled baseline of 1.65 km."}
-    mars: {status: conditional, correction: "Compare at the scaled baseline of 3.8 km."}
-  hypso_int:
-    moon: {status: transferable}
-    mars: {status: transferable}
+      rationale: "The primary geometric comparison uses a shared 2 km baseline. Gravity-scaled results are a separate sensitivity analysis."
+      correction: "Match resolution, filtering, and normalization at 2 km. Display any gravity-scaled comparison separately and document its assumptions."
 
-  # ---- thermal: the headline physics caveat of the whole project ----
+  rough_10km:
+    moon:
+      status: conditional
+      rationale: "The primary geometric comparison uses a shared 10 km baseline. Gravity-scaled results are a separate sensitivity analysis."
+      correction: "Match resolution, filtering, and normalization at 10 km. Display any gravity-scaled comparison separately and document its assumptions."
+    mars:
+      status: conditional
+      rationale: "The primary geometric comparison uses a shared 10 km baseline. Gravity-scaled results are a separate sensitivity analysis."
+      correction: "Match resolution, filtering, and normalization at 10 km. Display any gravity-scaled comparison separately and document its assumptions."
+
+  hypso_int:
+    moon:
+      status: transferable
+      rationale: "Supports normalized elevation-distribution comparisons with matched boundaries and processing. Equal values do not establish equal geological histories."
+    mars:
+      status: transferable
+      rationale: "Supports normalized elevation-distribution comparisons with matched boundaries and processing. Equal values do not establish equal geological histories."
+
   ti_class:
     moon:
       status: not_transferable
-      note: "Thermal inertia of loose material depends on pore gas pressure. In vacuum
-             there is no gas conduction between grains, so a matching Earth class does
-             not behave the same way."
+      rationale: "Earth thermal-inertia classes cannot establish lunar heat transport because vacuum, temperature, grain contacts, and radiative transfer alter effective conductivity."
     mars:
       status: conditional
-      correction: "Valid only with a stated pressure correction: the same grain size
-                   reads a higher thermal inertia at 1 bar than at 6 mbar."
+      rationale: "Pore-gas pressure changes effective conductivity, so matching Earth and Mars classes does not establish equivalent material behavior."
+      correction: "Apply a validated pressure-dependent model or chamber calibration accounting for temperature, grain properties, porosity, and composition."
+
   tmin_k:
     moon:
       status: not_transferable
-      note: "No Earth surface reaches lunar night or permanently-shadowed temperatures
-             of 25-40 K."
+      rationale: "Outdoor Earth sites cannot reproduce the coldest lunar permanent shadows, including temperatures around 25-40 K."
     mars:
       status: conditional
-      correction: "Earth's coldest sites overlap the warm end of the Martian range only;
-                   state the offset."
+      rationale: "Some temperature ranges overlap, but matching minima alone does not establish equivalent thermal conditions."
+      correction: "Match surface-temperature definitions and observation periods. Report uncovered target temperatures and model pressure-dependent heat transfer."
+
   tmax_k:
     moon:
       status: not_transferable
-      note: "Lunar noon reaches ~390 K with no atmosphere to move the heat. Earth cannot
-             reproduce the input or the transport."
-    mars: {status: conditional, correction: "Overlapping ranges, but driven by a thin CO2 atmosphere rather than air."}
-  diurnal_amp_k:
-    moon: {status: not_transferable, note: "A ~250 K swing over 29.5 Earth days has no terrestrial equivalent."}
-    mars: {status: conditional, correction: "Similar amplitude, very different heat transport - radiative rather than convective."}
+      rationale: "Outdoor Earth sites cannot reproduce lunar daytime temperatures near 390 K together with vacuum and lunar heat-transfer conditions."
+    mars:
+      status: conditional
+      rationale: "Matching maximum temperatures does not establish equal solar input, atmospheric exchange, or subsurface heat flow."
+      correction: "Match measurement definitions and solar exposure, then model atmospheric and subsurface heat-transfer differences."
 
-  # ---- material ----
+  diurnal_amp_k:
+    moon:
+      status: not_transferable
+      rationale: "Approximate equatorial temperatures of 100-390 K span 290 K over a lunar solar cycle. Earth field cycles do not reproduce these conditions."
+    mars:
+      status: conditional
+      rationale: "Matching amplitude does not establish equal heating rates or heat transport. Martian convection exists under low atmospheric density."
+      correction: "Match duration, temperature limits, and heating rates. Account for pressure, convection, radiation, and conduction."
+
   albedo:
     moon:
-      status: conditional
-      correction: "Different quantities: MODIS broadband white-sky albedo on Earth vs
-                   LROC normalized reflectance at 643 nm. Compare trends, not values."
+      status: not_transferable
+      rationale: "The Earth and lunar products use different reflectance definitions. No validated transformation currently establishes a quantitative match."
     mars:
-      status: conditional
-      correction: "MODIS broadband albedo vs TES Lambert albedo are different
-                   definitions; treat the match as approximate."
-  litho_class:
-    moon: {status: transferable, note: "Rock chemistry transfers; space weathering and agglutinates do not."}
-    mars: {status: transferable, note: "Rock chemistry transfers; oxidation state and perchlorates do not."}
+      status: not_transferable
+      rationale: "The Earth and Martian products use different albedo definitions. No validated transformation currently establishes a quantitative match."
 
-  # ---- water / ice ----
-  ice_idx:
+  litho_class:
     moon:
       status: conditional
-      correction: "Earth ice is glacial or permafrost at 250-273 K; lunar cold-trap ice sits
-                   at 25-40 K in vacuum. Mechanical behaviour differs completely."
+      rationale: "Rock classes become comparable only through a shared, reviewed classification mapping."
+      correction: "Define and review the Earth-to-Moon class mapping and similarity matrix before scoring."
     mars:
       status: conditional
-      correction: "Comparable as ground ice, but Martian ice is stable only under a
-                   desiccated regolith lag."
-  precip_mm:
-    moon: {status: transferable, note: "Zero on both; a match means the surface is not being reworked by rain."}
-    mars: {status: transferable, note: "Zero on both."}
-  soil_moist:
-    moon: {status: transferable}
-    mars: {status: transferable}
+      rationale: "Rock classes become comparable only through a shared, reviewed classification mapping."
+      correction: "Define and review the Earth-to-Mars class mapping and similarity matrix before scoring."
 
-  # ---- vegetation (renamed from "biology" - NDVI measures cover, not habitability) ----
+  # Provisional rules pending reconciliation with Section 14.5 definitions.
+  # These features must remain separate.
+
+  ice_near_surface:
+    moon:
+      status: conditional
+      rationale: "Near-surface ice evidence alone does not establish comparable abundance, depth, structure, temperature, or mechanical behavior."
+      correction: "Verify the feature definition and detection depth. Calibrate abundance and reproduce target thermal and pressure conditions for mechanical tests."
+    mars:
+      status: conditional
+      rationale: "Ground-ice stability depends on local climate and depth. A protective dry layer is one relevant condition."
+      correction: "Verify detection depth, abundance, and ice structure. Account for local temperature, pressure, salts, and sublimation."
+
+  ice_shadow_frac:
+    moon:
+      status: conditional
+      rationale: "Shadow fraction alone does not establish ice presence or stability. The feature definition and temporal coverage require review."
+      correction: "Confirm Section 14.5 semantics, harmonize shadow calculations, and evaluate target-specific duration and temperatures before inferring ice stability."
+    mars:
+      status: conditional
+      rationale: "Shadow fraction alone does not establish Martian ground ice. Seasonal temperatures and subsurface conditions also matter."
+      correction: "Confirm Section 14.5 semantics and temporal coverage, then assess the relationship to local ice stability."
+
+  ice_model:
+    moon:
+      status: conditional
+      rationale: "Modeled ice evidence depends on assumptions, inputs, and validation. Matching model outputs alone cannot establish equivalent ice conditions."
+      correction: "Document the model definition, depth, uncertainty, and validation. Assess target-specific pressure and temperature assumptions."
+    mars:
+      status: conditional
+      rationale: "Modeled ice evidence depends on local climate, depth, and model assumptions. A matching value alone cannot establish equivalent ice conditions."
+      correction: "Document the model definition, depth, uncertainty, and validation. Assess climate and subsurface assumptions before transferring conclusions."
+
+  precip_mm:
+    moon:
+      status: not_applicable
+      rationale: "Terrestrial precipitation is excluded from lunar transfer scoring. A zero value cannot establish equivalent surface history or present conditions."
+    mars:
+      status: not_applicable
+      rationale: "Terrestrial precipitation is excluded from Martian transfer scoring. Martian snowfall and frost require separate definitions and evidence."
+
+  soil_moist:
+    moon:
+      status: conditional
+      rationale: "Earth soil-moisture retrievals do not automatically represent lunar water phases or measurement depths."
+      correction: "Confirm depth, units, detection limits, and water phase. Validate cross-body interpretation before scoring."
+    mars:
+      status: conditional
+      rationale: "Earth soil-moisture retrievals do not automatically represent Martian liquid water, ice, or adsorbed water."
+      correction: "Confirm depth, units, detection limits, salts, and water phase. Validate cross-body interpretation before scoring."
+
+  # Conservative default for biological interpretation.
+  # Non-biological vegetation screening has an explicit experiment override.
   ndvi_max:
     moon:
-      status: transferable
-      note: "A match means no vegetation confound for instruments. It says nothing about
-             habitability - Earth deserts are near zero too, and are full of life."
+      status: not_transferable
+      rationale: "Low Earth vegetation index cannot establish lunar habitability or biological cleanliness. Microbes and organic contamination may remain."
     mars:
-      status: transferable
-      note: "No vegetation confound. Earth biology remains a contamination source for any
-             biosignature test."
+      status: not_transferable
+      rationale: "Low Earth vegetation index cannot establish Martian habitability or biological cleanliness. Microbes and organic contamination may remain."
 
-  # ---- construction ----
   flat_frac:
-    moon: {status: conditional, correction: "Flatness transfers as geometry; bearing capacity and grading effort do not at 1/6 g."}
-    mars: {status: conditional, correction: "Flatness transfers; bearing capacity differs at 3/8 g."}
+    moon:
+      status: conditional
+      rationale: "Flat-ground fraction describes geometry. Foundation performance also depends on material properties, loading, and lunar gravity."
+      correction: "Match slope thresholds and map resolution. Assess bearing capacity and grading separately under target conditions."
+    mars:
+      status: conditional
+      rationale: "Flat-ground fraction describes geometry. Foundation performance also depends on material properties, loading, and Martian gravity."
+      correction: "Match slope thresholds and map resolution. Assess bearing capacity and grading separately under target conditions."
+
   steep_frac:
-    moon: {status: conditional, correction: "Same geometry, different failure threshold - lunar slopes stand steeper."}
-    mars: {status: conditional, correction: "Same geometry, different failure threshold."}
+    moon:
+      status: conditional
+      rationale: "Steep-ground fraction does not establish failure thresholds. Lower gravity alone does not guarantee greater stability."
+      correction: "Match thresholds and resolution. Assess stability using lunar gravity, cohesion, friction, geometry, and loading."
+    mars:
+      status: conditional
+      rationale: "Steep-ground fraction does not establish failure thresholds or construction suitability."
+      correction: "Match thresholds and resolution. Assess stability using Martian gravity, cohesion, friction, geometry, and loading."
+
   bulk_density:
     moon:
       status: not_transferable
-      note: "Lunar regolith density comes from a literature constant, not a measurement at
-             the target, and compaction behaves differently in vacuum at 1/6 g."
-    mars: {status: conditional, correction: "Density may match; cohesion and compaction under 3/8 g do not."}
-
-  # ---- atmosphere / dust ----
-  aod_p90:
-    moon: {status: not_transferable, note: "No atmosphere. Lunar dust is lofted electrostatically, not by wind."}
-    mars: {status: conditional, correction: "Both are suspended dust, but Martian lifting happens at 6 mbar with much lower wind stress."}
-  wind_p95:
-    moon: {status: not_transferable, note: "No atmosphere, so no wind."}
+      rationale: "Matching a generic lunar density constant cannot validate target-specific compaction or bearing capacity."
     mars:
       status: conditional
-      correction: "Martian winds reach similar speeds at ~1 % of Earth's air density, so
-                   the force on structures is far lower for the same speed."
+      rationale: "Equal density does not establish equal cohesion, packing response, or load-bearing performance."
+      correction: "Match depth and packing state. Evaluate stress, cohesion, friction, and compaction under Martian gravity."
 
-  # ---- illumination ----
+  aod_p90:
+    moon:
+      status: not_transferable
+      rationale: "Atmospheric optical depth cannot represent lunar surface-dust transport in the absence of a substantial atmosphere."
+    mars:
+      status: conditional
+      rationale: "Matching optical depth does not establish equivalent dust particles, lifting thresholds, or deposition."
+      correction: "Harmonize wavelength and retrieval definitions. Account for particle properties, gas density, and vertical distribution."
+
+  wind_p95:
+    moon:
+      status: not_transferable
+      rationale: "The Moon lacks a substantial atmosphere capable of producing terrestrial-style aerodynamic wind loads."
+    mars:
+      status: conditional
+      rationale: "Typical Martian surface air density is approximately 1.5-2% of Earth's, varying with local conditions. Equal speeds produce different aerodynamic loads."
+      correction: "Use local gas density and match dynamic pressure. Assess drag, turbulence, and particle entrainment separately."
+
   lowsun_frac:
     moon:
       status: conditional
-      correction: "Earth's high latitudes give grazing light seasonally; the lunar poles give
-                   it permanently, on a 29.5-day cycle."
-    mars: {status: transferable}
+      rationale: "Similar low-sun fractions can conceal different illumination sequences, local horizons, and seasonal conditions."
+      correction: "Match elevation thresholds and temporal sampling. Evaluate target-specific horizons and continuous light or darkness durations."
+    mars:
+      status: transferable
+      rationale: "Supports solar-angle frequency comparisons with identical thresholds and time weighting. Irradiance and atmospheric scattering require separate assessment."
+
   shadow_frac_lowsun:
     moon:
       status: conditional
-      correction: "Use the horizon-based PGDA illumination maps for lunar targets - crater
-                   rims, not latitude, dominate polar shadowing."
-    mars: {status: transferable}
+      rationale: "Lunar polar shadowing depends on terrain horizons and solar geometry. Equal fractions can conceal different shadow durations."
+      correction: "Use target-specific horizon maps with matched resolution and solar geometry. Evaluate duration separately."
+    mars:
+      status: transferable
+      rationale: "Supports geometric shadow comparisons with matched terrain resolution and solar geometry. Dust, diffuse light, and temperature require separate assessment."
+
+  day_length:
+    moon:
+      status: conditional
+      rationale: "The lunar solar day is approximately 29.5 Earth days. Target illumination also depends on location and terrain."
+      correction: "Use controlled illumination or validated temporal models reproducing the target's light and darkness sequence."
+    mars:
+      status: conditional
+      rationale: "The Martian solar day is approximately 24.66 hours, about 0.66 hours longer than Earth's."
+      correction: "Adjust operational schedules and thermal or illumination models to the Martian sol."
+
+  biological_contamination:
+    moon:
+      status: not_transferable
+      rationale: "An Earth field site cannot establish lunar biological background. Terrestrial organisms and organics can confound biosignature measurements."
+    mars:
+      status: not_transferable
+      rationale: "An Earth field site cannot establish Martian biological background. Terrestrial organisms and organics can confound biosignature measurements."
 
 # ============================================================================
-# Variables with no Earth equivalent at all. These populate the "Cannot test"
-# column on every card, for every experiment, and are never scored.
-# Values come from contract/body_constants.json.
+# Proposed experiment binding.
+# Each required variable references rules.<variable>.<selected body>.
+# Overrides are explicitly limited to the named experiment.
+# Unlisted variables are outside that experiment's declared requirements.
+# Missing referenced rules must display unassessed.
+#
+# Only the supplied experiment ID is included here.
+# Add other profiles using their actual missions.json IDs and requirements.
 # ============================================================================
+
+experiments:
+  rover_nav_dry_regolith:
+    name: Autonomous navigation in dry regolith
+    required_variables:
+      - slope_med_deg
+      - slope_p90_deg
+      - rough_2km
+      - ti_class
+      - ndvi_max
+      - flat_frac
+    rule_refs:
+      slope_med_deg: slope_med_deg
+      slope_p90_deg: slope_p90_deg
+      rough_2km: rough_2km
+      ti_class: ti_class
+      ndvi_max: ndvi_max
+      flat_frac: flat_frac
+    overrides:
+      ndvi_max:
+        moon:
+          status: conditional
+          rationale: "For navigation, this Earth-side index screens vegetation interference. It does not support biological conclusions."
+          correction: "Confirm low vegetation cover with imagery or field observations and account for sensor retrieval uncertainty."
+        mars:
+          status: conditional
+          rationale: "For navigation, this Earth-side index screens vegetation interference. It does not support biological conclusions."
+          correction: "Confirm low vegetation cover with imagery or field observations and account for sensor retrieval uncertainty."
+
+# Habitation or biosignature experiment profiles must explicitly reference
+# biological_contamination so it appears in their Cannot test column.
+# Do not infer profile applicability from an absent key.
+
+# ============================================================================
+# Natural outdoor Earth-site limitations displayed on every experiment card.
+# Controlled facilities can investigate some effects separately.
+# Reconcile numerical values with contract/body_constants.json.
+# The agreed Mars gravity value is 3.71 m/s2.
+# ============================================================================
+
 never_testable:
   - id: gravity
-    label: Gravity
-    moon: "1.62 m/s2 (1/6 g) - mobility, dust ballistics, slope stability and structural loads all differ"
-    mars: "3.72 m/s2 (3/8 g) - same, to a lesser degree"
+    label: Target gravity
+    moon: "Lunar gravity is approximately 1.62 m/s2. Earth field tests require separate scaling or reduced-gravity validation."
+    mars: "Martian gravity is approximately 3.71 m/s2. Earth field tests require separate scaling or reduced-gravity validation."
+
   - id: radiation
-    label: Radiation environment
-    moon: "Unshielded galactic cosmic rays and solar particle events; no magnetosphere, no atmosphere"
-    mars: "No global magnetic field and ~16 g/cm2 of CO2; surface dose far above any Earth site"
+    label: Target radiation environment
+    moon: "Earth's shielding prevents direct reproduction of lunar surface radiation. Radiation effects require dedicated measurements, modeling, or irradiation tests."
+    mars: "Earth sites cannot reproduce Martian radiation spectra and shielding. Radiation effects require dedicated measurements, modeling, or irradiation tests."
+
   - id: pressure
-    label: Atmospheric pressure
-    moon: "Hard vacuum - no convection, no sound, no gas conduction in regolith pores"
-    mars: "~6 mbar CO2 - dust storms are possible, breathing and convective cooling are not"
-  - id: day_length
-    label: Day length
-    moon: "29.5 Earth days, with two weeks of continuous darkness"
-    mars: "24.66 h - close enough to Earth that this one is nearly testable"
+    label: Target atmospheric pressure
+    moon: "Outdoor Earth sites cannot reproduce lunar vacuum. Gas heat transfer, outgassing, and sublimation require controlled testing."
+    mars: "Outdoor Earth sites cannot reproduce approximately 6 mbar carbon dioxide conditions. Atmospheric heat transfer requires separate characterization."
