@@ -1,0 +1,94 @@
+# ============================================================================
+# Analog Atlas - LITHOLOGY CLASSES + SIMILARITY MATRIX
+# ----------------------------------------------------------------------------
+# Owners: Michal + Sofia (task M2 / S4).
+# DRAFT scaffolded by Eduard from Section 5.3 of the team plan so that
+# engine/score.py has something to run against. Michal and Sofia: check every
+# mapping below, especially the Moon and Mars unit names, and replace the
+# "TODO" entries with the real unit codes from the USGS maps.
+#
+# Used by: engine/score.py (sigma_mode: matrix on litho_class)
+#          pipeline/earth/gee_features.py (GLiM -> class)
+#          pipeline/planetary/*.py (geologic map unit -> class)
+# ============================================================================
+
+version: 1
+
+classes:
+  1:
+    name: Mafic volcanic
+    short: basalt
+    description: Basalt, basaltic andesite, volcanic glass, fresh lava fields.
+  2:
+    name: Feldspathic / crystalline
+    short: crystalline
+    description: Anorthosite-like highland rock, granitic and metamorphic crystalline basement.
+  3:
+    name: Clastic sediment / unconsolidated
+    short: clastic
+    description: Sand, silt, gravel, regolith-like loose material, siliciclastic rock.
+  4:
+    name: Chemical sediment
+    short: evaporite
+    description: Evaporite, carbonate, sulfate, chloride crusts, playa salt.
+  5:
+    name: Ice-dominated
+    short: ice
+    description: Glacier ice, ice sheet, massive ground ice.
+
+# ---------------------------------------------------------------------------
+# Similarity matrix, symmetric, values 0..1. s_f = matrix[class_x][class_t].
+# Same class = 1.0; basalt <-> basaltic sediment = 0.4; clastic <-> chemical
+# sediment = 0.4; basalt <-> crystalline = 0.2; everything else = 0.
+# ---------------------------------------------------------------------------
+similarity:
+  1: {1: 1.0, 2: 0.2, 3: 0.4, 4: 0.0, 5: 0.0}
+  2: {1: 0.2, 2: 1.0, 3: 0.0, 4: 0.0, 5: 0.0}
+  3: {1: 0.4, 2: 0.0, 3: 1.0, 4: 0.4, 5: 0.0}
+  4: {1: 0.0, 2: 0.0, 3: 0.4, 4: 1.0, 5: 0.0}
+  5: {1: 0.0, 2: 0.0, 3: 0.0, 4: 0.0, 5: 1.0}
+
+# ---------------------------------------------------------------------------
+# Earth: GLiM (Hartmann & Moosdorf 2012) top-level lithology code -> class.
+# Codes not listed here (wb water bodies, nd no data) become NaN = missing.
+# ---------------------------------------------------------------------------
+earth_glim:
+  vb: 1   # basic volcanic
+  vi: 1   # intermediate volcanic
+  py: 1   # pyroclastic
+  pb: 1   # basic plutonic
+  va: 2   # acid volcanic
+  pa: 2   # acid plutonic
+  pi: 2   # intermediate plutonic
+  mt: 2   # metamorphic
+  su: 3   # unconsolidated sediment
+  ss: 3   # siliciclastic sedimentary
+  sm: 3   # mixed sedimentary
+  ev: 4   # evaporite
+  sc: 4   # carbonate sedimentary
+  ig: 5   # ice and glaciers
+
+# ---------------------------------------------------------------------------
+# Moon: USGS Unified Geologic Map of the Moon (Fortezzo et al. 2020).
+# Michal: fill in the exact UnitSymbol values; the two families below are the
+# minimum the MVP needs.
+# ---------------------------------------------------------------------------
+moon_units:
+  mare: 1         # Im, Em, ... basaltic mare units
+  highland: 2     # Nbc, Ntp, ... feldspathic highland / basin material
+  crater_ejecta: 2
+  pyroclastic: 1
+  # TODO Michal: list the real unit symbols you encounter in the shapefile
+
+# ---------------------------------------------------------------------------
+# Mars: USGS Mars global geologic map (Tanaka et al. 2014, SIM 3292).
+# ---------------------------------------------------------------------------
+mars_units:
+  volcanic: 1      # lAv, eHv, Av ... lava plains
+  highland: 2      # Nh, Nhu basement where crystalline
+  transition: 3
+  sedimentary: 3   # Ap, Hsl layered/undivided sediments
+  polar_ice: 5     # Api, Hp polar ice
+  evaporite_deposit: 4   # applied where sulfate/chloride deposits are mapped
+  # TODO Michal: Oxia/Mawrth phyllosilicates - decide 2 vs 3 with Sofia and
+  # write the reason in the README; it changes the Mars clay-site scores.

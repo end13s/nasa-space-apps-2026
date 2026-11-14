@@ -1,0 +1,439 @@
+# ============================================================================
+# Analog Atlas - FEATURE DICTIONARY (the single source of truth)
+# ----------------------------------------------------------------------------
+# Owner: Eduard. Frozen v1 at the Saturday 2:30 PM contract meeting.
+# Nothing in this file changes without Eduard's OK in #data, because every
+# pipeline (Clara's GEE export, Michal's planetary grids), the scoring engine
+# and the web worker all key off these ids.
+#
+# Every feature column in earth_grid.parquet / moon_grid.parquet /
+# mars_grid.parquet / targets.json MUST appear here, spelled exactly the same.
+#
+# Field meanings
+#   id          column name, lowercase snake_case
+#   dim         dimension bucket: T terrain, H thermal, M material,
+#               W water/ice, B biology, A atmosphere/dust, I illumination
+#   tier        mvp | stretch   (stretch features may be missing -> NaN is fine)
+#   unit        human-readable unit, shown in the UI
+#   lo, hi      quantization bounds for the uint8 web pack (pack_web.py).
+#               Values are clipped to [lo, hi]; 255 is reserved for missing.
+#               Pick them generously: clipping silently distorts scores.
+#   sigma       default tolerance used by the Gaussian similarity kernel
+#   sigma_mode  abs    - sigma is in the feature's own unit
+#               rel    - sigma_f = max(sigma * |t_f|, sigma_floor)
+#               log    - compare log10(x+1) vs log10(t+1); sigma in log10 units
+#               class  - integer class distance, Gaussian with sigma classes
+#               matrix - lookup in contract/lithology_classes.yaml
+#   sigma_floor only for sigma_mode: rel
+#   gravity_swap optional {moon: <id>, mars: <id>} - when the gravity-scaling
+#               toggle is ON, the Earth value is read from the column named
+#               here instead (see engine/score.py).
+#   earth_only  feature exists on Earth only; it is skipped when the target is
+#               a planetary body, unless it is the swap target of another one.
+#   scored      false = carried for display/deep-dives but never scored.
+#   earth/moon/mars: provenance strings, copied into the README and the
+#               project page. "-" means the feature does not exist there.
+# ============================================================================
+
+version: 1
+frozen_at: "2026-11-14T14:30:00-08:00"
+missing_value: NaN          # in parquet; 255 in the packed .bin
+quantization: uint8         # 0..254 linear between lo and hi, 255 = missing
+
+dimensions:
+  T: {name: Terrain,           default_weight: 1}
+  H: {name: Thermal,           default_weight: 1}
+  M: {name: Surface material,  default_weight: 1}
+  W: {name: Water / ice,       default_weight: 1}
+  B: {name: Biology,           default_weight: 1}
+  A: {name: Atmosphere / dust, default_weight: 0, tier: stretch}
+  I: {name: Illumination,      default_weight: 0, tier: stretch}
+
+features:
+
+  # ---------------------------------------------------------------- Terrain
+  - id: relief_km
+    dim: T
+    tier: mvp
+    unit: km
+    definition: P95 minus P5 elevation within the cell / target circle
+    lo: 0.0
+    hi: 8.0
+    sigma: 0.4
+    sigma_mode: abs
+    earth: Copernicus GLO-30 DEM (COPERNICUS/DEM/GLO30)
+    moon: LOLA LDEM_64 global (~473 m); LOLA 20 m polar DEM for presets
+    mars: MOLA MEGDR 64 ppd global; MOLA-HRSC blended 200 m for presets
+
+  - id: slope_med_deg
+    dim: T
+    tier: mvp
+    unit: deg
+    definition: Median slope after resampling the DEM to 400 m
+    lo: 0.0
+    hi: 45.0
+    sigma: 3.0
+    sigma_mode: abs
+    earth: same as relief_km
+    moon: same as relief_km
+    mars: same as relief_km
+
+  - id: slope_p90_deg
+    dim: T
+    tier: mvp
+    unit: deg
+    definition: 90th-percentile slope at a 400 m baseline
+    lo: 0.0
+    hi: 60.0
+    sigma: 5.0
+    sigma_mode: abs
+    earth: same as relief_km
+    moon: same as relief_km
+    mars: same as relief_km
+
+  - id: rough_2km
+    dim: T
+    tier: mvp
+    unit: permille
+    definition: std(DEM - Gaussian(DEM, 2 km)) / 2 km * 1000
+    lo: 0.0
+    hi: 80.0
+    sigma: 0.30
+    sigma_mode: rel
+    sigma_floor: 2.0
+    gravity_swap: {moon: rough_2km_gM, mars: rough_2km_gR}
+    earth: GLO-30 DEM
+    moon: LOLA
+    mars: MOLA / MOLA-HRSC
+
+  - id: rough_10km
+    dim: T
+    tier: mvp
+    unit: permille
+    definition: std(DEM - Gaussian(DEM, 10 km)) / 10 km * 1000
+    lo: 0.0
+    hi: 80.0
+    sigma: 0.30
+    sigma_mode: rel
+    sigma_floor: 2.0
+    gravity_swap: {moon: rough_10km_gM, mars: rough_10km_gR}
+    earth: GLO-30 DEM
+    moon: LOLA
+    mars: MOLA / MOLA-HRSC
+
+  - id: rough_2km_gM
+    dim: T
+    tier: stretch
+    unit: permille
+    definition: Earth roughness at the Moon-gravity-scaled baseline 330 m (2 km * g_moon/g_earth)
+    lo: 0.0
+    hi: 80.0
+    sigma: 0.30
+    sigma_mode: rel
+    sigma_floor: 2.0
+    earth_only: true
+    earth: GLO-30 DEM
+    moon: "-"
+    mars: "-"
+
+  - id: rough_10km_gM
+    dim: T
+    tier: stretch
+    unit: permille
+    definition: Earth roughness at the Moon-gravity-scaled baseline 1.65 km
+    lo: 0.0
+    hi: 80.0
+    sigma: 0.30
+    sigma_mode: rel
+    sigma_floor: 2.0
+    earth_only: true
+    earth: GLO-30 DEM
+    moon: "-"
+    mars: "-"
+
+  - id: rough_2km_gR
+    dim: T
+    tier: stretch
+    unit: permille
+    definition: Earth roughness at the Mars-gravity-scaled baseline 760 m
+    lo: 0.0
+    hi: 80.0
+    sigma: 0.30
+    sigma_mode: rel
+    sigma_floor: 2.0
+    earth_only: true
+    earth: GLO-30 DEM
+    moon: "-"
+    mars: "-"
+
+  - id: rough_10km_gR
+    dim: T
+    tier: stretch
+    unit: permille
+    definition: Earth roughness at the Mars-gravity-scaled baseline 3.8 km
+    lo: 0.0
+    hi: 80.0
+    sigma: 0.30
+    sigma_mode: rel
+    sigma_floor: 2.0
+    earth_only: true
+    earth: GLO-30 DEM
+    moon: "-"
+    mars: "-"
+
+  - id: hypso_int
+    dim: T
+    tier: stretch
+    unit: "0-1"
+    definition: Hypsometric integral (mean - min) / (max - min)
+    lo: 0.0
+    hi: 1.0
+    sigma: 0.10
+    sigma_mode: abs
+    earth: GLO-30 DEM
+    moon: LOLA
+    mars: MOLA
+
+  # ---------------------------------------------------------------- Thermal
+  - id: ti_class
+    dim: H
+    tier: mvp
+    unit: class
+    definition: >-
+      Thermal-inertia class, calibrated within each body:
+      0 dust/very fine, 1 sand, 2 indurated/duricrust, 3 rocky, 4 bedrock/ice
+    lo: 0
+    hi: 4
+    sigma: 1.0
+    sigma_mode: class
+    earth: ATI = (1-albedo)/(LST_1330 - LST_0130) from Aqua MODIS MYD11A2 plus MCD43A3 albedo, binned with Sofia's calibration sites
+    moon: Diviner H-parameter (Hayne et al. 2017) plus rock abundance (Bandfield et al. 2011)
+    mars: TES thermal inertia (Putzig & Mellon 2007) or THEMIS TI mosaic, binned at 100 / 250 / 600 / 1200
+
+  - id: tmin_k
+    dim: H
+    tier: mvp
+    unit: K
+    definition: Coldest-month mean minimum surface temperature
+    lo: 20.0
+    hi: 320.0
+    sigma: 25.0
+    sigma_mode: abs
+    earth: MODIS night LST, coldest 8-day median (MOD11A2 / MYD11A2)
+    moon: Diviner polar and global bolometric temperature products
+    mars: Mars Climate Database surface temperature climatology (or TES)
+
+  - id: tmax_k
+    dim: H
+    tier: mvp
+    unit: K
+    definition: Warmest-month mean maximum surface temperature
+    lo: 150.0
+    hi: 420.0
+    sigma: 25.0
+    sigma_mode: abs
+    earth: MODIS day LST (MYD11A2)
+    moon: Diviner
+    mars: MCD / TES
+
+  - id: diurnal_amp_k
+    dim: H
+    tier: stretch
+    unit: K
+    definition: Typical day-night surface temperature amplitude
+    lo: 0.0
+    hi: 300.0
+    sigma: 20.0
+    sigma_mode: abs
+    earth: MYD11A2 13:30 minus 01:30
+    moon: Diviner
+    mars: MCD
+
+  # ------------------------------------------------------- Surface material
+  - id: albedo
+    dim: M
+    tier: mvp
+    unit: "0-1"
+    definition: Broadband surface albedo
+    lo: 0.0
+    hi: 0.9
+    sigma: 0.05
+    sigma_mode: abs
+    earth: MODIS MCD43A3 Albedo_WSA_shortwave, median 2021-2025
+    moon: LROC WAC normalized reflectance 643 nm (or Clementine 750 nm)
+    mars: TES Lambert albedo
+
+  - id: litho_class
+    dim: M
+    tier: mvp
+    unit: class
+    definition: >-
+      5-class lithology: 1 mafic volcanic, 2 feldspathic/crystalline,
+      3 clastic sediment or unconsolidated, 4 chemical sediment, 5 ice-dominated.
+      Similarity comes from the matrix in contract/lithology_classes.yaml.
+    lo: 1
+    hi: 5
+    sigma: 0
+    sigma_mode: matrix
+    matrix: lithology_classes.yaml
+    earth: GLiM global lithological map (Hartmann & Moosdorf 2012), majority class per cell
+    moon: USGS Unified Geologic Map of the Moon (Fortezzo et al. 2020)
+    mars: USGS Mars global geologic map (Tanaka et al. 2014, SIM 3292)
+
+  - id: mafic_idx
+    dim: M
+    tier: stretch
+    unit: ratio
+    definition: Thermal-IR mafic index eps12/eps13; Earth-only context for deep-dives, never scored cross-body
+    lo: 0.9
+    hi: 1.1
+    sigma: 0.02
+    sigma_mode: abs
+    earth_only: true
+    scored: false
+    earth: ASTER GED (NASA/ASTER_GED/AG100_003)
+    moon: "-"
+    mars: "-"
+
+  # ------------------------------------------------------------- Water / ice
+  - id: ice_idx
+    dim: W
+    tier: mvp
+    unit: "0-1"
+    definition: Near-surface ice presence index, 0 none to 1 ice-dominated
+    lo: 0.0
+    hi: 1.0
+    sigma: 0.25
+    sigma_mode: abs
+    earth: max of permafrost fraction (ESA CCI Permafrost, fallback ERA5-Land soil temp L1 annual max below 0 C), glacier fraction (GLIMS), perennial snow fraction (MOD10A1)
+    moon: PSR fraction within the target (Mazarico et al. 2011 / PGDA) combined with LEND/LPNS hydrogen enhancement
+    mars: SWIM consensus ice value; outside SWIM coverage, Odyssey GRS water-equivalent hydrogen scaled to 0-1
+
+  - id: precip_mm
+    dim: W
+    tier: mvp
+    unit: mm/yr
+    definition: Mean annual precipitation
+    lo: 0.0
+    hi: 6000.0
+    sigma: 0.5
+    sigma_mode: log
+    earth: ERA5-Land monthly total_precipitation_sum, 2015-2024
+    moon: 0 by definition
+    mars: 0 by definition
+
+  - id: soil_moist
+    dim: W
+    tier: stretch
+    unit: m3/m3
+    definition: Mean surface soil moisture
+    lo: 0.0
+    hi: 0.6
+    sigma: 0.05
+    sigma_mode: abs
+    earth: SMAP L4 (NASA/SMAP/SPL4SMGP)
+    moon: 0 by definition
+    mars: 0 by definition
+
+  # ---------------------------------------------------------------- Biology
+  - id: ndvi_max
+    dim: B
+    tier: mvp
+    unit: "-1..1"
+    definition: Annual maximum NDVI, median over years
+    lo: -0.1
+    hi: 1.0
+    sigma: 0.08
+    sigma_mode: abs
+    earth: MODIS MOD13A2 NDVI
+    moon: 0 by definition
+    mars: 0 by definition
+
+  # ------------------------------------------------------ Atmosphere / dust
+  - id: aod_p90
+    dim: A
+    tier: stretch
+    unit: "-"
+    definition: 90th-percentile aerosol optical depth
+    lo: 0.0
+    hi: 3.0
+    sigma: 0.3
+    sigma_mode: abs
+    earth: MAIAC MCD19A2 Optical_Depth_047
+    moon: 0 - no atmosphere; electrostatic dust is covered in the breaks text, not here
+    mars: Mars Climate Database dust column / TES dust opacity climatology
+
+  - id: wind_p95
+    dim: A
+    tier: stretch
+    unit: m/s
+    definition: 95th-percentile 10 m wind speed
+    lo: 0.0
+    hi: 30.0
+    sigma: 4.0
+    sigma_mode: abs
+    earth: ERA5-Land u/v 10 m
+    moon: 0 by definition
+    mars: MCD near-surface wind
+
+  # ------------------------------------------------------------ Illumination
+  - id: lowsun_frac
+    dim: I
+    tier: stretch
+    unit: "0-1"
+    definition: Fraction of the year when the daily maximum solar elevation stays below 10 deg
+    lo: 0.0
+    hi: 1.0
+    sigma: 0.15
+    sigma_mode: abs
+    earth: analytic from latitude, obliquity 23.44 deg (engine/illumination.py)
+    moon: analytic, obliquity 1.54 deg
+    mars: analytic, obliquity 25.19 deg
+
+  - id: shadow_frac_lowsun
+    dim: I
+    tier: stretch
+    unit: "0-1"
+    definition: Fraction of the cell in terrain shadow at 5 deg sun elevation, averaged over 8 azimuths
+    lo: 0.0
+    hi: 1.0
+    sigma: 0.15
+    sigma_mode: abs
+    earth: ee.Terrain.hillShadow on GLO-30
+    moon: LOLA polar DEM, or PGDA illumination maps
+    mars: MOLA-HRSC blended DEM
+
+# ============================================================================
+# Logistics columns - Earth only. Filters and site-card information.
+# They are NEVER part of the similarity score.
+# ============================================================================
+logistics:
+  - id: travel_min
+    unit: minutes
+    definition: Travel time to the nearest city of 50k or more
+    source: Oxford/MAP/accessibility_to_cities_2015_v1_0
+  - id: protected_frac
+    unit: "0-1"
+    definition: Fraction of the cell inside a protected area
+    source: WCMC/WDPA/current/polygons, rasterized
+  - id: viirs_rad
+    unit: nW/cm2/sr
+    definition: Night-lights radiance, used as a remoteness and radio-quiet proxy
+    source: NOAA/VIIRS/DNB/ANNUAL_V22
+  - id: country_iso3
+    unit: code
+    definition: Country ISO-3166 alpha-3
+    source: USDOS/LSIB_SIMPLE/2017 or Natural Earth admin-0
+  - id: known_analog_km
+    unit: km
+    definition: Great-circle distance to the nearest site in science/known_analogs.csv; drives novelty mode
+    source: computed by engine/pack_web.py
+
+# ============================================================================
+# QA flag bitmask for the earth_grid.parquet qa_flags column (uint16)
+# ============================================================================
+qa_flags:
+  1: cloudy LST gaps over 50 percent of composites
+  2: coastal cell, under 50 percent land
+  4: polar night LST gap
+  8: DEM void

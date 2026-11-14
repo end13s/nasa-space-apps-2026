@@ -1,0 +1,83 @@
+name: Deploy to GitHub Pages
+
+# Task E12. Pushes to main publish the app. Until Julia's Vite scaffold exists
+# (web/package.json), the job still runs and publishes a placeholder plus the
+# data bundle, so the public URL is live and testable from the first hour
+# instead of appearing for the first time on Sunday afternoon.
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Is there a Vite app yet?
+        id: check
+        run: |
+          if [ -f web/package.json ]; then
+            echo "has_app=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "has_app=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/setup-node@v4
+        if: steps.check.outputs.has_app == 'true'
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: web/package-lock.json
+
+      - name: Build
+        if: steps.check.outputs.has_app == 'true'
+        working-directory: web
+        run: |
+          npm ci || npm install
+          npm run build
+
+      - name: Placeholder site
+        if: steps.check.outputs.has_app != 'true'
+        run: |
+          mkdir -p web/dist
+          cp -r web/public/* web/dist/ 2>/dev/null || true
+          cat > web/dist/index.html <<'HTML'
+          <!doctype html><html lang="en"><head><meta charset="utf-8">
+          <meta name="viewport" content="width=device-width,initial-scale=1">
+          <title>Analog Atlas</title>
+          <style>body{font:16px/1.6 system-ui,sans-serif;margin:0;display:grid;
+          place-items:center;min-height:100vh;background:#0b1020;color:#e8ecf8}
+          main{max-width:34rem;padding:2rem}code{background:#1a2238;padding:.1em .35em;
+          border-radius:4px}</style></head><body><main>
+          <h1>Analog Atlas</h1>
+          <p>Build pipeline is live; the app is being assembled.
+          The packed data bundle is served from <code>/data/</code>.</p>
+          </main></body></html>
+          HTML
+
+      - uses: actions/configure-pages@v5
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: web/dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

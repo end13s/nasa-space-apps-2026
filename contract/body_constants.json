@@ -1,0 +1,59 @@
+{
+  "_comment": "Analog Atlas - physical constants per body. Owner: Michal (task M2), drafted by Eduard so the engine and the site cards have values to run with. Michal: verify every number and add a citation in the README. These drive the always-on 'where it breaks' lines on every site card, so they are judged content, not decoration.",
+  "version": 1,
+  "bodies": {
+    "earth": {
+      "name": "Earth",
+      "gravity_m_s2": 9.807,
+      "mean_radius_m": 6371000,
+      "ellipsoid_m": [6378137.0, 6378137.0, 6356752.3142],
+      "surface_pressure_pa": 101325,
+      "atmosphere": "~1 bar N2/O2",
+      "obliquity_deg": 23.44,
+      "solar_day_hours": 24.0,
+      "year_days": 365.25,
+      "magnetic_field": "global magnetosphere",
+      "surface_temp_range_k": [180, 370],
+      "radiation_note": "Shielded by the magnetosphere and ~1000 g/cm2 of atmosphere.",
+      "regolith_note": "Weathered, hydrated, biologically altered; grains rounded by water and wind."
+    },
+    "moon": {
+      "name": "Moon",
+      "gravity_m_s2": 1.625,
+      "mean_radius_m": 1737400,
+      "ellipsoid_m": [1737400.0, 1737400.0, 1737400.0],
+      "surface_pressure_pa": 3e-10,
+      "atmosphere": "hard vacuum (surface-bounded exosphere)",
+      "obliquity_deg": 1.54,
+      "solar_day_hours": 708.7,
+      "year_days": 365.25,
+      "magnetic_field": "none global; local crustal swirls only",
+      "surface_temp_range_k": [25, 390],
+      "psr_temp_range_k": [25, 40],
+      "radiation_note": "Unshielded GCR and solar particle events; no magnetosphere, no atmosphere.",
+      "regolith_note": "Sharp, unweathered, agglutinate-rich, space-weathered, electrostatically charged.",
+      "gravity_scale_vs_earth": 0.1657
+    },
+    "mars": {
+      "name": "Mars",
+      "gravity_m_s2": 3.721,
+      "mean_radius_m": 3389500,
+      "ellipsoid_m": [3396190.0, 3396190.0, 3376200.0],
+      "surface_pressure_pa": 610,
+      "atmosphere": "~6 mbar CO2",
+      "obliquity_deg": 25.19,
+      "solar_day_hours": 24.66,
+      "year_days": 686.98,
+      "magnetic_field": "no global field; crustal remanent magnetism in the southern highlands",
+      "surface_temp_range_k": [140, 300],
+      "radiation_note": "No global field and ~16 g/cm2 of CO2; surface dose roughly 0.2-0.3 mSv/day.",
+      "regolith_note": "Oxidized basaltic dust, perchlorate salts, fine and strongly electrostatic.",
+      "gravity_scale_vs_earth": 0.3794
+    }
+  },
+  "gravity_scaled_baselines_m": {
+    "_comment": "Earth roughness baselines that correspond to the 2 km and 10 km planetary baselines under 1/g landform scaling. Heuristic - say so on the site card.",
+    "moon": {"rough_2km_gM": 330, "rough_10km_gM": 1657},
+    "mars": {"rough_2km_gR": 759, "rough_10km_gR": 3794}
+  }
+}

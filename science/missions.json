@@ -1,0 +1,48 @@
+{
+  "_comment": "Mission profiles - weights per dimension, used by the UI weight presets. Owner: Sofia (task S5). This is Eduard's placeholder draft from Section 7.5 so the dropdown has something to show; Sofia replaces the purposes and tunes the weights.",
+  "version": 1,
+  "profiles": [
+    {
+      "id": "balanced",
+      "name": "Balanced (default)",
+      "purpose": "Every physical dimension counts equally - the neutral view.",
+      "weights": {"T": 1, "H": 1, "M": 1, "W": 1, "B": 1, "A": 0, "I": 0}
+    },
+    {
+      "id": "lunar_south_pole_ops",
+      "name": "Lunar south-pole operations",
+      "purpose": "Rehearse surface operations under grazing light on rough polar terrain.",
+      "weights": {"T": 3, "I": 3, "W": 2, "H": 1, "M": 1, "B": 1, "A": 0}
+    },
+    {
+      "id": "ice_prospecting",
+      "name": "Ice prospecting (ISRU)",
+      "purpose": "Find places to test instruments that hunt for buried water ice.",
+      "weights": {"W": 3, "H": 2, "T": 1, "M": 1, "B": 1, "A": 0, "I": 0}
+    },
+    {
+      "id": "mars_astrobiology",
+      "name": "Mars astrobiology and sample science",
+      "purpose": "Match the rocks and the water history that biosignature searches depend on.",
+      "weights": {"M": 3, "W": 2, "B": 2, "T": 1, "H": 1, "A": 0, "I": 0}
+    },
+    {
+      "id": "rover_mobility",
+      "name": "Rover mobility and navigation",
+      "purpose": "Match what a rover drives on: slope, roughness and how loose the ground is.",
+      "weights": {"T": 3, "H": 3, "M": 1, "W": 1, "B": 0, "A": 0, "I": 1}
+    },
+    {
+      "id": "lava_tube_ops",
+      "name": "Lava-tube and cave operations",
+      "purpose": "Match young basaltic volcanic terrain where collapsed tubes are reachable.",
+      "weights": {"M": 3, "T": 2, "H": 1, "W": 1, "B": 0, "A": 0, "I": 0}
+    },
+    {
+      "id": "dust_aeolian",
+      "name": "Dust and aeolian processes",
+      "purpose": "Match dusty, windy, fine-grained surfaces for dust-mitigation testing.",
+      "weights": {"A": 3, "H": 2, "T": 1, "M": 1, "W": 1, "B": 0, "I": 0}
+    }
+  ]
+}

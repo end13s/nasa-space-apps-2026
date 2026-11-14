@@ -1,0 +1,38 @@
+# --- data: never commit raw or intermediate pipeline data ---
+# Big files live in the shared Drive folder analog-atlas-data/
+*.parquet
+*.tif
+*.tiff
+*.img
+*.lbl
+*.hdf
+*.nc
+*.zip
+data_raw/
+data_work/
+
+# The packed web bundle: ignored while it is SYNTHETIC (regenerate in 2
+# commands, see web/public/data/README.md). When the real bundle is ready,
+# Eduard force-adds it once:  git add -f web/public/data
+web/public/data/*
+!web/public/data/README.md
+
+# --- python ---
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.env
+.ipynb_checkpoints/
+.pytest_cache/
+
+# --- node / vite ---
+node_modules/
+web/dist/
+web/.vite/
+
+# --- os / editors ---
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
