@@ -65,9 +65,61 @@ not hit the 300 ms budget. Alpha 0 below S = 0.2 so the globe shows through.
 - No Cesium ion token: pass `baseLayer: false` and add NASA Trek / GIBS imagery
   providers explicitly. No NASA logo anywhere in the UI.
 
-## Still to scaffold (J1)
+## Frontend (F1-F13)
 
-`package.json`, `vite.config.js`, `index.html`, `src/main.js`, `src/globes.js`,
-`src/heatmap.js`, `src/ui/` (F1). The GitHub Pages workflow in
-`.github/workflows/pages.yml` builds `web/` automatically as soon as a
-`package.json` exists; until then it publishes the data bundle only.
+Vite 7 + vanilla JS + CesiumJS 1.143.0 + Chart.js. No framework, no backend,
+no Cesium ion token.
+
+### Run it
+
+```bash
+cd web
+npm install
+npm run dev        # http://localhost:5173
+npm run build      # -> web/dist, what GitHub Pages serves
+```
+
+`predev` / `prebuild` copy Cesium's static assets into `public/cesium`
+(`scripts/copy-cesium.mjs`). You need a data bundle in `public/data/`; see the
+root README quick start (`fake_data.py` + `pack_web.py`).
+
+### Module map
+
+| File | Task | What it does |
+|---|---|---|
+| `src/main.js` | F5-F12 | App state and wiring: target -> score -> heatmap + pins -> site card. |
+| `src/globes.js` | F2, F3 | Moon/Mars viewer (rebuilt on toggle) and Earth viewer; NASA imagery. |
+| `src/scoring.js` | F5 | Promise wrapper around the worker. Latest score request wins. |
+| `src/heatmap.js` | F6 | Viridis heatmap: one 1440x720 canvas handed to Cesium as a single tile. |
+| `src/picking.js` | F7, F12 | Target circle on the left globe, click-to-snap, shared fly-to helper. |
+| `src/pins.js` | F8 | Numbered hotspot pins, grey known-analog markers, click anywhere on land. |
+| `src/ui/panel.js` | F9 | Target, mission profile, weights, filters. Re-score is debounced 150 ms. |
+| `src/ui/tabs.js` | F13 | Explore / Site / Validation / Discoveries. |
+| `src/ui/siteCard.js` | F11 | Site card: radar, verdicts, breaks, construction panel, logistics. |
+
+### Data the app reads (`public/data/`)
+
+| File | Required | From |
+|---|---|---|
+| `earth_meta.json`, `earth_features.bin`, `earth_index.bin`, ... | yes | `engine/pack_web.py` |
+| `targets.json`, `missions.json`, `breaks_text.json` | yes | `pack_web.py` copies them |
+| `validation.json` | no, Validation tab says "not yet" | `engine/validate.py` (E9) |
+| `known_analogs.json` | no, grey markers hidden | `science/known_analogs.csv` as JSON (array of rows, `lat`/`lon` as numbers) |
+| `deep_dives/index.json` | no, Discoveries lists current top matches | Sofia (S9): `[{id, name, lat, lon, body, summary}]` |
+
+**Ask for Eduard:** have `pack_web.py` also write `validation.json` and
+`known_analogs.json` into the bundle, so the deployed site has them.
+
+### Imagery gotchas (checked Sat Nov 14)
+
+- Moon/Mars Trek tiles: 2x1 equirectangular grid at level 0, 256 px. Max level: Moon 8, Mars 7.
+- GIBS EPSG:4326 **WMTS** tiles are 288 degrees wide at level 0, so they don't line up
+  with Cesium's geographic tiling. Earth uses GIBS **WMS** instead.
+- `cesium@1.143.0` declares `@cesium/engine@^26.1.0`; npm resolves a newer engine that
+  breaks the import. `package.json` `overrides` pins engine 26.1.0 and widgets 16.1.0.
+
+### Dev pages
+
+`dev/site-card.html` renders the site card from a saved worker card
+(`dev/site-card.json`); `heatmap-test.html` is a local-only heatmap harness.
+Neither ships in the build.
