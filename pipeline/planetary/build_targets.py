@@ -23,8 +23,8 @@ What it does, per target:
      north/south/east/west (5 km, or radius/3 for small targets) and taking
      the standard deviation.
   5. Adds the "0 by definition" features and any non-terrain values filled in
-     OTHER below, then writes contract/targets.json and checks it against the
-     contract.
+     OTHER below, gives every value an evidence grade A-D (see GRADES), then
+     writes contract/targets.json and checks it against the contract.
 
 Footprint: a square of side 2 x radius_km (30 km for the default 15 km), the
 same idea as one 0.25 deg Earth cell (~28 km). rough_10km needs a window of at
@@ -58,6 +58,7 @@ DEM = {
         "res_m": 200.0,
         "sphere": "+R=3396190",
         "source": "MOLA-HRSC blended DEM 200 m v2 (Fergason, Hare & Laura 2018, USGS Astrogeology)",
+        "grade": "B",  # orbital DEM, no ground truth for the terrain statistics
     },
     "moon": {
         # SLDEM2015 only covers 60S-60N; polar targets use "moon_south" below.
@@ -66,6 +67,7 @@ DEM = {
         "res_m": 100.0,
         "sphere": "+R=1737400",
         "source": "LOLA + Kaguya TC merged DEM, SLDEM2015 512 ppd (Barker et al. 2016, USGS Astrogeology)",
+        "grade": "B",  # orbital DEM, no ground truth for the terrain statistics
     },
     "moon_south": {
         # LOLA 80-90S DEM, 40 m/px, south polar stereographic, cloud-optimized
@@ -75,6 +77,7 @@ DEM = {
         "sphere": "+R=1737400",
         "source": "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, "
         "doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
+        "grade": "B",  # orbital laser altimetry, no ground truth
     },
 }
 
@@ -201,6 +204,26 @@ for _tid, _name, _centre, _src in ARTEMIS:
 # These are genuine values, not placeholders.
 ZERO_BY_DEFINITION = {"precip_mm": 0.0, "ndvi_max": 0.0}
 
+# ---------------------------------------------------------------------------
+# Evidence grades (adopted at the Saturday sync). Every value in targets.json
+# carries a letter; Eduard turns it into a tolerance, so a weakly known value
+# cannot produce false precision.
+#   A  multiple instruments, or ground truth at the site
+#   B  single orbital instrument, no ground truth
+#   C  model-derived or extrapolated - incl. anything inferred from latitude
+#   D  poorly constrained - e.g. a literature constant instead of a measurement
+# Grade by SOURCE, not by value: "__terrain__" covers every DEM-derived
+# feature (TERRAIN_KEYS) in one line, and each DEM below carries its grade.
+# A grade is a summary of what the citation in "sources" already says.
+# ---------------------------------------------------------------------------
+GRADES = ("A", "B", "C", "D")
+TERRAIN_KEYS = ("relief_km", "slope_med_deg", "slope_p90_deg", "hypso_int",
+                "flat_frac", "steep_frac", "rough_2km", "rough_10km")
+# The by-definition zeros are physically certain (no liquid rain, no plants on
+# the Moon or Mars), so they are graded A. Eduard: veto if you want them
+# marked differently.
+ZERO_GRADE = "A"
+
 # Non-terrain MVP features still to fill per target:
 #   ti_class, tmin_k, tmax_k, albedo, litho_class, ice_idx
 # Take each from its product (see feature_dictionary.yaml) and cite it.
@@ -210,6 +233,7 @@ ZERO_BY_DEFINITION = {"precip_mm": 0.0, "ndvi_max": 0.0}
 #   "mars_jezero": {
 #       "features": {"albedo": <value>},
 #       "sd":       {"albedo": <uncertainty>},
+#       "grades":   {"albedo": "<A-D>"},   # terrain is graded via its DEM
 #       "sources":  ["<product and citation>"],
 #   },
 #
@@ -224,6 +248,12 @@ OTHER: dict[str, dict] = {
     "mars_jezero": {
         "features": {"ti_class": 2, "albedo": 0.16, "litho_class": 1, "ice_idx": 0.0},
         "sd": {"ti_class": 0.5, "albedo": 0.03, "ice_idx": 0.05},
+        "grades": {
+            "ti_class": "A",     # THEMIS orbital + MEDA measured on the ground
+            "albedo": "A",       # OMEGA orbital + MEDA measured on the ground
+            "litho_class": "A",  # Perseverance ground truth (igneous floor)
+            "ice_idx": "C",      # inferred from the ice-stability latitude, not measured here
+        },
         "sources": [
             "ti_class: THEMIS TI ~200-400 around the rover traverse (Vicente-Retortillo et al., EPSC2026-1140); "
             "MEDA TI 180-605 (Martinez et al. 2023, JGR Planets, doi:10.1029/2022JE007537); "
@@ -240,6 +270,14 @@ OTHER: dict[str, dict] = {
         "features": {"ti_class": 2, "tmin_k": 175.0, "tmax_k": 285.0, "albedo": 0.20,
                      "litho_class": 3, "ice_idx": 0.0},
         "sd": {"ti_class": 0.5, "tmin_k": 8.0, "tmax_k": 8.0, "albedo": 0.05, "ice_idx": 0.05},
+        "grades": {
+            "ti_class": "B",     # THEMIS, orbital - the cited source has no ground truth
+            "tmin_k": "A",       # REMS, measured on the surface
+            "tmax_k": "A",
+            "albedo": "C",       # regional average used as a model input, not measured in our window
+            "litho_class": "A",  # Curiosity ground truth
+            "ice_idx": "C",      # inferred from the ice-stability latitude
+        },
         "sources": [
             "ti_class: THEMIS TI 250-410 over most of the landing region, layered units 400-500 "
             "(Fergason et al. 2012, Space Sci Rev, doi:10.1007/s11214-012-9891-3) -> class 2",
@@ -253,6 +291,13 @@ OTHER: dict[str, dict] = {
     "moon_apollo17": {
         "features": {"ti_class": 1, "tmin_k": 95.0, "tmax_k": 385.0, "litho_class": 1, "ice_idx": 0.0},
         "sd": {"ti_class": 0.5, "tmin_k": 5.0, "tmax_k": 10.0, "ice_idx": 0.02},
+        "grades": {
+            "ti_class": "A",     # regolith sampled and measured by Apollo 17
+            "tmin_k": "C",       # Diviner equatorial values extrapolated to 20N
+            "tmax_k": "C",       #   (A if replaced by the Apollo 17 heat-flow surface thermometers)
+            "litho_class": "A",  # Apollo 17 samples
+            "ice_idx": "C",      # inferred from latitude: no PSRs at 20N
+        },
         "sources": [
             "ti_class: regolith-covered valley floor (old mare regolith ~14 m thick; Lucchitta 1992, "
             "LPI Workshop on Geology of the Apollo 17 Landing Site) -> class 1",
@@ -267,6 +312,10 @@ OTHER: dict[str, dict] = {
     "mars_jezero_delta": {
         "features": {"litho_class": 3, "ice_idx": 0.0},
         "sd": {"ice_idx": 0.05},
+        "grades": {
+            "litho_class": "A",  # Perseverance Delta Front campaign ground truth
+            "ice_idx": "C",      # inferred from the ice-stability latitude
+        },
         "sources": [
             "litho_class: deltaic sedimentary rocks of the western fan front, deposited in a lake "
             "(Perseverance Delta Front campaign; Sun & Stack 2020, USGS SIM 3464, unit NHjf2) -> class 3",
@@ -348,6 +397,23 @@ def clean(d: dict) -> dict:
     return {k: round(float(v), 4) for k, v in d.items() if np.isfinite(v)}
 
 
+def expand_grades(raw: dict, feats: dict) -> dict:
+    """Per-source grades -> one grade per feature present in `feats`.
+
+    "__terrain__" expands to every DEM-derived feature (TERRAIN_KEYS).
+    Later entries override earlier ones, so a specific feature can still
+    be graded differently from its source group.
+    """
+    out = {}
+    for k, g in raw.items():
+        if g not in GRADES:
+            raise ValueError(f"grade {g!r} for {k!r} is not one of {GRADES}")
+        for kk in (TERRAIN_KEYS if k == "__terrain__" else (k,)):
+            if kk in feats:
+                out[kk] = g
+    return out
+
+
 def build() -> list[dict]:
     out = []
     skipped = []
@@ -375,7 +441,11 @@ def build() -> list[dict]:
 
         feats = clean(feats)
         sd = {k: v for k, v in clean(sd).items() if k in feats}
-        print("  " + ", ".join(f"{k}={v}" for k, v in feats.items()))
+        raw_grades = {"__terrain__": DEM[key]["grade"]}
+        raw_grades.update({k: ZERO_GRADE for k in ZERO_BY_DEFINITION})
+        raw_grades.update(extra.get("grades", {}))
+        grades = expand_grades(raw_grades, feats)
+        print("  " + ", ".join(f"{k}={v} [{grades.get(k, '?')}]" for k, v in feats.items()))
 
         out.append(
             {
@@ -388,6 +458,7 @@ def build() -> list[dict]:
                 "synthetic": False,
                 "features": feats,
                 "sd": sd,
+                "grades": grades,
                 "tags": t["tags"],
                 "sources": [DEM[key]["source"]]
                 + ([t["coord_source"]] if t.get("coord_source") else [])
@@ -413,7 +484,9 @@ def check(targets: list[dict]) -> None:
     for t in targets:
         unknown = sorted(set(t["features"]) - ids)
         missing = sorted(mvp - set(t["features"]))
-        print(f"  {t['id']:34s} unknown: {unknown or '-'}   missing MVP: {missing or '-'}")
+        ungraded = sorted(set(t["features"]) - set(t.get("grades", {})))
+        print(f"  {t['id']:34s} unknown: {unknown or '-'}   missing MVP: {missing or '-'}"
+              f"   ungraded: {ungraded or '-'}")
         if unknown:
             sys.exit("Unknown feature ids - they must match feature_dictionary.yaml exactly.")
 

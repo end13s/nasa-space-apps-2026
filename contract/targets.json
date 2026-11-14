@@ -36,6 +36,22 @@
       "albedo": 0.03,
       "ice_idx": 0.05
     },
+    "grades": {
+      "relief_km": "B",
+      "slope_med_deg": "B",
+      "slope_p90_deg": "B",
+      "hypso_int": "B",
+      "flat_frac": "B",
+      "steep_frac": "B",
+      "rough_2km": "B",
+      "rough_10km": "B",
+      "precip_mm": "A",
+      "ndvi_max": "A",
+      "ti_class": "A",
+      "albedo": "A",
+      "litho_class": "A",
+      "ice_idx": "C"
+    },
     "tags": [
       "sedimentary",
       "astrobiology"
@@ -90,6 +106,24 @@
       "albedo": 0.05,
       "ice_idx": 0.05
     },
+    "grades": {
+      "relief_km": "B",
+      "slope_med_deg": "B",
+      "slope_p90_deg": "B",
+      "hypso_int": "B",
+      "flat_frac": "B",
+      "steep_frac": "B",
+      "rough_2km": "B",
+      "rough_10km": "B",
+      "precip_mm": "A",
+      "ndvi_max": "A",
+      "ti_class": "B",
+      "tmin_k": "A",
+      "tmax_k": "A",
+      "albedo": "C",
+      "litho_class": "A",
+      "ice_idx": "C"
+    },
     "tags": [
       "sedimentary",
       "layered"
@@ -143,6 +177,23 @@
       "tmax_k": 10.0,
       "ice_idx": 0.02
     },
+    "grades": {
+      "relief_km": "B",
+      "slope_med_deg": "B",
+      "slope_p90_deg": "B",
+      "hypso_int": "B",
+      "flat_frac": "B",
+      "steep_frac": "B",
+      "rough_2km": "B",
+      "rough_10km": "B",
+      "precip_mm": "A",
+      "ndvi_max": "A",
+      "ti_class": "A",
+      "tmin_k": "C",
+      "tmax_k": "C",
+      "litho_class": "A",
+      "ice_idx": "C"
+    },
     "tags": [
       "ground-truth",
       "mare"
@@ -187,6 +238,19 @@
       "rough_2km": 9.8321,
       "ice_idx": 0.05
     },
+    "grades": {
+      "relief_km": "B",
+      "slope_med_deg": "B",
+      "slope_p90_deg": "B",
+      "hypso_int": "B",
+      "flat_frac": "B",
+      "steep_frac": "B",
+      "rough_2km": "B",
+      "precip_mm": "A",
+      "ndvi_max": "A",
+      "litho_class": "A",
+      "ice_idx": "C"
+    },
     "tags": [
       "sedimentary",
       "delta",
@@ -230,6 +294,18 @@
       "rough_2km": 2.9226,
       "rough_10km": 0.2218
     },
+    "grades": {
+      "relief_km": "B",
+      "slope_med_deg": "B",
+      "slope_p90_deg": "B",
+      "hypso_int": "B",
+      "flat_frac": "B",
+      "steep_frac": "B",
+      "rough_2km": "B",
+      "rough_10km": "B",
+      "precip_mm": "A",
+      "ndvi_max": "A"
+    },
     "tags": [
       "polar",
       "illumination",
@@ -270,6 +346,18 @@
       "steep_frac": 0.0127,
       "rough_2km": 4.1577,
       "rough_10km": 5.0296
+    },
+    "grades": {
+      "relief_km": "B",
+      "slope_med_deg": "B",
+      "slope_p90_deg": "B",
+      "hypso_int": "B",
+      "flat_frac": "B",
+      "steep_frac": "B",
+      "rough_2km": "B",
+      "rough_10km": "B",
+      "precip_mm": "A",
+      "ndvi_max": "A"
     },
     "tags": [
       "polar",
@@ -312,6 +400,18 @@
       "rough_2km": 0.8152,
       "rough_10km": 2.9611
     },
+    "grades": {
+      "relief_km": "B",
+      "slope_med_deg": "B",
+      "slope_p90_deg": "B",
+      "hypso_int": "B",
+      "flat_frac": "B",
+      "steep_frac": "B",
+      "rough_2km": "B",
+      "rough_10km": "B",
+      "precip_mm": "A",
+      "ndvi_max": "A"
+    },
     "tags": [
       "polar",
       "artemis",
@@ -352,6 +452,18 @@
       "steep_frac": 0.0137,
       "rough_2km": 5.5957,
       "rough_10km": 11.1217
+    },
+    "grades": {
+      "relief_km": "B",
+      "slope_med_deg": "B",
+      "slope_p90_deg": "B",
+      "hypso_int": "B",
+      "flat_frac": "B",
+      "steep_frac": "B",
+      "rough_2km": "B",
+      "rough_10km": "B",
+      "precip_mm": "A",
+      "ndvi_max": "A"
     },
     "tags": [
       "polar",
@@ -394,6 +506,18 @@
       "rough_2km": 9.5395,
       "rough_10km": 11.4476
     },
+    "grades": {
+      "relief_km": "B",
+      "slope_med_deg": "B",
+      "slope_p90_deg": "B",
+      "hypso_int": "B",
+      "flat_frac": "B",
+      "steep_frac": "B",
+      "rough_2km": "B",
+      "rough_10km": "B",
+      "precip_mm": "A",
+      "ndvi_max": "A"
+    },
     "tags": [
       "polar",
       "artemis",
@@ -434,6 +558,18 @@
       "steep_frac": 0.0111,
       "rough_2km": 3.66,
       "rough_10km": 6.6617
+    },
+    "grades": {
+      "relief_km": "B",
+      "slope_med_deg": "B",
+      "slope_p90_deg": "B",
+      "hypso_int": "B",
+      "flat_frac": "B",
+      "steep_frac": "B",
+      "rough_2km": "B",
+      "rough_10km": "B",
+      "precip_mm": "A",
+      "ndvi_max": "A"
     },
     "tags": [
       "polar",
@@ -476,6 +612,18 @@
       "rough_2km": 6.9744,
       "rough_10km": 2.5988
     },
+    "grades": {
+      "relief_km": "B",
+      "slope_med_deg": "B",
+      "slope_p90_deg": "B",
+      "hypso_int": "B",
+      "flat_frac": "B",
+      "steep_frac": "B",
+      "rough_2km": "B",
+      "rough_10km": "B",
+      "precip_mm": "A",
+      "ndvi_max": "A"
+    },
     "tags": [
       "polar",
       "artemis",
@@ -517,6 +665,18 @@
       "rough_2km": 5.0079,
       "rough_10km": 4.318
     },
+    "grades": {
+      "relief_km": "B",
+      "slope_med_deg": "B",
+      "slope_p90_deg": "B",
+      "hypso_int": "B",
+      "flat_frac": "B",
+      "steep_frac": "B",
+      "rough_2km": "B",
+      "rough_10km": "B",
+      "precip_mm": "A",
+      "ndvi_max": "A"
+    },
     "tags": [
       "polar",
       "artemis",
@@ -557,6 +717,18 @@
       "steep_frac": 0.0,
       "rough_2km": 3.7127,
       "rough_10km": 2.9619
+    },
+    "grades": {
+      "relief_km": "B",
+      "slope_med_deg": "B",
+      "slope_p90_deg": "B",
+      "hypso_int": "B",
+      "flat_frac": "B",
+      "steep_frac": "B",
+      "rough_2km": "B",
+      "rough_10km": "B",
+      "precip_mm": "A",
+      "ndvi_max": "A"
     },
     "tags": [
       "polar",
