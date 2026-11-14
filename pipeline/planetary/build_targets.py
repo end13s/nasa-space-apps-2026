@@ -249,9 +249,10 @@ OTHER: dict[str, dict] = {
         "features": {"ti_class": 2, "albedo": 0.16, "litho_class": 1, "ice_idx": 0.0},
         "sd": {"ti_class": 0.5, "albedo": 0.03, "ice_idx": 0.05},
         "grades": {
-            "ti_class": "A",     # THEMIS orbital + MEDA measured on the ground
-            "albedo": "A",       # OMEGA orbital + MEDA measured on the ground
-            "litho_class": "A",  # Perseverance ground truth (igneous floor)
+            "ti_class": "B",     # THEMIS orbital; MEDA ground truth covers only the rover traverse,
+            "albedo": "B",       #   a tiny part of the 30 km window (Eduard's audit, Sat 15:13)
+            "litho_class": "A",  # Perseverance in-situ analysis of the floor rocks - same kind of
+                                 #   evidence as Curiosity's litho at Gale, which is A
             "ice_idx": "C",      # inferred from the ice-stability latitude, not measured here
         },
         "sources": [
@@ -292,7 +293,7 @@ OTHER: dict[str, dict] = {
         "features": {"ti_class": 1, "tmin_k": 95.0, "tmax_k": 385.0, "litho_class": 1, "ice_idx": 0.0},
         "sd": {"ti_class": 0.5, "tmin_k": 5.0, "tmax_k": 10.0, "ice_idx": 0.02},
         "grades": {
-            "ti_class": "A",     # regolith sampled and measured by Apollo 17
+            "ti_class": "B",     # Apollo 17 ground truth covers the landing area, not the massifs in the window
             "tmin_k": "C",       # Diviner equatorial values extrapolated to 20N
             "tmax_k": "C",       #   (A if replaced by the Apollo 17 heat-flow surface thermometers)
             "litho_class": "A",  # Apollo 17 samples
@@ -322,16 +323,36 @@ OTHER: dict[str, dict] = {
             "ice_idx: 18N is far equatorward of the near-surface ice stability zone (Morgan et al. 2021)",
         ],
     },
-    # Shackleton and the Artemis regions: terrain only for now. Still to add
-    # from the polar products: ice_idx (PSR fraction, PGDA), tmin_k / tmax_k
-    # (Diviner polar), ti_class (Diviner), albedo (LROC), litho_class (USGS map).
+    # Shackleton and the Artemis regions get their non-terrain values from the
+    # polar products below (polar_values), automatically for every target.
 }
 
+# ---------------------------------------------------------------------------
+# South-polar targets (Shackleton + Artemis regions)
+# ---------------------------------------------------------------------------
+# ice_idx = share of the target window in permanent shadow, from the PGDA PSR
+# map (75-90S, 120 m/px, cloud-optimized GeoTIFF). Permanent shadow is where
+# water ice can be cold-trapped, which is why these regions are candidates.
+# Still to fold in: LEND hydrogen. Still to add for these targets: tmin_k /
+# tmax_k (Diviner polar products), albedo, ti_class.
+PSR_MAP = {
+    "url": "/vsicurl/https://pgda.gsfc.nasa.gov/data/MoonIllumination/LPSR_75S_120M_201608_COG.TIF",
+    "res_m": 120.0,
+    "sphere": "+R=1737400",
+}
+PSR_SOURCE = ("ice_idx: share of the window in permanent shadow, PGDA PSR map LPSR_75S_120M "
+              "(Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030); permanent "
+              "shadow is the cold-trap proxy - a model from LOLA topography, LEND hydrogen not folded in yet")
+POLAR_LITHO_SOURCE = ("litho_class: south-polar terrain is feldspathic highland (crater, basin and massif "
+                      "material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) "
+                      "-> class 2; regional call, per-target unit check still to do")
 
-def read_local_dem(key: str, lat: float, lon: float, half_m: float) -> np.ndarray:
-    """DEM window centred on (lat, lon), side 2*half_m, in local equidistant metres.
 
-    key is an entry of DEM ("mars", "moon", "moon_south").
+def read_local_raster(cfg: dict, lat: float, lon: float, half_m: float, nearest: bool = False) -> np.ndarray:
+    """Raster window centred on (lat, lon), side 2*half_m, in local equidistant metres.
+
+    cfg has "url", "res_m" and "sphere". nearest=True for masks/classes (no
+    blending of category values); bilinear otherwise.
     """
     try:
         import rasterio
@@ -342,29 +363,68 @@ def read_local_dem(key: str, lat: float, lon: float, half_m: float) -> np.ndarra
     except ImportError:
         sys.exit("rasterio is missing - run:  python3 -m pip install rasterio pyproj")
 
-    d = DEM[key]
-    res = d["res_m"]
+    res = cfg["res_m"]
     n = int(round(2 * half_m / res))
     local = CRS.from_proj4(
-        f"+proj=aeqd +lat_0={lat} +lon_0={lon} {d['sphere']} +units=m +no_defs"
+        f"+proj=aeqd +lat_0={lat} +lon_0={lon} {cfg['sphere']} +units=m +no_defs"
     )
     with rasterio.Env(GDAL_DISABLE_READDIR_ON_OPEN="EMPTY_DIR", VSI_CACHE=True):
-        with rasterio.open(d["url"]) as src:
+        with rasterio.open(cfg["url"]) as src:
             with WarpedVRT(
                 src,
                 crs=local,
                 transform=from_origin(-half_m, half_m, res, res),
                 width=n,
                 height=n,
-                resampling=Resampling.bilinear,
+                resampling=Resampling.nearest if nearest else Resampling.bilinear,
                 src_nodata=src.nodata,
                 nodata=np.nan,
                 dtype="float32",
             ) as vrt:
-                dem = vrt.read(1).astype(np.float64)
+                arr = vrt.read(1).astype(np.float64)
             scale = src.scales[0] if src.scales else 1.0
             offset = src.offsets[0] if src.offsets else 0.0
-    return dem * scale + offset
+    return arr * scale + offset
+
+
+def read_local_dem(key: str, lat: float, lon: float, half_m: float) -> np.ndarray:
+    """DEM window; key is an entry of DEM ("mars", "moon", "moon_south")."""
+    return read_local_raster(DEM[key], lat, lon, half_m)
+
+
+def polar_values(lat: float, lon: float, radius_km: float) -> tuple[dict, list]:
+    """Non-terrain values for a south-polar target, in the same shape as OTHER.
+
+    ice_idx is the PSR share of the window, with sd from the same four
+    shifted footprints as the terrain. The share is taken over ALL pixels of
+    the window, so a map that stores "not shadowed" as nodata still gives the
+    right number.
+    """
+    res = PSR_MAP["res_m"]
+    half = radius_km * 1000.0
+    shift = min(MAX_SHIFT_M, half / 3.0)
+    big = read_local_raster(PSR_MAP, lat, lon, half + shift, nearest=True)
+    n = int(round(2 * half / res))
+    p = int(round(shift / res))
+
+    shares = []
+    for dx, dy in [(0, 0), (shift, 0), (-shift, 0), (0, shift), (0, -shift)]:
+        i0 = p - int(round(dy / res))
+        j0 = p + int(round(dx / res))
+        w = big[i0 : i0 + n, j0 : j0 + n]
+        shares.append(np.count_nonzero(np.isfinite(w) & (w > 0)) / w.size)
+    seen = sorted({float(v) for v in np.unique(big[np.isfinite(big)])[:6]})
+
+    values = {
+        "features": {"ice_idx": shares[0], "litho_class": 2},
+        "sd": {"ice_idx": float(np.std(shares))},
+        "grades": {
+            "ice_idx": "C",      # PSR is modelled from LOLA topography; ice itself is not measured here
+            "litho_class": "C",  # regional call from the map, not yet checked target by target
+        },
+        "sources": [PSR_SOURCE, POLAR_LITHO_SOURCE],
+    }
+    return values, seen
 
 
 def terrain_with_sd(key: str, lat: float, lon: float, radius_km: float) -> tuple[dict, dict]:
@@ -434,15 +494,26 @@ def build() -> list[dict]:
             print(f"  WARNING: relief {feats['relief_km']:.2f} km at a south-polar target - expected 2-6 km. "
                   "Check the coordinates; this usually means the reprojection is wrong.")
 
+        polar = {}
+        if key == "moon_south":
+            polar, seen = polar_values(lat, lon, radius_km)
+            share = polar["features"]["ice_idx"]
+            print(f"  PSR map values seen: {seen} -> ice_idx (PSR share of the window) = {share:.3f}")
+            if share > 0.9:
+                print("  WARNING: >90 % of the window counted as permanent shadow - check the PSR map encoding")
+
         extra = OTHER.get(t["id"], {})
         feats.update(ZERO_BY_DEFINITION)
+        feats.update(polar.get("features", {}))
         feats.update(extra.get("features", {}))
+        sd.update(polar.get("sd", {}))
         sd.update(extra.get("sd", {}))
 
         feats = clean(feats)
         sd = {k: v for k, v in clean(sd).items() if k in feats}
         raw_grades = {"__terrain__": DEM[key]["grade"]}
         raw_grades.update({k: ZERO_GRADE for k in ZERO_BY_DEFINITION})
+        raw_grades.update(polar.get("grades", {}))
         raw_grades.update(extra.get("grades", {}))
         grades = expand_grades(raw_grades, feats)
         print("  " + ", ".join(f"{k}={v} [{grades.get(k, '?')}]" for k, v in feats.items()))
@@ -462,6 +533,7 @@ def build() -> list[dict]:
                 "tags": t["tags"],
                 "sources": [DEM[key]["source"]]
                 + ([t["coord_source"]] if t.get("coord_source") else [])
+                + list(polar.get("sources", []))
                 + list(extra.get("sources", [])),
                 "blurb": t["blurb"],
             }
