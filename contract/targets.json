@@ -1,0 +1,107 @@
+[
+  {
+    "id": "mars_jezero",
+    "body": "mars",
+    "name": "Jezero crater",
+    "lat": 18.4,
+    "lon": 77.5,
+    "radius_km": 15,
+    "synthetic": false,
+    "features": {
+      "relief_km": 0.8556,
+      "slope_med_deg": 1.6607,
+      "slope_p90_deg": 8.4544,
+      "hypso_int": 0.2377,
+      "rough_2km": 27.9089,
+      "rough_10km": 15.8074,
+      "precip_mm": 0.0,
+      "ndvi_max": 0.0
+    },
+    "sd": {
+      "relief_km": 0.1541,
+      "slope_med_deg": 0.2285,
+      "slope_p90_deg": 1.7648,
+      "hypso_int": 0.0509,
+      "rough_2km": 5.2856,
+      "rough_10km": 3.017
+    },
+    "tags": [
+      "sedimentary",
+      "astrobiology"
+    ],
+    "sources": [
+      "MOLA-HRSC blended DEM 200 m v2 (Fergason, Hare & Laura 2018, USGS Astrogeology)"
+    ],
+    "blurb": "Ancient lake delta; Perseverance landing site."
+  },
+  {
+    "id": "mars_gale",
+    "body": "mars",
+    "name": "Gale crater",
+    "lat": -5.4,
+    "lon": 137.8,
+    "radius_km": 15,
+    "synthetic": false,
+    "features": {
+      "relief_km": 3.3064,
+      "slope_med_deg": 7.577,
+      "slope_p90_deg": 21.9041,
+      "hypso_int": 0.3442,
+      "rough_2km": 70.248,
+      "rough_10km": 62.9276,
+      "precip_mm": 0.0,
+      "ndvi_max": 0.0
+    },
+    "sd": {
+      "relief_km": 0.0598,
+      "slope_med_deg": 1.1844,
+      "slope_p90_deg": 0.1198,
+      "hypso_int": 0.0607,
+      "rough_2km": 1.5493,
+      "rough_10km": 1.2665
+    },
+    "tags": [
+      "sedimentary",
+      "layered"
+    ],
+    "sources": [
+      "MOLA-HRSC blended DEM 200 m v2 (Fergason, Hare & Laura 2018, USGS Astrogeology)"
+    ],
+    "blurb": "Layered sediments and sulfates; Curiosity landing site."
+  },
+  {
+    "id": "moon_apollo17",
+    "body": "moon",
+    "name": "Taurus-Littrow valley (Apollo 17)",
+    "lat": 20.19,
+    "lon": 30.77,
+    "radius_km": 15,
+    "synthetic": false,
+    "features": {
+      "relief_km": 2.0484,
+      "slope_med_deg": 11.1192,
+      "slope_p90_deg": 24.2473,
+      "hypso_int": 0.3868,
+      "rough_2km": 89.5539,
+      "rough_10km": 60.4281,
+      "precip_mm": 0.0,
+      "ndvi_max": 0.0
+    },
+    "sd": {
+      "relief_km": 0.0641,
+      "slope_med_deg": 0.6272,
+      "slope_p90_deg": 0.5777,
+      "hypso_int": 0.0122,
+      "rough_2km": 2.5042,
+      "rough_10km": 2.2694
+    },
+    "tags": [
+      "ground-truth",
+      "mare"
+    ],
+    "sources": [
+      "LOLA + Kaguya TC merged DEM, SLDEM2015 512 ppd (Barker et al. 2016, USGS Astrogeology)"
+    ],
+    "blurb": "Apollo 17 landing site: ground truth for the method."
+  }
+]
