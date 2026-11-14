@@ -155,5 +155,295 @@
       "ice_idx: no permanently shadowed regions at 20N (lunar PSRs are polar)"
     ],
     "blurb": "Apollo 17 landing site: ground truth for the method."
+  },
+  {
+    "id": "mars_jezero_delta",
+    "body": "mars",
+    "name": "Jezero western delta front",
+    "lat": 18.48,
+    "lon": 77.39,
+    "radius_km": 5,
+    "synthetic": false,
+    "features": {
+      "relief_km": 0.4565,
+      "slope_med_deg": 2.218,
+      "slope_p90_deg": 10.4637,
+      "hypso_int": 0.2283,
+      "flat_frac": 0.808,
+      "steep_frac": 0.0,
+      "rough_2km": 33.9649,
+      "precip_mm": 0.0,
+      "ndvi_max": 0.0,
+      "litho_class": 3.0,
+      "ice_idx": 0.0
+    },
+    "sd": {
+      "relief_km": 0.1417,
+      "slope_med_deg": 0.401,
+      "slope_p90_deg": 2.7442,
+      "hypso_int": 0.0389,
+      "flat_frac": 0.0935,
+      "steep_frac": 0.0,
+      "rough_2km": 9.8321,
+      "ice_idx": 0.05
+    },
+    "tags": [
+      "sedimentary",
+      "delta",
+      "astrobiology"
+    ],
+    "sources": [
+      "MOLA-HRSC blended DEM 200 m v2 (Fergason, Hare & Laura 2018, USGS Astrogeology)",
+      "centre: western fan unit NHjf2 (18.48N 77.39E) in Sun & Stack 2020, USGS SIM 3464, doi:10.3133/sim3464",
+      "litho_class: deltaic sedimentary rocks of the western fan front, deposited in a lake (Perseverance Delta Front campaign; Sun & Stack 2020, USGS SIM 3464, unit NHjf2) -> class 3",
+      "ice_idx: 18N is far equatorward of the near-surface ice stability zone (Morgan et al. 2021)"
+    ],
+    "blurb": "Lake delta front in Jezero crater; the sedimentary target for the astrobiology profile."
+  },
+  {
+    "id": "moon_shackleton_rim",
+    "body": "moon",
+    "name": "Shackleton crater and rim",
+    "lat": -89.67,
+    "lon": 129.78,
+    "radius_km": 15,
+    "synthetic": false,
+    "features": {
+      "relief_km": 3.7769,
+      "slope_med_deg": 13.5781,
+      "slope_p90_deg": 31.3966,
+      "hypso_int": 0.6351,
+      "flat_frac": 0.0919,
+      "steep_frac": 0.2789,
+      "rough_2km": 124.3112,
+      "rough_10km": 99.1742,
+      "precip_mm": 0.0,
+      "ndvi_max": 0.0
+    },
+    "sd": {
+      "relief_km": 0.0981,
+      "slope_med_deg": 0.7845,
+      "slope_p90_deg": 0.0079,
+      "hypso_int": 0.0162,
+      "flat_frac": 0.0199,
+      "steep_frac": 0.0007,
+      "rough_2km": 2.9226,
+      "rough_10km": 0.2218
+    },
+    "tags": [
+      "polar",
+      "illumination",
+      "psr"
+    ],
+    "sources": [
+      "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
+      "centre: IAU Gazetteer of Planetary Nomenclature, Shackleton (feature 5450), diameter 20.9 km - the 15 km circle covers the whole crater and rim"
+    ],
+    "blurb": "Crater at the lunar south pole: near-permanently lit rim around a permanently shadowed floor."
+  },
+  {
+    "id": "moon_artemis_haworth",
+    "body": "moon",
+    "name": "Artemis III candidate region: Haworth",
+    "lat": -86.7639,
+    "lon": -22.777,
+    "radius_km": 15,
+    "synthetic": false,
+    "features": {
+      "relief_km": 2.4729,
+      "slope_med_deg": 9.2548,
+      "slope_p90_deg": 17.1904,
+      "hypso_int": 0.6284,
+      "flat_frac": 0.1602,
+      "steep_frac": 0.0,
+      "rough_2km": 58.8544,
+      "rough_10km": 63.3544,
+      "precip_mm": 0.0,
+      "ndvi_max": 0.0
+    },
+    "sd": {
+      "relief_km": 0.3179,
+      "slope_med_deg": 0.3079,
+      "slope_p90_deg": 0.2038,
+      "hypso_int": 0.0534,
+      "flat_frac": 0.0111,
+      "steep_frac": 0.0,
+      "rough_2km": 0.8152,
+      "rough_10km": 2.9611
+    },
+    "tags": [
+      "polar",
+      "artemis",
+      "permanent-base"
+    ],
+    "sources": [
+      "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
+      "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)"
+    ],
+    "blurb": "Haworth, one of NASA's nine Artemis III candidate landing regions near the lunar south pole."
+  },
+  {
+    "id": "moon_artemis_malapert_massif",
+    "body": "moon",
+    "name": "Artemis III candidate region: Malapert Massif",
+    "lat": -85.9948,
+    "lon": -0.2358,
+    "radius_km": 15,
+    "synthetic": false,
+    "features": {
+      "relief_km": 4.0638,
+      "slope_med_deg": 16.553,
+      "slope_p90_deg": 24.9978,
+      "hypso_int": 0.5592,
+      "flat_frac": 0.0708,
+      "steep_frac": 0.0997,
+      "rough_2km": 90.607,
+      "rough_10km": 109.2568,
+      "precip_mm": 0.0,
+      "ndvi_max": 0.0
+    },
+    "sd": {
+      "relief_km": 0.4998,
+      "slope_med_deg": 0.9404,
+      "slope_p90_deg": 0.4275,
+      "hypso_int": 0.0285,
+      "flat_frac": 0.008,
+      "steep_frac": 0.0137,
+      "rough_2km": 5.5957,
+      "rough_10km": 11.1217
+    },
+    "tags": [
+      "polar",
+      "artemis",
+      "permanent-base"
+    ],
+    "sources": [
+      "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
+      "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)"
+    ],
+    "blurb": "Malapert Massif, one of NASA's nine Artemis III candidate landing regions near the lunar south pole."
+  },
+  {
+    "id": "moon_artemis_nobile_rim_1",
+    "body": "moon",
+    "name": "Artemis III candidate region: Nobile Rim 1",
+    "lat": -85.4381,
+    "lon": 37.3667,
+    "radius_km": 15,
+    "synthetic": false,
+    "features": {
+      "relief_km": 5.2488,
+      "slope_med_deg": 16.1173,
+      "slope_p90_deg": 25.1761,
+      "hypso_int": 0.6223,
+      "flat_frac": 0.0868,
+      "steep_frac": 0.1076,
+      "rough_2km": 81.7978,
+      "rough_10km": 112.6697,
+      "precip_mm": 0.0,
+      "ndvi_max": 0.0
+    },
+    "sd": {
+      "relief_km": 0.6726,
+      "slope_med_deg": 0.6131,
+      "slope_p90_deg": 0.249,
+      "hypso_int": 0.0461,
+      "flat_frac": 0.0211,
+      "steep_frac": 0.0111,
+      "rough_2km": 3.66,
+      "rough_10km": 6.6617
+    },
+    "tags": [
+      "polar",
+      "artemis",
+      "permanent-base"
+    ],
+    "sources": [
+      "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
+      "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)"
+    ],
+    "blurb": "Nobile Rim 1, one of NASA's nine Artemis III candidate landing regions near the lunar south pole."
+  },
+  {
+    "id": "moon_artemis_nobile_rim_2",
+    "body": "moon",
+    "name": "Artemis III candidate region: Nobile Rim 2",
+    "lat": -83.954,
+    "lon": 58.8221,
+    "radius_km": 15,
+    "synthetic": false,
+    "features": {
+      "relief_km": 2.6969,
+      "slope_med_deg": 11.2022,
+      "slope_p90_deg": 22.8114,
+      "hypso_int": 0.5782,
+      "flat_frac": 0.1991,
+      "steep_frac": 0.061,
+      "rough_2km": 85.5792,
+      "rough_10km": 69.141,
+      "precip_mm": 0.0,
+      "ndvi_max": 0.0
+    },
+    "sd": {
+      "relief_km": 0.1688,
+      "slope_med_deg": 0.9273,
+      "slope_p90_deg": 0.9863,
+      "hypso_int": 0.0273,
+      "flat_frac": 0.0357,
+      "steep_frac": 0.0187,
+      "rough_2km": 6.9744,
+      "rough_10km": 2.5988
+    },
+    "tags": [
+      "polar",
+      "artemis",
+      "permanent-base"
+    ],
+    "sources": [
+      "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
+      "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)"
+    ],
+    "blurb": "Nobile Rim 2, one of NASA's nine Artemis III candidate landing regions near the lunar south pole."
+  },
+  {
+    "id": "moon_artemis_de_gerlache_rim_2",
+    "body": "moon",
+    "name": "Artemis III candidate region: de Gerlache Rim 2",
+    "lat": -88.23,
+    "lon": -64.6284,
+    "radius_km": 15,
+    "synthetic": false,
+    "features": {
+      "relief_km": 3.0248,
+      "slope_med_deg": 10.2744,
+      "slope_p90_deg": 17.7502,
+      "hypso_int": 0.4064,
+      "flat_frac": 0.2016,
+      "steep_frac": 0.0016,
+      "rough_2km": 67.4407,
+      "rough_10km": 60.2778,
+      "precip_mm": 0.0,
+      "ndvi_max": 0.0
+    },
+    "sd": {
+      "relief_km": 0.1043,
+      "slope_med_deg": 0.8996,
+      "slope_p90_deg": 0.4091,
+      "hypso_int": 0.0806,
+      "flat_frac": 0.0501,
+      "steep_frac": 0.0062,
+      "rough_2km": 5.0079,
+      "rough_10km": 4.318
+    },
+    "tags": [
+      "polar",
+      "artemis",
+      "permanent-base"
+    ],
+    "sources": [
+      "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
+      "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)"
+    ],
+    "blurb": "de Gerlache Rim 2, one of NASA's nine Artemis III candidate landing regions near the lunar south pole."
   }
 ]
