@@ -12,6 +12,7 @@ const features = Uint8Array.from(job.features);
 const res = scoreAll(job.meta, features, job.target, job.weights, {
   gravityScaling: job.gravityScaling ?? false,
   body: job.body ?? null,
+  sigmaOverrides: job.sigmaOverrides ?? null,
 });
 
 const dims = {};

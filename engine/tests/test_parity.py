@@ -24,7 +24,7 @@ ENGINE = ROOT / "engine"
 sys.path.insert(0, str(ENGINE))
 
 from pack_web import MISSING, dequantize  # noqa: E402
-from score import load_contract, score_grid  # noqa: E402
+from score import grade_sigma_overrides, load_contract, score_grid  # noqa: E402
 
 TOL = 1e-3
 N_CELLS = 1000
@@ -94,13 +94,19 @@ def main(gravity: bool = False) -> int:
     rng = np.random.default_rng(SEED)
     meta, codes, all_specs, target_features, weights = build_job(contract, rng)
 
+    # exercise the evidence grades on both sides, not just the plain path
+    grades = {"__terrain__": "B", "ti_class": "C", "tmin_k": "D", "albedo": "A"}
+    target = {"features": target_features, "body": "mars", "grades": grades}
+    overrides = grade_sigma_overrides(contract, target)
+
     job = {
         "meta": meta,
         "features": codes.reshape(-1).tolist(),
-        "target": {"features": target_features, "body": "mars"},
+        "target": target,
         "weights": weights,
         "gravityScaling": gravity,
         "body": "mars",
+        "sigmaOverrides": overrides,
     }
     js = run_node(job)
 
@@ -116,6 +122,7 @@ def main(gravity: bool = False) -> int:
         weights=weights,
         gravity_scaling=gravity,
         body="mars",
+        sigma_overrides=overrides,
     )
 
     js_scores = np.array(js["scores"], dtype=np.float64)

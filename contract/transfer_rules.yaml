@@ -1,0 +1,213 @@
+# ============================================================================
+# Analog Atlas - TRANSFER RULES
+# ----------------------------------------------------------------------------
+# Owner: Julia (writes), Sofia (reviews the physics). Shape owned by Eduard.
+#
+# The question this file answers, per variable and per body:
+#   "If an Earth site matches the target on this variable, does it behave the
+#    same way - or does the physics stop transferring?"
+#
+#   transferable      a match means the same thing on both bodies
+#   conditional       a match is usable ONLY with the stated correction
+#   not_transferable  matching numbers do not imply matching behaviour
+#   (absent)          treated as "unassessed" -> shown as conditional with a
+#                     note saying so. Never silently treated as transferable.
+#
+# Eduard has seeded the rows that are pure physics and hard to get wrong.
+# Julia: edit the wording, fill the gaps, delete nothing without telling Sofia.
+# Keep every note under about 30 words - it is rendered on the card verbatim.
+# ============================================================================
+
+version: 1
+
+feature_labels:
+  relief_km: Elevation range
+  slope_med_deg: Median slope
+  slope_p90_deg: Steep slope (90th pct)
+  rough_2km: Roughness at 2 km
+  rough_10km: Roughness at 10 km
+  hypso_int: Hypsometric integral
+  ti_class: Thermal inertia class
+  tmin_k: Coldest temperature
+  tmax_k: Warmest temperature
+  diurnal_amp_k: Day-night swing
+  albedo: Surface brightness
+  litho_class: Rock type
+  ice_idx: Near-surface ice
+  precip_mm: Precipitation
+  soil_moist: Soil moisture
+  ndvi_max: Vegetation cover
+  flat_frac: Buildable flat ground
+  steep_frac: Steep, non-buildable ground
+  bulk_density: Soil / regolith density
+  aod_p90: Dust loading
+  wind_p95: Wind speed
+  lowsun_frac: Low-sun fraction of the year
+  shadow_frac_lowsun: Terrain shadowing at low sun
+
+rules:
+
+  # ---- terrain: geometry transfers, the processes that made it do not ----
+  relief_km:
+    moon: {status: transferable}
+    mars: {status: transferable}
+  slope_med_deg:
+    moon:
+      status: conditional
+      correction: "Geometry transfers, but slope stability does not - the same angle
+                   is far more stable at 1/6 g."
+    mars:
+      status: conditional
+      correction: "Geometry transfers; slope stability differs at 3/8 g."
+  slope_p90_deg:
+    moon: {status: conditional, correction: "As median slope: geometry transfers, stability does not."}
+    mars: {status: conditional, correction: "As median slope: geometry transfers, stability does not."}
+  rough_2km:
+    moon:
+      status: conditional
+      correction: "Comparable only at the Moon-gravity-scaled baseline of 330 m.
+                   Landform size scales roughly as 1/g; this ignores material
+                   strength and erosion history."
+    mars:
+      status: conditional
+      correction: "Comparable only at the Mars-gravity-scaled baseline of 760 m."
+  rough_10km:
+    moon: {status: conditional, correction: "Compare at the scaled baseline of 1.65 km."}
+    mars: {status: conditional, correction: "Compare at the scaled baseline of 3.8 km."}
+  hypso_int:
+    moon: {status: transferable}
+    mars: {status: transferable}
+
+  # ---- thermal: the headline physics caveat of the whole project ----
+  ti_class:
+    moon:
+      status: not_transferable
+      note: "Thermal inertia of loose material depends on pore gas pressure. In vacuum
+             there is no gas conduction between grains, so a matching Earth class does
+             not behave the same way."
+    mars:
+      status: conditional
+      correction: "Valid only with a stated pressure correction: the same grain size
+                   reads a higher thermal inertia at 1 bar than at 6 mbar."
+  tmin_k:
+    moon:
+      status: not_transferable
+      note: "No Earth surface reaches lunar night or permanently-shadowed temperatures
+             of 25-40 K."
+    mars:
+      status: conditional
+      correction: "Earth's coldest sites overlap the warm end of the Martian range only;
+                   state the offset."
+  tmax_k:
+    moon:
+      status: not_transferable
+      note: "Lunar noon reaches ~390 K with no atmosphere to move the heat. Earth cannot
+             reproduce the input or the transport."
+    mars: {status: conditional, correction: "Overlapping ranges, but driven by a thin CO2 atmosphere rather than air."}
+  diurnal_amp_k:
+    moon: {status: not_transferable, note: "A ~250 K swing over 29.5 Earth days has no terrestrial equivalent."}
+    mars: {status: conditional, correction: "Similar amplitude, very different heat transport - radiative rather than convective."}
+
+  # ---- material ----
+  albedo:
+    moon:
+      status: conditional
+      correction: "Different quantities: MODIS broadband white-sky albedo on Earth vs
+                   LROC normalized reflectance at 643 nm. Compare trends, not values."
+    mars:
+      status: conditional
+      correction: "MODIS broadband albedo vs TES Lambert albedo are different
+                   definitions; treat the match as approximate."
+  litho_class:
+    moon: {status: transferable, note: "Rock chemistry transfers; space weathering and agglutinates do not."}
+    mars: {status: transferable, note: "Rock chemistry transfers; oxidation state and perchlorates do not."}
+
+  # ---- water / ice ----
+  ice_idx:
+    moon:
+      status: conditional
+      correction: "Earth ice is glacial or permafrost at 250-273 K; lunar cold-trap ice sits
+                   at 25-40 K in vacuum. Mechanical behaviour differs completely."
+    mars:
+      status: conditional
+      correction: "Comparable as ground ice, but Martian ice is stable only under a
+                   desiccated regolith lag."
+  precip_mm:
+    moon: {status: transferable, note: "Zero on both; a match means the surface is not being reworked by rain."}
+    mars: {status: transferable, note: "Zero on both."}
+  soil_moist:
+    moon: {status: transferable}
+    mars: {status: transferable}
+
+  # ---- vegetation (renamed from "biology" - NDVI measures cover, not habitability) ----
+  ndvi_max:
+    moon:
+      status: transferable
+      note: "A match means no vegetation confound for instruments. It says nothing about
+             habitability - Earth deserts are near zero too, and are full of life."
+    mars:
+      status: transferable
+      note: "No vegetation confound. Earth biology remains a contamination source for any
+             biosignature test."
+
+  # ---- construction ----
+  flat_frac:
+    moon: {status: conditional, correction: "Flatness transfers as geometry; bearing capacity and grading effort do not at 1/6 g."}
+    mars: {status: conditional, correction: "Flatness transfers; bearing capacity differs at 3/8 g."}
+  steep_frac:
+    moon: {status: conditional, correction: "Same geometry, different failure threshold - lunar slopes stand steeper."}
+    mars: {status: conditional, correction: "Same geometry, different failure threshold."}
+  bulk_density:
+    moon:
+      status: not_transferable
+      note: "Lunar regolith density comes from a literature constant, not a measurement at
+             the target, and compaction behaves differently in vacuum at 1/6 g."
+    mars: {status: conditional, correction: "Density may match; cohesion and compaction under 3/8 g do not."}
+
+  # ---- atmosphere / dust ----
+  aod_p90:
+    moon: {status: not_transferable, note: "No atmosphere. Lunar dust is lofted electrostatically, not by wind."}
+    mars: {status: conditional, correction: "Both are suspended dust, but Martian lifting happens at 6 mbar with much lower wind stress."}
+  wind_p95:
+    moon: {status: not_transferable, note: "No atmosphere, so no wind."}
+    mars:
+      status: conditional
+      correction: "Martian winds reach similar speeds at ~1 % of Earth's air density, so
+                   the force on structures is far lower for the same speed."
+
+  # ---- illumination ----
+  lowsun_frac:
+    moon:
+      status: conditional
+      correction: "Earth's high latitudes give grazing light seasonally; the lunar poles give
+                   it permanently, on a 29.5-day cycle."
+    mars: {status: transferable}
+  shadow_frac_lowsun:
+    moon:
+      status: conditional
+      correction: "Use the horizon-based PGDA illumination maps for lunar targets - crater
+                   rims, not latitude, dominate polar shadowing."
+    mars: {status: transferable}
+
+# ============================================================================
+# Variables with no Earth equivalent at all. These populate the "Cannot test"
+# column on every card, for every experiment, and are never scored.
+# Values come from contract/body_constants.json.
+# ============================================================================
+never_testable:
+  - id: gravity
+    label: Gravity
+    moon: "1.62 m/s2 (1/6 g) - mobility, dust ballistics, slope stability and structural loads all differ"
+    mars: "3.72 m/s2 (3/8 g) - same, to a lesser degree"
+  - id: radiation
+    label: Radiation environment
+    moon: "Unshielded galactic cosmic rays and solar particle events; no magnetosphere, no atmosphere"
+    mars: "No global magnetic field and ~16 g/cm2 of CO2; surface dose far above any Earth site"
+  - id: pressure
+    label: Atmospheric pressure
+    moon: "Hard vacuum - no convection, no sound, no gas conduction in regolith pores"
+    mars: "~6 mbar CO2 - dust storms are possible, breathing and convective cooling are not"
+  - id: day_length
+    label: Day length
+    moon: "29.5 Earth days, with two weeks of continuous darkness"
+    mars: "24.66 h - close enough to Earth that this one is nearly testable"

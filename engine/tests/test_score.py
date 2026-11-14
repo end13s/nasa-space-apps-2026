@@ -15,7 +15,11 @@ ENGINE = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ENGINE))
 
 from score import (  # noqa: E402
+    GRADE_SIGMA,
     classify_dimension,
+    grade_sigma_overrides,
+    load_transfer_rules,
+    proxy_card,
     haversine_km,
     load_contract,
     score_grid,
@@ -153,6 +157,37 @@ def test_construction_dimension_is_scored():
     assert abs(r.dims["C"][0] - 1.0) < 1e-9
     assert r.dims["C"][1] < 0.2
     assert r.overall[1] < r.overall[0]
+
+
+def test_grades_widen_sigma_and_never_narrow_it():
+    t = _target()
+    graded = dict(t, grades={"__terrain__": "D", "ti_class": "A"})
+    ov = grade_sigma_overrides(CONTRACT, graded)
+    assert ov["relief_km"] == CONTRACT.by_id("relief_km").sigma * GRADE_SIGMA["D"]
+    assert ov["flat_frac"] == CONTRACT.by_id("flat_frac").sigma * GRADE_SIGMA["D"]  # terrain-derived
+    assert ov["ti_class"] == CONTRACT.by_id("ti_class").sigma * GRADE_SIGMA["A"]
+    assert all(v >= CONTRACT.by_id(k).sigma for k, v in ov.items())
+
+
+def test_a_perfect_match_on_a_non_transferable_variable_is_not_support():
+    """The central claim of the proxy reframe, as an assertion.
+
+    Thermal inertia class can match the Moon exactly and still prove nothing,
+    because in vacuum there is no gas conduction between grains. If this test
+    ever fails, the card is making a claim the physics does not support.
+    """
+    transfer = load_transfer_rules()
+    t = _target()
+    target = {"id": "moon_test", "body": "moon", "features": t, "grades": {}}
+    r = score_grid(_grid_from([dict(t)]), t, CONTRACT, tiers=("mvp",))
+    card = proxy_card(r, 0, target, transfer, CONTRACT)
+
+    assert r.features["ti_class"][0] == 1.0, "the variable does match perfectly"
+    ids = lambda col: {row["id"] for row in card[col]}
+    assert "ti_class" not in ids("supports")
+    assert "ti_class" in ids("cannot_test")
+    # and the body constants are always there, matched or not
+    assert {"gravity", "radiation", "pressure"} <= ids("cannot_test")
 
 
 def test_verdict_thresholds():

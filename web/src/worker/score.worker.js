@@ -25,6 +25,8 @@ import {
   cellLatLon,
   classifyDimension,
   decode,
+  proxyCard,
+  gradeSigmaOverrides,
 } from './score_core.js';
 
 const state = {
@@ -33,6 +35,8 @@ const state = {
   index: null,
   logistics: null,
   country: null,
+  transfer: null,
+  target: null,
   last: null,
 };
 
@@ -59,6 +63,11 @@ async function init(dataUrl, body) {
     } catch {
       state.logistics = null;
     }
+  }
+  try {
+    state.transfer = await (await fetch(`${base}transfer_rules.json`)).json();
+  } catch {
+    state.transfer = { rules: {}, never_testable: [], feature_labels: {} };
   }
   if (meta.country_codes?.length) {
     try {
@@ -152,6 +161,12 @@ function cellCard(cellIndex) {
       state.country && meta.country_codes
         ? meta.country_codes[state.country[cellIndex]]
         : null,
+    // Supports / Conditional / Cannot test - the proxy card (reframe, Sat sync)
+    proxy:
+      last && state.target
+        ? proxyCard(meta, last.features, cellIndex, state.target, state.transfer,
+                    last.scores[cellIndex], last.partial[cellIndex])
+        : null,
   };
 }
 
@@ -166,9 +181,11 @@ self.onmessage = async (e) => {
 
     if (msg.type === 'score') {
       const t0 = performance.now();
+      state.target = msg.target;
       const res = scoreAll(state.meta, state.features, msg.target, msg.weights, {
         gravityScaling: msg.gravityScaling,
         body: msg.body ?? msg.target?.body,
+        sigmaOverrides: gradeSigmaOverrides(state.meta, msg.target),
       });
       state.last = res;
 

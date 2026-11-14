@@ -14,6 +14,98 @@
 export const MISSING = 255;
 export const DIM_ORDER = ['T', 'H', 'M', 'W', 'B', 'C', 'A', 'I'];
 
+// Evidence grades - mirror of GRADE_SIGMA / TERRAIN_DERIVED in engine/score.py.
+export const GRADE_SIGMA = { A: 1.0, B: 1.5, C: 2.5, D: 4.0 };
+export const DEFAULT_GRADE = 'C';
+export const MATCH_FEATURE = 0.6;
+export const TERRAIN_DERIVED = new Set([
+  'relief_km', 'slope_med_deg', 'slope_p90_deg', 'hypso_int',
+  'flat_frac', 'steep_frac',
+  'rough_2km', 'rough_10km',
+  'rough_2km_gM', 'rough_10km_gM', 'rough_2km_gR', 'rough_10km_gR',
+]);
+
+/** Per-feature sigma widened by the target's evidence grade. */
+export function gradeSigmaOverrides(meta, target) {
+  const grades = { ...(target.grades || {}) };
+  const terrain = grades.__terrain__;
+  delete grades.__terrain__;
+  const out = {};
+  for (const f of meta.features) {
+    if (f.sigma_mode === 'matrix') continue;
+    let g = grades[f.id];
+    if (!g && terrain && TERRAIN_DERIVED.has(f.id)) g = terrain;
+    if (!g) continue;
+    out[f.id] = f.sigma * (GRADE_SIGMA[String(g).toUpperCase()] ?? GRADE_SIGMA[DEFAULT_GRADE]);
+  }
+  return out;
+}
+
+export function featureGrade(target, id) {
+  const g = target.grades || {};
+  if (g[id]) return String(g[id]).toUpperCase();
+  if (TERRAIN_DERIVED.has(id) && g.__terrain__) return String(g.__terrain__).toUpperCase();
+  return DEFAULT_GRADE;
+}
+
+/**
+ * Supports / Conditional / Cannot test for one cell.
+ * A variable reaches Supports only if it BOTH matches AND transfers - matching
+ * numbers on a non-transferable variable are not evidence.
+ */
+export function proxyCard(meta, perFeature, index, target, transfer, overall, partial) {
+  const body = String(target.body || '').toLowerCase();
+  const rules = (transfer && transfer.rules) || {};
+  const labels = (transfer && transfer.feature_labels) || {};
+  const specOf = new Map(meta.features.map((f) => [f.id, f]));
+  const supports = [], conditional = [], cannot = [], notMatched = [];
+
+  for (const [id, arr] of Object.entries(perFeature)) {
+    const sf = arr[index];
+    const spec = specOf.get(id);
+    const row = {
+      id,
+      label: labels[id] || id,
+      dim: spec ? spec.dim : null,
+      score: Number.isFinite(sf) ? Math.round(sf * 1000) / 1000 : null,
+      grade: featureGrade(target, id),
+    };
+    const rule = (rules[id] && rules[id][body]) || {};
+    const status = rule.status || 'unassessed';
+
+    if (status === 'not_transferable') {
+      row.reason = rule.note || 'Physics does not carry over to this body.';
+      cannot.push(row);
+    } else if (!Number.isFinite(sf) || sf < MATCH_FEATURE) {
+      row.reason = 'measured, does not match this target';
+      notMatched.push(row);
+    } else if (status === 'transferable') {
+      if (rule.note) row.note = rule.note;
+      supports.push(row);
+    } else {
+      row.correction = rule.correction || 'Transfer not yet assessed - treat as conditional.';
+      conditional.push(row);
+    }
+  }
+
+  for (const nt of (transfer && transfer.never_testable) || []) {
+    if (nt[body]) {
+      cannot.push({ id: nt.id, label: nt.label || nt.id, score: null, grade: null,
+                    reason: nt[body], never_testable: true });
+    }
+  }
+
+  const byScore = (a, b) => (b.score || 0) - (a.score || 0);
+  return {
+    supports: supports.sort(byScore),
+    conditional: conditional.sort(byScore),
+    cannot_test: cannot,
+    not_matched: notMatched.sort(byScore),
+    proxy_strength: overall,
+    partial: Boolean(partial),
+  };
+}
+
 /** uint8 code -> physical value. NaN where the code is the missing marker. */
 export function decode(code, lo, hi, scale = 'linear') {
   if (code === MISSING) return NaN;
@@ -56,7 +148,7 @@ export function featureSimilarity(x, t, spec, lithoMatrix) {
  * honouring the gravity swap. Cheap, but doing it outside the cell loop keeps
  * the hot loop free of string lookups.
  */
-export function buildPlan(meta, target, { gravityScaling = false, body = null, tiers = null } = {}) {
+export function buildPlan(meta, target, { gravityScaling = false, body = null, tiers = null, sigmaOverrides = null } = {}) {
   const colOf = new Map();
   meta.features.forEach((f, i) => colOf.set(f.id, i));
 
@@ -76,6 +168,9 @@ export function buildPlan(meta, target, { gravityScaling = false, body = null, t
     if (col === undefined) continue;
 
     const src = meta.features[col];
+    // evidence-grade widening: use the overridden sigma if one was supplied
+    const ov = sigmaOverrides && sigmaOverrides[f.id];
+    const spec = ov ? { ...f, sigma: ov } : f;
     plan.push({
       id: f.id,
       dim: f.dim,
@@ -83,7 +178,7 @@ export function buildPlan(meta, target, { gravityScaling = false, body = null, t
       lo: src.lo,
       hi: src.hi,
       target: t,
-      spec: f,
+      spec,
       mvp: f.tier === 'mvp',
     });
   }
@@ -115,6 +210,8 @@ export function scoreAll(meta, features, target, weights, opts = {}) {
   const scores = new Float32Array(n);
   const dimArrays = dimsPresent.map(() => new Float32Array(n));
   const partial = new Uint8Array(n);
+  // per-feature similarities, needed by proxyCard()
+  const featArrays = plan.map(() => new Float32Array(n));
 
   const num = new Float64Array(nd);
   const den = new Float64Array(nd);
@@ -132,6 +229,7 @@ export function scoreAll(meta, features, target, weights, opts = {}) {
       const code = features[base + p.col];
       const x = decode(code, p.lo, p.hi);
       const s = featureSimilarity(x, p.target, p.spec, litho);
+      featArrays[k][c] = s;
       if (Number.isFinite(s)) {
         const d = dimIdx.get(p.dim);
         num[d] += s;
@@ -159,7 +257,11 @@ export function scoreAll(meta, features, target, weights, opts = {}) {
   dimsPresent.forEach((d, i) => {
     dims[d] = dimArrays[i];
   });
-  return { scores, dims, partial, plan };
+  const featureSims = {};
+  plan.forEach((p, i) => {
+    featureSims[p.id] = featArrays[i];
+  });
+  return { scores, dims, partial, plan, features: featureSims };
 }
 
 /** cell_id -> {lat, lon} cell centre, using the grid block of meta. */

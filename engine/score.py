@@ -40,6 +40,26 @@ DEFAULT_EPS = 0.01
 
 DIM_ORDER = ["T", "H", "M", "W", "B", "C", "A", "I"]
 
+# Evidence grades (the proxy reframe, adopted at the Saturday sync).
+# A target value we barely know must not produce a sharp similarity score, so
+# the grade inflates that variable's tolerance instead of hiding it.
+#   A multiple instruments or ground truth | B single orbital instrument
+#   C model-derived or extrapolated        | D poorly constrained
+GRADE_SIGMA = {"A": 1.0, "B": 1.5, "C": 2.5, "D": 4.0}
+DEFAULT_GRADE = "C"          # ungraded is not "perfectly known"
+
+# Features that come out of engine/terrain_features.compute(), so one
+# "__terrain__" grade in targets.json covers all of them.
+TERRAIN_DERIVED = {
+    "relief_km", "slope_med_deg", "slope_p90_deg", "hypso_int",
+    "flat_frac", "steep_frac",
+    "rough_2km", "rough_10km",
+    "rough_2km_gM", "rough_10km_gM", "rough_2km_gR", "rough_10km_gR",
+}
+
+# A feature counts as "matching" on a card at or above this similarity.
+MATCH_FEATURE = 0.6
+
 
 # ---------------------------------------------------------------------------
 # Contract loading
@@ -390,6 +410,121 @@ def site_card(result: ScoreResult, index: int) -> dict:
         "dims": dims,
         "verdict": {d: classify_dimension(v) for d, v in dims.items()},
         "features": {f: float(v[index]) for f, v in result.features.items()},
+        "partial": bool(result.partial[index]),
+    }
+
+
+def load_transfer_rules(contract_dir: Path | str = CONTRACT_DIR) -> dict:
+    """contract/transfer_rules.yaml, or an empty ruleset if it is not there yet.
+
+    Missing file or missing row is never read as "transferable" - it is
+    reported as unassessed, which lands in the Conditional column.
+    """
+    path = Path(contract_dir) / "transfer_rules.yaml"
+    if not path.exists():
+        return {"rules": {}, "never_testable": [], "feature_labels": {}}
+    return yaml.safe_load(path.read_text(encoding="utf-8")) or {}
+
+
+def grade_sigma_overrides(contract: Contract, target: Mapping) -> dict[str, float]:
+    """Per-feature sigma, widened by the target's evidence grade.
+
+    targets.json carries {"grades": {"__terrain__": "B", "ti_class": "B", ...}}.
+    "__terrain__" applies to every feature in TERRAIN_DERIVED.
+    """
+    grades = dict(target.get("grades", {}) or {})
+    terrain_grade = grades.pop("__terrain__", None)
+    out: dict[str, float] = {}
+    for spec in contract.features:
+        if spec.sigma_mode == "matrix":
+            continue  # no sigma to widen
+        g = grades.get(spec.id)
+        if g is None and terrain_grade and spec.id in TERRAIN_DERIVED:
+            g = terrain_grade
+        if g is None:
+            continue
+        out[spec.id] = spec.sigma * GRADE_SIGMA.get(str(g).upper(), GRADE_SIGMA[DEFAULT_GRADE])
+    return out
+
+
+def feature_grade(target: Mapping, feature_id: str) -> str:
+    grades = target.get("grades", {}) or {}
+    if feature_id in grades:
+        return str(grades[feature_id]).upper()
+    if feature_id in TERRAIN_DERIVED and "__terrain__" in grades:
+        return str(grades["__terrain__"]).upper()
+    return DEFAULT_GRADE
+
+
+def proxy_card(
+    result: ScoreResult,
+    index: int,
+    target: Mapping,
+    transfer: Mapping,
+    contract: Contract,
+) -> dict:
+    """The card the UI renders: Supports / Conditional / Cannot test.
+
+    A variable reaches **Supports** only if it both matches and transfers.
+    Matching numbers on a non-transferable variable are not evidence, so they
+    go to Cannot test - that is the whole point of the reframe.
+    """
+    body = str(target.get("body", "")).lower()
+    rules = (transfer or {}).get("rules", {}) or {}
+    labels = (transfer or {}).get("feature_labels", {}) or {}
+    spec_of = {f.id: f for f in contract.features}
+
+    supports, conditional, cannot, unmatched = [], [], [], []
+
+    for fid, arr in result.features.items():
+        s_f = float(arr[index])
+        spec = spec_of.get(fid)
+        row = {
+            "id": fid,
+            "label": labels.get(fid, fid),
+            "dim": spec.dim if spec else None,
+            "score": None if not np.isfinite(s_f) else round(s_f, 3),
+            "grade": feature_grade(target, fid),
+        }
+        rule = (rules.get(fid) or {}).get(body) or {}
+        status = rule.get("status", "unassessed")
+
+        if status == "not_transferable":
+            row["reason"] = rule.get("note", "Physics does not carry over to this body.")
+            cannot.append(row)
+            continue
+        if not np.isfinite(s_f) or s_f < MATCH_FEATURE:
+            row["reason"] = "measured, does not match this target"
+            unmatched.append(row)
+            continue
+        if status == "transferable":
+            if rule.get("note"):
+                row["note"] = rule["note"]
+            supports.append(row)
+        else:
+            row["correction"] = rule.get(
+                "correction", "Transfer not yet assessed - treat as conditional."
+            )
+            conditional.append(row)
+
+    for nt in (transfer or {}).get("never_testable", []) or []:
+        if body in nt:
+            cannot.append({
+                "id": nt["id"],
+                "label": nt.get("label", nt["id"]),
+                "score": None,
+                "grade": None,
+                "reason": nt[body],
+                "never_testable": True,
+            })
+
+    key = lambda r: -(r["score"] or 0)
+    return {
+        "supports": sorted(supports, key=key),
+        "conditional": sorted(conditional, key=key),
+        "cannot_test": cannot,
+        "not_matched": sorted(unmatched, key=key),
+        "proxy_strength": float(result.overall[index]),
         "partial": bool(result.partial[index]),
     }
 

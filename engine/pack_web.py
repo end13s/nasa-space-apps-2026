@@ -34,7 +34,7 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from score import DEFAULT_EPS, haversine_km, load_contract
+from score import DEFAULT_EPS, GRADE_SIGMA, haversine_km, load_contract, load_transfer_rules
 
 MISSING = 255
 GRID_NCOLS = {"earth": 1440, "moon": 720, "mars": 720}
@@ -193,8 +193,12 @@ def pack(
         else:
             print(f"  note: {src} not there yet, skipping {name}")
 
+    transfer = load_transfer_rules(contract_dir) if contract_dir else load_transfer_rules()
+    (out_dir / "transfer_rules.json").write_text(json.dumps(transfer), encoding="utf-8")
+
     meta = {
         "body": body,
+        "grade_sigma": GRADE_SIGMA,
         "n_cells": int(n),
         "grid": {
             "ncols": GRID_NCOLS[body],
