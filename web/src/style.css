@@ -1,0 +1,200 @@
+:root {
+  --bg: #0b0e14;
+  --surface: #141923;
+  --surface-2: #1c2330;
+  --border: #2a3242;
+  --text: #e6e9ef;
+  --muted: #8b95a7;
+  --accent: #f4b740;
+  --radius: 8px;
+  --panel-w: 340px;
+  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: var(--bg);
+  color: var(--text);
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 10px 16px;
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+}
+
+.brand {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 650;
+  letter-spacing: 0.01em;
+}
+
+.body-toggle {
+  display: inline-flex;
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+}
+
+.body-toggle button {
+  font: inherit;
+  font-size: 14px;
+  padding: 6px 14px;
+  background: transparent;
+  color: var(--muted);
+  border: 0;
+  cursor: pointer;
+}
+
+.body-toggle button[aria-pressed='true'] {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.chip {
+  margin-left: auto;
+  font-size: 12px;
+  padding: 3px 10px;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  color: var(--muted);
+}
+
+.chip.synthetic {
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+.chip.error {
+  border-color: #e5484d;
+  color: #ff8589;
+}
+
+.layout {
+  flex: 1;
+  min-height: 0;
+  display: grid;
+  grid-template-columns: 1fr var(--panel-w);
+}
+
+.globes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 2px;
+  background: var(--border);
+  min-height: 0;
+}
+
+.globe-pane {
+  position: relative;
+  min-height: 0;
+  background: #000;
+}
+
+.globe {
+  position: absolute;
+  inset: 0;
+}
+
+.globe-label {
+  position: absolute;
+  top: 10px;
+  left: 12px;
+  z-index: 2;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: rgb(11 14 20 / 0.7);
+  pointer-events: none;
+}
+
+.panel {
+  border-left: 1px solid var(--border);
+  background: var(--surface);
+  padding: 16px;
+  overflow-y: auto;
+}
+
+.panel-empty {
+  color: var(--muted);
+  font-size: 14px;
+}
+
+/* Cesium credit text: keep it readable but small. */
+.cesium-widget-credits {
+  font-size: 10px;
+}
+
+/* We use no ion services, so hide the ion logo. Hidden, not removed:
+   Cesium's CreditDisplay still owns the element and removes it on destroy. */
+.cesium-credit-logoContainer {
+  display: none !important;
+}
+
+/* Stack only on narrow portrait screens; a short landscape window keeps the
+   globes side by side so they stay a usable size. */
+@media (max-width: 900px) and (orientation: portrait) {
+  .layout {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto;
+  }
+  .globes {
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr;
+  }
+  .panel {
+    border-left: 0;
+    border-top: 1px solid var(--border);
+    max-height: 40vh;
+  }
+}
+
+.field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-size: 13px;
+  color: var(--muted);
+  margin-bottom: 12px;
+}
+
+.field select {
+  font: inherit;
+  font-size: 14px;
+  color: var(--text);
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 8px 10px;
+}
+
+.legend {
+  margin-top: 8px;
+}
+
+.legend-bar {
+  height: 10px;
+  border-radius: 999px;
+}
+
+.legend-labels {
+  display: flex;
+  justify-content: space-between;
+  font-size: 11px;
+  color: var(--muted);
+  margin-top: 4px;
+}

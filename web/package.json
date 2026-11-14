@@ -1,0 +1,24 @@
+{
+  "name": "analog-atlas-web",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "predev": "node scripts/copy-cesium.mjs",
+    "dev": "vite",
+    "prebuild": "node scripts/copy-cesium.mjs",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "cesium": "1.143.0",
+    "chart.js": "4.6.1"
+  },
+  "devDependencies": {
+    "vite": "7.3.8"
+  },
+  "overrides": {
+    "@cesium/engine": "26.1.0",
+    "@cesium/widgets": "16.1.0"
+  }
+}

@@ -166,7 +166,7 @@ def pack(
     if "country_iso3" in df.columns:
         cats = pd.Categorical(df["country_iso3"].fillna("---"))
         country_codes = [str(c) for c in cats.categories][:255]
-        idx = np.clip(cats.codes, 0, 254).astype(np.uint8)
+        idx = np.clip(cats.codes.astype(np.int16), 0, 254).astype(np.uint8)
         (out_dir / f"{body}_country.bin").write_bytes(idx.tobytes())
 
     # ---- write ------------------------------------------------------------
