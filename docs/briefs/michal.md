@@ -1,7 +1,7 @@
 # Michal — proxy reframe brief
 
-> **Status: pending the sync decision.** If the team votes no, ignore this —
-> your M-tasks are unchanged either way.
+> **Adopted at the Saturday sync.** This is the plan now, not a proposal.
+> Anything in your existing task list that this does not mention is unchanged.
 
 **Read this first: your priority does not change.** You owe 12 more targets by
 22:00, Artemis regions first. Grades are an enhancement on top. If grading ever
@@ -69,14 +69,23 @@ You are already writing per-value citations with DOIs, which is the best
 sourcing on the team. Keep doing exactly that; the grade is a summary of what
 the citation already says, not extra research.
 
-## Unchanged, and still the priority
+## Where you actually are (targets.json v2, merged)
 
-- M4/M5: the **9 Artemis regions + Shackleton**, with Sofia on the terrain
-  hand-off. These are the "permanent Moon base locations" in the challenge
-  title and we have none of them.
-- Jezero still needs `tmin_k`/`tmax_k`; Apollo 17 still needs `albedo`.
-- The `mars_jezero_delta` second target at ~5 km radius, if you agree.
-- M7 global grids, M8 illumination, M9 deep dives with Sofia, M11 README.
+Done: Shackleton, 5 Artemis regions, the Jezero delta split, plus the original
+three. That is the hard part of M4/M5.
+
+Still open, in priority order:
+1. **The remaining 4 Artemis regions** - the DoD is all nine.
+2. Grades on everything you have shipped (see above, ~10 min per target).
+3. Jezero `tmin_k`/`tmax_k`; Apollo 17 `albedo` (LROC WAC 643 nm).
+4. M7 global grids, M8 illumination from PGDA, M9 deep dives with Sofia,
+   M11 README.
+
+One physics note now that the transfer rules exist: `shadow_frac_lowsun` for
+lunar targets must come from the **horizon-based PGDA illumination maps**, not
+from the latitude-only analytic function. At Shackleton the crater rim, not the
+latitude, decides what is lit. The transfer rule says so on the card, so the
+data should match the claim.
 
 ## Definition of done
 

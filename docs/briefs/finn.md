@@ -1,7 +1,7 @@
 # Finn — proxy reframe brief
 
-> **Status: pending the sync decision.** If the team votes no, build F11 as
-> originally specced and ignore this.
+> **Adopted at the Saturday sync.** This is the plan now, not a proposal.
+> Anything in your existing task list that this does not mention is unchanged.
 
 **This is free if decided before you start F11 at 09:15 Sunday, and expensive
 after.** That is the only reason it is being discussed tonight.

@@ -1,7 +1,7 @@
 # Julia — proxy reframe brief
 
-> **Status: pending the sync decision.** If the team votes no, ignore this and
-> keep your existing J-tasks as they are.
+> **Adopted at the Saturday sync.** This is the plan now, not a proposal.
+> Anything in your existing task list that this does not mention is unchanged.
 
 You get the biggest shift, and your night **reorders**. Two people — Finn and
 Eduard — block on one file you write. It moves ahead of your UI copy.

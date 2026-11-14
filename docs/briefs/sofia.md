@@ -1,7 +1,7 @@
 # Sofia — proxy reframe brief
 
-> **Status: pending the sync decision.** If the team votes no, your S-tasks are
-> unchanged — and most of them are unchanged either way.
+> **Adopted at the Saturday sync.** This is the plan now, not a proposal.
+> Anything in your existing task list that this does not mention is unchanged.
 
 Your workload barely moves. What changes is where two things you were already
 going to write end up living, and they end up somewhere more useful.

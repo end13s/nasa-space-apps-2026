@@ -1,7 +1,7 @@
 # Eduard — proxy reframe brief
 
-> **Status: pending the sync decision.** Everything below assumes the team votes
-> yes. If it votes no, nothing here happens and the existing E-tasks stand.
+> **Adopted at the Saturday sync.** This is the plan now, not a proposal.
+> Anything in your existing task list that this does not mention is unchanged.
 
 You are the gate. Julia, Michal and Finn all write against a schema that does
 not exist yet, so **your 45 minutes come before their three hours.** Publish the

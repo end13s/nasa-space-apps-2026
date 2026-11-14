@@ -1,8 +1,7 @@
 # Clara — proxy reframe brief
 
-> **Status: pending the sync decision.** Either way, almost nothing changes for
-> you — this brief exists so you are not surprised by new vocabulary at the
-> sync.
+> **Adopted at the Saturday sync.** This is the plan now, not a proposal.
+> Anything in your existing task list that this does not mention is unchanged.
 
 **No new exports. No new features. No code changes.** Your critical path is
 exactly what it was: launch the exports by 18:00, deliver
