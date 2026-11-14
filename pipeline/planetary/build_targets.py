@@ -111,10 +111,58 @@ ZERO_BY_DEFINITION = {"precip_mm": 0.0, "ndvi_max": 0.0}
 #       "sd":       {"albedo": <uncertainty>},
 #       "sources":  ["<product and citation>"],
 #   },
+#
+# v1 values below come from published rover / orbital results for these exact
+# sites (sources listed per target). They are site-level estimates, not yet
+# computed over the 30 km window from the global products - replace them with
+# product values (TES/THEMIS, MCD, Diviner, LROC, USGS maps) once those reads
+# are in place. Still missing on purpose (no reliable number yet):
+#   mars_jezero    tmin_k, tmax_k  -> Mars Climate Database at 18.4N 77.5E
+#   moon_apollo17  albedo          -> LROC WAC 643 nm normalized reflectance
 OTHER: dict[str, dict] = {
-    "mars_jezero": {"features": {}, "sd": {}, "sources": []},
-    "mars_gale": {"features": {}, "sd": {}, "sources": []},
-    "moon_apollo17": {"features": {}, "sd": {}, "sources": []},
+    "mars_jezero": {
+        "features": {"ti_class": 2, "albedo": 0.16, "litho_class": 1, "ice_idx": 0.0},
+        "sd": {"ti_class": 0.5, "albedo": 0.03, "ice_idx": 0.05},
+        "sources": [
+            "ti_class: THEMIS TI ~200-400 around the rover traverse (Vicente-Retortillo et al., EPSC2026-1140); "
+            "MEDA TI 180-605 (Martinez et al. 2023, JGR Planets, doi:10.1029/2022JE007537); "
+            "Mars bins 100/250/600/1200 -> class 2",
+            "albedo: OMEGA regional mean ~0.16, MEDA noon albedo 0.10-0.23 (Vicente-Retortillo et al., EPSC2026-1140)",
+            "litho_class: crater floor is igneous - Seitah olivine cumulate, Maaz lava flows (Farley et al. 2022, "
+            "Science, doi:10.1126/science.abo2196); the delta in the west of the window is sedimentary (class 3) "
+            "- Sofia to confirm",
+            "ice_idx: 18N is far equatorward of the near-surface ice stability zone (~50 deg; Morgan et al. 2021, "
+            "Nature Astronomy, doi:10.1038/s41550-020-01290-z)",
+        ],
+    },
+    "mars_gale": {
+        "features": {"ti_class": 2, "tmin_k": 175.0, "tmax_k": 285.0, "albedo": 0.20,
+                     "litho_class": 3, "ice_idx": 0.0},
+        "sd": {"ti_class": 0.5, "tmin_k": 8.0, "tmax_k": 8.0, "albedo": 0.05, "ice_idx": 0.05},
+        "sources": [
+            "ti_class: THEMIS TI 250-410 over most of the landing region, layered units 400-500 "
+            "(Fergason et al. 2012, Space Sci Rev, doi:10.1007/s11214-012-9891-3) -> class 2",
+            "tmin_k / tmax_k: REMS ground temperature, daily max ~250-290 K and daily min ~170-210 K over the year "
+            "(Gomez-Elvira et al., Granada 2017 workshop) - measured on the crater floor; Mount Sharp is a bit colder",
+            "albedo: ~0.20 average for the Gale region, range 0.1-0.3 (used in REMS/Navcam radiative studies)",
+            "litho_class: Aeolis Mons (Mount Sharp) is a thick stack of sedimentary rocks (Curiosity results) -> class 3",
+            "ice_idx: 5S is far equatorward of the near-surface ice stability zone (Morgan et al. 2021)",
+        ],
+    },
+    "moon_apollo17": {
+        "features": {"ti_class": 1, "tmin_k": 95.0, "tmax_k": 385.0, "litho_class": 1, "ice_idx": 0.0},
+        "sd": {"ti_class": 0.5, "tmin_k": 5.0, "tmax_k": 10.0, "ice_idx": 0.02},
+        "sources": [
+            "ti_class: regolith-covered valley floor (old mare regolith ~14 m thick; Lucchitta 1992, "
+            "LPI Workshop on Geology of the Apollo 17 Landing Site) -> class 1",
+            "tmin_k / tmax_k: Diviner, ~387-397 K at noon and ~95 K before sunrise near the equator "
+            "(Williams et al. 2017, Icarus, doi:10.1016/j.icarus.2016.08.012); 20N noon is a few K lower",
+            "litho_class: basalt-flooded valley floor under a dark pyroclastic mantle (Muehlberger et al. 1973, "
+            "Science, doi:10.1126/science.182.4113.672) -> class 1; the massifs in the window are feldspathic "
+            "breccia (class 2) - check the majority class with the USGS map",
+            "ice_idx: no permanently shadowed regions at 20N (lunar PSRs are polar)",
+        ],
+    },
 }
 
 
