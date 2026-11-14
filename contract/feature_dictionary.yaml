@@ -1,5 +1,12 @@
 # ============================================================================
 # Analog Atlas - FEATURE DICTIONARY (the single source of truth)
+#
+# CHANGELOG
+#   v1.1 - roughness hi raised 80 -> 160 permille. Michal's real Apollo 17
+#          fingerprint measures rough_2km = 89.6, so the v1 ceiling would have
+#          clipped every Earth cell rough enough to match it. Quantization
+#          bounds are applied at PACK time, so this costs a repack, not a
+#          re-export. Announced in #data.
 # ----------------------------------------------------------------------------
 # Owner: Eduard. Frozen v1 at the Saturday 2:30 PM contract meeting.
 # Nothing in this file changes without Eduard's OK in #data, because every
@@ -35,7 +42,7 @@
 #               project page. "-" means the feature does not exist there.
 # ============================================================================
 
-version: 1
+version: 1.1
 frozen_at: "2026-11-14T14:30:00-08:00"
 missing_value: NaN          # in parquet; 255 in the packed .bin
 quantization: uint8         # 0..254 linear between lo and hi, 255 = missing
@@ -98,7 +105,7 @@ features:
     unit: permille
     definition: std(DEM - Gaussian(DEM, 2 km)) / 2 km * 1000
     lo: 0.0
-    hi: 80.0
+    hi: 160.0
     sigma: 0.30
     sigma_mode: rel
     sigma_floor: 2.0
@@ -113,7 +120,7 @@ features:
     unit: permille
     definition: std(DEM - Gaussian(DEM, 10 km)) / 10 km * 1000
     lo: 0.0
-    hi: 80.0
+    hi: 160.0
     sigma: 0.30
     sigma_mode: rel
     sigma_floor: 2.0
@@ -128,7 +135,7 @@ features:
     unit: permille
     definition: Earth roughness at the Moon-gravity-scaled baseline 330 m (2 km * g_moon/g_earth)
     lo: 0.0
-    hi: 80.0
+    hi: 160.0
     sigma: 0.30
     sigma_mode: rel
     sigma_floor: 2.0
@@ -143,7 +150,7 @@ features:
     unit: permille
     definition: Earth roughness at the Moon-gravity-scaled baseline 1.65 km
     lo: 0.0
-    hi: 80.0
+    hi: 160.0
     sigma: 0.30
     sigma_mode: rel
     sigma_floor: 2.0
@@ -158,7 +165,7 @@ features:
     unit: permille
     definition: Earth roughness at the Mars-gravity-scaled baseline 760 m
     lo: 0.0
-    hi: 80.0
+    hi: 160.0
     sigma: 0.30
     sigma_mode: rel
     sigma_floor: 2.0
@@ -173,7 +180,7 @@ features:
     unit: permille
     definition: Earth roughness at the Mars-gravity-scaled baseline 3.8 km
     lo: 0.0
-    hi: 80.0
+    hi: 160.0
     sigma: 0.30
     sigma_mode: rel
     sigma_floor: 2.0

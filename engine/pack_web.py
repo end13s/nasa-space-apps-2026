@@ -179,11 +179,13 @@ def pack(
     if "qa_flags" in df.columns:
         (out_dir / f"{body}_qa.bin").write_bytes(df["qa_flags"].to_numpy(dtype=np.uint16).tobytes())
 
-    synthetic = False
+    synthetic_grid = Path(str(grid_path) + ".SYNTHETIC").exists()
+    synthetic_targets = False
     if targets_path and Path(targets_path).exists():
         targets = json.loads(Path(targets_path).read_text(encoding="utf-8"))
-        synthetic = any(t.get("synthetic") for t in targets)
+        synthetic_targets = any(t.get("synthetic") for t in targets)
         (out_dir / "targets.json").write_text(json.dumps(targets), encoding="utf-8")
+    synthetic = synthetic_grid or synthetic_targets
 
     for name, src in (extra_json or {}).items():
         if Path(src).exists():
@@ -205,6 +207,8 @@ def pack(
         "eps": DEFAULT_EPS,
         "contract_version": 1,
         "synthetic": synthetic,
+        "synthetic_grid": synthetic_grid,
+        "synthetic_targets": synthetic_targets,
         "dimensions": contract.dimensions,
         "features": [
             {
@@ -242,7 +246,13 @@ def pack(
     if total > 20e6:
         print("  WARNING: over the 20 MB budget - drop stretch features or coarsen the grid")
     if synthetic:
-        print("  NOTE: this bundle is built from SYNTHETIC data (fake_data.py)")
+        what = []
+        if synthetic_grid:
+            what.append("the Earth grid")
+        if synthetic_targets:
+            what.append("at least one target")
+        print(f"  NOTE: SYNTHETIC data in this bundle ({' and '.join(what)}) - "
+              f"the About modal must say so")
     return meta
 
 

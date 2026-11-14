@@ -334,6 +334,12 @@ def main() -> None:
     df = build_grid(args.seed)
     grid_path = out / "earth_grid.parquet"
     df.to_parquet(grid_path, index=False)
+    # Marker so pack_web.py can stamp the bundle: a fake grid must never be
+    # packable as a real one, even when the targets are real.
+    (out / "earth_grid.parquet.SYNTHETIC").write_text(
+        "Written by engine/fake_data.py. Delete this file only if the parquet "
+        "beside it is real data.
+", encoding="utf-8")
 
     targets = build_targets(args.seed)
     targets_path = out / "targets.json"
