@@ -47,12 +47,31 @@ def best_score_per_cell(grid, targets, contract, body, weights=None, gravity=Fal
     return best
 
 
-def percentile_ranks(scores: np.ndarray, idx: np.ndarray) -> np.ndarray:
-    """Percentile rank (0-100) of the given cells among all scored land cells."""
+def percentile_ranks(
+    scores: np.ndarray, idx: np.ndarray, weights: np.ndarray | None = None
+) -> np.ndarray:
+    """Percentile rank (0-100) of the given cells among all scored land cells.
+
+    **Area-weighted.** On a 0.25 degree equal-angle grid a cell covers
+    cos(lat) times the area of an equatorial one, so counting cells equally
+    over-counts high latitudes badly: in our grid 53 % of land *cells* sit
+    above 60 degrees but only 24 % of land *area* does. An unweighted
+    percentile therefore flatters any mid-latitude site and penalises tropical
+    ones, which would quietly distort every validation number. Pass
+    weights=cos(radians(lat)).
+    """
+    scores = np.asarray(scores, dtype=np.float64)
     valid = np.isfinite(scores)
-    ranked = np.argsort(np.argsort(scores[valid]))
+    w = np.ones_like(scores) if weights is None else np.asarray(weights, dtype=np.float64)
+    wv = w[valid]
+    order = np.argsort(scores[valid])
+    # midpoint of each cell's weight band, as a fraction of total weight
+    cum = np.cumsum(wv[order]) - 0.5 * wv[order]
+    pct_sorted = 100.0 * cum / max(wv.sum(), 1e-12)
+    back = np.empty(valid.sum(), dtype=np.float64)
+    back[order] = pct_sorted
     pct = np.full(len(scores), np.nan)
-    pct[valid] = 100.0 * ranked / max(valid.sum() - 1, 1)
+    pct[valid] = back
     return pct[idx]
 
 
@@ -70,13 +89,18 @@ def evaluate(grid, lat, lon, targets, analogs, contract, body, gravity=False, dr
     if len(sites) == 0:
         return None
     scores = best_score_per_cell(grid, targets, contract, body, gravity=gravity, drop_dim=drop_dim)
+    area_w = np.cos(np.radians(lat))
     idx = np.array(nearest_cells(lat, lon, sites))
-    pct = percentile_ranks(scores, idx)
+    pct = percentile_ranks(scores, idx, area_w)
 
+    # Null baseline drawn proportional to area, not to cell count, for the
+    # same reason the percentiles are area-weighted. Its median should land
+    # near 50 - if it does not, something upstream is wrong.
     rng = np.random.default_rng(42)
     valid = np.flatnonzero(np.isfinite(scores))
-    null_idx = rng.choice(valid, size=min(NULL_SAMPLES, valid.size), replace=False)
-    null_pct = percentile_ranks(scores, null_idx)
+    pw = area_w[valid] / area_w[valid].sum()
+    null_idx = rng.choice(valid, size=min(NULL_SAMPLES, valid.size), replace=False, p=pw)
+    null_pct = percentile_ranks(scores, null_idx, area_w)
 
     return {
         "body": body,
