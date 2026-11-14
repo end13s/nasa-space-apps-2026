@@ -36,3 +36,6 @@ web/.vite/
 Thumbs.db
 .vscode/
 .idea/
+
+# Cesium runtime assets, copied from node_modules by web/scripts/copy-cesium.mjs
+web/public/cesium/

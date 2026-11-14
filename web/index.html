@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Analog Atlas</title>
+    <meta name="description" content="Find places on Earth that behave like a site on the Moon or Mars, and see where the analogy breaks." />
+    <script>
+      // Must be set before Cesium loads. Relative so it works under
+      // GitHub Pages' /<repo>/ path as well as on localhost.
+      window.CESIUM_BASE_URL = new URL('cesium/', document.baseURI).href;
+    </script>
+  </head>
+  <body>
+    <header class="topbar">
+      <h1 class="brand">Analog Atlas</h1>
+      <div class="body-toggle" role="group" aria-label="Target body">
+        <button type="button" data-body="moon" aria-pressed="true">Moon</button>
+        <button type="button" data-body="mars" aria-pressed="false">Mars</button>
+      </div>
+      <span id="data-status" class="chip" hidden></span>
+    </header>
+
+    <main class="layout">
+      <section class="globes">
+        <div class="globe-pane">
+          <span class="globe-label" id="target-label">Moon</span>
+          <div id="target-globe" class="globe"></div>
+        </div>
+        <div class="globe-pane">
+          <span class="globe-label">Earth</span>
+          <div id="earth-globe" class="globe"></div>
+        </div>
+      </section>
+      <aside id="panel" class="panel" aria-label="Controls">
+        <p class="panel-empty">Pick a target to light up Earth.</p>
+      </aside>
+    </main>
+
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
