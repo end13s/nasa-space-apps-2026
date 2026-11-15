@@ -207,6 +207,24 @@ export function createHeatmap(viewer, meta) {
     });
   }
 
+  // Zoom fade. A cell is 0.25 deg (~28 km): that is the real size of one
+  // measurement, so cells cannot get smaller as you zoom in - and close up,
+  // opaque cells hide the satellite imagery. The layer therefore fades with
+  // camera height: full strength from orbit, FADE_MIN close to the ground.
+  // Edges stay hard (NEAREST filtering): blurring would imply detail we do
+  // not have.
+  const FADE_FAR_M = 4.0e6;
+  const FADE_NEAR_M = 3.0e5;
+  const FADE_MIN = 0.3;
+  function zoomFade() {
+    const h = scene.camera.positionCartographic?.height;
+    if (!Number.isFinite(h) || h >= FADE_FAR_M) return 1;
+    if (h <= FADE_NEAR_M) return FADE_MIN;
+    const t = Math.log(h / FADE_NEAR_M) / Math.log(FADE_FAR_M / FADE_NEAR_M);
+    return FADE_MIN + (1 - FADE_MIN) * t;
+  }
+  const effectiveAlpha = () => opacity * zoomFade();
+
   function dropLayer(layer) {
     if (layer && layers.contains(layer)) layers.remove(layer, true);
   }
@@ -218,6 +236,15 @@ export function createHeatmap(viewer, meta) {
   }
 
   function onPostRender() {
+    // Follow the camera: re-apply the zoom fade when it has moved enough to
+    // matter. No change, no extra render - so this never loops.
+    if (visible) {
+      const a = effectiveAlpha();
+      if (Math.abs(visible.alpha - a) > 0.01) {
+        visible.alpha = a;
+        scene.requestRender();
+      }
+    }
     // The frame after the swap is the first one that shows the new heatmap.
     if (shownFrame) {
       finishPending(shownFrame);
@@ -231,7 +258,7 @@ export function createHeatmap(viewer, meta) {
     if (!ready && elapsed > SWAP_TIMEOUT_MS) ready = true;
 
     if (ready) {
-      pending.layer.alpha = opacity;
+      pending.layer.alpha = effectiveAlpha();
       dropLayer(visible);
       visible = pending.layer;
       shownFrame = pending;
@@ -328,7 +355,7 @@ export function createHeatmap(viewer, meta) {
     /** Layer-wide opacity multiplier, 0..1, on top of the per-pixel ramp. */
     setOpacity(a) {
       opacity = Math.min(1, Math.max(0, Number(a) || 0));
-      if (visible) visible.alpha = opacity;
+      if (visible) visible.alpha = effectiveAlpha();
       scene.requestRender();
     },
 

@@ -52,7 +52,7 @@ dimensions:
   H: {name: Thermal,           default_weight: 1}
   M: {name: Surface material,  default_weight: 1}
   W: {name: Water / ice,       default_weight: 1}
-  B: {name: Biology,           default_weight: 1}
+  B: {name: Vegetation,        default_weight: 1}   # NDVI is cover, not habitability
   C: {name: Construction,      default_weight: 1}
   A: {name: Atmosphere / dust, default_weight: 0, tier: stretch}
   I: {name: Illumination,      default_weight: 0, tier: stretch}
@@ -343,7 +343,7 @@ features:
     moon: 0 by definition
     mars: 0 by definition
 
-  # ---------------------------------------------------------------- Biology
+  # ------------------------------------------------------------- Vegetation
   - id: ndvi_max
     dim: B
     tier: mvp
