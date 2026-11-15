@@ -1,54 +1,42 @@
 {
-  "_comment": "Mission profiles - weights per dimension, used by the UI weight presets. Owner: Julia (task J5). This is Eduard's placeholder draft from Section 7.6 so the dropdown has something to show; Julia replaces the purposes and tunes the weights. Dimensions: T terrain, H thermal, M material, W water/ice, B biology, C construction, A atmosphere/dust, I illumination.",
+  "_comment": "Mission presets for the UI. Weights map to Terrain (T), Thermal (H), Material (M), Water and ice (W), Biology (B), Construction (C), Atmosphere and dust (A), and Illumination (I).",
   "version": 2,
   "profiles": [
     {
       "id": "balanced",
       "name": "Balanced (default)",
-      "purpose": "Every physical dimension counts equally - the neutral view.",
-      "weights": {"T": 1, "H": 1, "M": 1, "W": 1, "B": 1, "C": 1, "A": 0, "I": 0}
+      "purpose": "Compare sites across the core physical dimensions without prioritizing one mission goal.",
+      "weights": {"T": 1, "H": 1, "M": 1, "W": 1, "B": 1, "C": 1, "A": 1, "I": 1}
     },
     {
       "id": "lunar_south_pole_ops",
       "name": "Lunar south-pole operations",
-      "purpose": "Rehearse surface operations under grazing light on rough polar terrain.",
-      "weights": {"T": 3, "I": 3, "W": 2, "H": 1, "M": 1, "B": 1, "C": 1, "A": 0}
+      "purpose": "Assess terrain, low-angle light and ice-related conditions for polar surface operations.",
+      "weights": {"T": 3, "H": 1, "M": 1, "W": 2, "B": 0, "C": 1, "A": 0, "I": 3}
     },
     {
       "id": "base_construction",
-      "name": "Base construction and site prep",
-      "purpose": "Find ground you could actually build a permanent base on: flat, firm, excavatable.",
-      "weights": {"C": 3, "T": 2, "H": 2, "M": 1, "A": 1, "W": 1, "B": 0, "I": 0}
+      "name": "Base construction and site preparation",
+      "purpose": "Find places to test grading, foundations, excavation and construction equipment.",
+      "weights": {"T": 2, "H": 1, "M": 1, "W": 1, "B": 0, "C": 3, "A": 1, "I": 0}
     },
     {
       "id": "ice_prospecting",
-      "name": "Ice prospecting (ISRU)",
-      "purpose": "Find places to test instruments that hunt for buried water ice.",
-      "weights": {"W": 3, "H": 2, "T": 1, "M": 1, "B": 1, "C": 0, "A": 0, "I": 0}
+      "name": "Water-ice prospecting",
+      "purpose": "Compare terrain and thermal conditions relevant to finding and measuring buried ice.",
+      "weights": {"T": 1, "H": 2, "M": 1, "W": 3, "B": 0, "C": 0, "A": 0, "I": 1}
     },
     {
       "id": "mars_astrobiology",
-      "name": "Mars astrobiology and sample science",
-      "purpose": "Match the rocks and the water history that biosignature searches depend on.",
-      "weights": {"M": 3, "W": 2, "B": 2, "T": 1, "H": 1, "C": 0, "A": 0, "I": 0}
+      "name": "Mars sample science and astrobiology",
+      "purpose": "Compare rocks, water history and biological context for sample collection and biosignature work.",
+      "weights": {"T": 1, "H": 1, "M": 3, "W": 2, "B": 2, "C": 0, "A": 0, "I": 0}
     },
     {
       "id": "rover_mobility",
       "name": "Rover mobility and navigation",
-      "purpose": "Match what a rover drives on: slope, roughness and how loose the ground is.",
-      "weights": {"T": 3, "H": 3, "M": 1, "C": 1, "W": 1, "B": 0, "A": 0, "I": 1}
-    },
-    {
-      "id": "lava_tube_ops",
-      "name": "Lava-tube and cave operations",
-      "purpose": "Match young basaltic volcanic terrain where collapsed tubes are reachable.",
-      "weights": {"M": 3, "T": 2, "C": 1, "H": 1, "W": 1, "B": 0, "A": 0, "I": 0}
-    },
-    {
-      "id": "dust_aeolian",
-      "name": "Dust and aeolian processes",
-      "purpose": "Match dusty, windy, fine-grained surfaces for dust-mitigation testing.",
-      "weights": {"A": 3, "H": 2, "T": 1, "M": 1, "W": 1, "C": 1, "B": 0, "I": 0}
+      "purpose": "Find terrain and surface conditions relevant to driving, traction and route planning.",
+      "weights": {"T": 3, "H": 2, "M": 1, "W": 1, "B": 0, "C": 1, "A": 0, "I": 1}
     }
   ]
 }
