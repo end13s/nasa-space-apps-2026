@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Analog Atlas">
+  <!-- Analog Atlas mark: a target world (Mars orange) compared with Earth (Earth blue).
+       Colours are the HDS data tokens from web/src/tokens.css; square corners per HDS. -->
+  <rect width="64" height="64" fill="#17171b"/>
+  <line x1="24.5" y1="24.5" x2="31" y2="31" stroke="#ffffff" stroke-width="2.5" stroke-linecap="round"/>
+  <circle cx="17" cy="17" r="9" fill="#f29d49"/>
+  <circle cx="43" cy="43" r="17" fill="#256ee4"/>
+</svg>
