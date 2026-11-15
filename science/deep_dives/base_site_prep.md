@@ -4,44 +4,44 @@
 
 **Question.** Where on Earth can construction robots rehearse site preparation on ground that is as flat, firm and dry as the Haworth candidate region?
 
-**Candidate.** 81.125°, 57.375° — [open in Worldview](https://worldview.earthdata.nasa.gov/?v=56.38,80.12,58.38,82.12). 829 km from the nearest documented analog site, so this is not a place the field already uses.
+**Candidate.** -77.375°, 166.875° — [open in Worldview](https://worldview.earthdata.nasa.gov/?v=165.88,-78.38,167.88,-76.38). 143 km from the nearest documented analog site, so this is not a place the field already uses.
 
-> ⚠ **Ice status unresolved.** This cell is above 60° latitude and our ice layer reads it as ice-free, but that layer (ETOPO surface minus bedrock) only resolves the Antarctic and Greenland ice sheets. Small ice caps are invisible to it. **Check imagery before showing this card** - if the site is glaciated, use the next candidate.
-
-**Proxy strength for this experiment:** 0.496 (geometric mean over the experiment's weighted dimensions; a secondary figure — the columns below are the claim).
+**Proxy strength for this experiment:** 0.514 (geometric mean over the experiment's weighted dimensions; a secondary figure — the columns below are the claim).
 
 ## Target vs candidate
 
 | feature | target | candidate | similarity | grade |
 |---|---:|---:|---:|---|
-| relief_km (km) | 0.00 | 0.37 | 0.823 | B |
-| slope_med_deg (deg) | 7.77 | 4.93 | 0.820 | B |
-| slope_p90_deg (deg) | 7.77 | 9.64 | 0.969 | B |
-| rough_10km (permille) | 41.34 | 13.19 | 0.318 | B |
-| tmin_k (K) | 52.36 | 249.44 | 0.000 | B |
-| tmax_k (K) | 217.01 | 273.20 | 0.325 | B |
-| diurnal_amp_k (K) | 164.65 | 4.01 | 0.000 | B |
-| ice_idx (0-1) | 0.02 | 0.00 | 1.000 | C |
-| precip_mm (mm/yr) | 0.00 | 223.89 | 0.000 | DEF |
-| flat_frac (0-1) | 0.21 | 0.18 | 0.988 | B |
+| relief_km (km) | 0.00 | 1.14 | 0.166 | B |
+| slope_med_deg (deg) | 7.77 | 8.95 | 0.966 | B |
+| slope_p90_deg (deg) | 7.77 | 13.55 | 0.743 | B |
+| rough_10km (permille) | 41.34 | 33.17 | 0.908 | B |
+| tmin_k (K) | 52.36 | 237.03 | 0.000 | B |
+| tmax_k (K) | 217.01 | 264.65 | 0.446 | B |
+| diurnal_amp_k (K) | 164.65 | 6.81 | 0.000 | B |
+| ice_idx (0-1) | 0.02 | 0.05 | 0.998 | C |
+| precip_mm (mm/yr) | 0.00 | 123.11 | 0.000 | DEF |
+| flat_frac (0-1) | 0.21 | 0.09 | 0.858 | B |
 | steep_frac (0-1) | 0.00 | 0.00 | 1.000 | B |
+| lowsun_frac (0-1) | 1.00 | 0.46 | 0.002 | A |
 
 ## Supports
 
-- **Elevation range** — similarity 0.82.
+_None._
 
 ## Conditional — usable with the stated correction
 
-- **ice_idx** — similarity 1.00. For polar targets this is the permanently-shadowed fraction of the window, not ice content. Earth ice sits near 273 K; lunar cold-trap ice at 25-40 K in vacuum.
 - **Steep-ground fraction** — similarity 1.00. Match thresholds and resolution. Assess stability using lunar gravity, cohesion, friction, geometry, and loading.
-- **Flat-ground fraction** — similarity 0.99. Match slope thresholds and map resolution. Assess bearing capacity and grading separately under target conditions.
-- **Steep slope (90th percentile)** — similarity 0.97. Match resolution and slope definitions, then assess lunar stability and mobility using material properties and loading.
-- **Median slope** — similarity 0.82. Match map resolution and evaluate stability using lunar gravity, cohesion, friction, and loading.
+- **ice_idx** — similarity 1.00. For polar targets this is the permanently-shadowed fraction of the window, not ice content. Earth ice sits near 273 K; lunar cold-trap ice at 25-40 K in vacuum.
+- **Median slope** — similarity 0.97. Match map resolution and evaluate stability using lunar gravity, cohesion, friction, and loading.
+- **Roughness at 10 km** — similarity 0.91. Match resolution, filtering, and normalization at 10 km. Display any gravity-scaled comparison separately and document its assumptions.
+- **Flat-ground fraction** — similarity 0.86. Match slope thresholds and map resolution. Assess bearing capacity and grading separately under target conditions.
+- **Steep slope (90th percentile)** — similarity 0.74. Match resolution and slope definitions, then assess lunar stability and mobility using material properties and loading.
 
 ## Cannot test
 
 - **Minimum surface temperature** — similarity 0.00. Physics does not carry over to this body.
-- **Maximum surface temperature** — similarity 0.33. Physics does not carry over to this body.
+- **Maximum surface temperature** — similarity 0.45. Physics does not carry over to this body.
 - **Day-night temperature range** — similarity 0.00. Physics does not carry over to this body.
 - **Target gravity**. Lunar gravity is approximately 1.62 m/s2. Earth field tests require separate scaling or reduced-gravity validation.
 - **Target radiation environment**. Earth's shielding prevents direct reproduction of lunar surface radiation. Radiation effects require dedicated measurements, modeling, or irradiation tests.
@@ -55,4 +55,4 @@
 - [ ] Note access: road, permits, protected-area status
 - [ ] One sentence on the field campaign this site would enable
 
-*Generated by `engine/deep_dives.py` from `earth_fallback.parquet` and `targets_1855.json`.*
+*Generated by `engine/deep_dives.py` from `earth_fallback.parquet` and `targets.json`.*

@@ -65,6 +65,7 @@ import numpy as np
 ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(ROOT / "engine"))
 from terrain_features import terrain_features  # noqa: E402  (shared definition)
+from illumination import OBLIQUITY_DEG, lowsun_frac  # noqa: E402  (shared sun geometry)
 
 OUT = ROOT / "contract" / "targets.json"
 DEFAULT_RADIUS_KM = 15
@@ -1026,6 +1027,14 @@ def themis_ti_values(lat: float, lon: float, radius_km: float) -> dict:
     }
 
 
+# Slope / roughness resampling grid (the terrain baseline). It MUST match the
+# Earth grid the targets are compared against: 500 m for the 30 m Copernicus
+# Earth Engine export, ~1855 m for the ETOPO 60 arc-second fallback grid the
+# app currently ships. A mismatch biases every terrain comparison - slope over
+# a longer baseline reads lower. Set with --grid-m.
+GRID_M = 500.0
+
+
 def terrain_with_sd(key: str, lat: float, lon: float, radius_km: float) -> tuple[dict, dict, float]:
     """Terrain features at the target, sd from 4 shifted footprints, and the
     footprint's height range in km (a sanity check on the DEM read)."""
@@ -1040,7 +1049,7 @@ def terrain_with_sd(key: str, lat: float, lon: float, radius_km: float) -> tuple
     for dx, dy in [(0, 0), (shift, 0), (-shift, 0), (0, shift), (0, -shift)]:
         i0 = p - int(round(dy / res))  # row 0 is north
         j0 = p + int(round(dx / res))  # col 0 is west
-        runs.append(terrain_features(big[i0 : i0 + n, j0 : j0 + n], res))
+        runs.append(terrain_features(big[i0 : i0 + n, j0 : j0 + n], res, grid_m=GRID_M))
 
     centre = runs[0]
     sd = {}
@@ -1135,7 +1144,18 @@ def build() -> list[dict]:
                 print(f"  WARNING: THEMIS thermal inertia not used - {e}")
 
         extra = OTHER.get(t["id"], {})
-        parts = (polar, temps, alb, ti, extra)
+        # Fraction of the year the Sun never climbs above 10 deg - the grazing-
+        # light regime that makes the lunar south pole what it is. Pure sun
+        # geometry from latitude and obliquity, computed by the same function
+        # the Earth grid uses. Terrain SHADOWING is a different feature and
+        # needs the horizon-based PGDA maps; it is not produced here.
+        sun = {
+            "features": {"lowsun_frac": lowsun_frac(lat, OBLIQUITY_DEG[body])},
+            "grades": {"lowsun_frac": "A"},
+            "sources": [f"lowsun_frac: analytic sun geometry, obliquity {OBLIQUITY_DEG[body]} deg "
+                        f"(engine/illumination.py) - exact for latitude, ignores local horizon"],
+        }
+        parts = (polar, temps, alb, ti, extra, sun)
         feats.update(ZERO_BY_DEFINITION)
         for part in parts:
             feats.update(part.get("features", {}))
@@ -1174,6 +1194,7 @@ def build() -> list[dict]:
             "lat": lat,
             "lon": lon,
             "radius_km": radius_km,
+            "terrain_grid_m": GRID_M,
             "synthetic": False,
             "features": feats,
             "sd": sd,
@@ -1222,6 +1243,15 @@ def check(targets: list[dict]) -> None:
 
 
 def main() -> None:
+    import argparse
+
+    global GRID_M
+    ap = argparse.ArgumentParser(description="Build contract/targets.json")
+    ap.add_argument("--grid-m", type=float, default=GRID_M,
+                    help="terrain baseline in metres: 500 for the Copernicus export, "
+                         "1855 for the ETOPO fallback Earth grid")
+    GRID_M = ap.parse_args().grid_m
+    print(f"terrain baseline: {GRID_M:.0f} m")
     targets = build()
     check(targets)
     OUT.write_text(json.dumps(targets, indent=2) + "\n", encoding="utf-8")

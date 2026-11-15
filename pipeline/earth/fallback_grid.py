@@ -278,6 +278,15 @@ def main() -> None:
             continue
         df[name] = field[land].astype(np.float32)
 
+    # Illumination: fraction of the year the Sun stays below 10 deg. Same
+    # analytic function the targets use (engine/illumination.py).
+    import sys as _sys
+    _sys.path.insert(0, str(Path(__file__).resolve().parents[2] / "engine"))
+    from illumination import OBLIQUITY_DEG, lowsun_frac
+    lat_rows = 90.0 - (np.arange(NROWS) + 0.5) * RES
+    per_row = np.asarray(lowsun_frac(lat_rows, OBLIQUITY_DEG["earth"]), dtype=np.float32)
+    df["lowsun_frac"] = per_row[(df["cell_id"].to_numpy() // NCOLS)]
+
     # zero by definition on the Moon and Mars, measured as zero here
     qa = np.zeros(len(df), np.uint16)
     if "land_frac" in cols:                      # bit 2 = coastal, under 50 % land
