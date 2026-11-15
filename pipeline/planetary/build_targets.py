@@ -28,8 +28,10 @@ What it does, per target:
   5. South-polar targets also get values from the polar products: ice_idx
      (permanent-shadow share, PGDA PSR map), litho_class and ti_class
      (regional calls), and tmin_k / tmax_k / diurnal_amp_k (Diviner). Every
-     lunar target gets albedo from LOLA (1064 nm normal albedo). Numbers that
-     are context only - shown, not scored - go in a separate "context" block.
+     lunar target gets albedo from LOLA (1064 nm normal albedo), every Mars
+     target from TES, and the two Jezero targets get ti_class from the THEMIS
+     Jezero mosaic. Numbers that are context only - shown, not scored - go in
+     a separate "context" block.
   6. Adds the "0 by definition" features and any non-terrain values filled in
      OTHER below, gives every value an evidence grade (see GRADES), then
      writes contract/targets.json and checks it against the contract.
@@ -43,13 +45,15 @@ returns a number even for a 10 km window, so build() drops it explicitly.)
 Targets whose lat/lon is still None are skipped with a message (e.g. a region
 whose official outline we do not have yet).
 
-Downloads: the Diviner temperature table (156 MB) is the only file read whole.
-It is downloaded once into ~/.cache/analog_atlas - outside the repo, so it can
-never be committed - and every later run reuses it.
+Downloads: the Diviner temperature table (156 MB) and the THEMIS Jezero mosaic
+(1.7 MB) are the only files read whole. They are downloaded once into
+~/.cache/analog_atlas - outside the repo, so they can never be committed - and
+every later run reuses them. Everything else is read window by window.
 """
 
 from __future__ import annotations
 
+import hashlib
 import json
 import subprocess
 import sys
@@ -264,29 +268,35 @@ ZERO_GRADE = "DEF"
 #       "sources":  ["<product and citation>"],
 #   },
 #
-# v1 values below come from published rover / orbital results for these exact
-# sites (sources listed per target). They are site-level estimates, not yet
-# computed over the 30 km window from the global products - replace them with
-# product values (TES/THEMIS, MCD, Diviner, LROC, USGS maps) once those reads
-# are in place. Still missing on purpose (no reliable number yet):
-#   mars_jezero    tmin_k, tmax_k  -> Mars Climate Database at 18.4N 77.5E
-# (Apollo 17's albedo now comes from LOLA, like every lunar target - albedo_values.)
+# Values below come from published rover / orbital results for these exact
+# sites (sources listed per target). They are site-level estimates, not
+# computed over the 30 km window from a global product; where a product read
+# exists it is used instead (Mars albedo: TES, Jezero ti_class: THEMIS, every
+# lunar target: LOLA albedo), and the old literature value is kept only as a
+# fallback in FALLBACK below, used when that read fails.
+#
+# Jezero temperatures: MEDA ground temperature, which covers Ls 13-203 only
+# (northern spring to early autumn). Northern winter is missing, so tmin_k is
+# probably a few K too warm; said in the source. The delta gets the same MEDA
+# numbers as an extrapolation (grade C): the rover measured them on the crater
+# floor a few km away, not on the delta front.
+MEDA_TEMPS = ("tmin_k / tmax_k: MEDA ground temperature (TIRS) along Perseverance's traverse, Ls 13-203: "
+              "daily max 273 / 277 / 293 K and min 192 / 191 / 189 K at Ls 25 / 90 / 180 (Munguira et al. "
+              "2023, JGR Planets 128, e2022JE007559, doi:10.1029/2022JE007559) -> warmest 293 K, coldest 189 K. "
+              "Northern winter is not covered, so the coldest-month minimum is probably a little lower")
 OTHER: dict[str, dict] = {
     "mars_jezero": {
-        "features": {"ti_class": 2, "albedo": 0.16, "litho_class": 1, "ice_idx": 0.0},
-        "sd": {"ti_class": 0.5, "albedo": 0.03, "ice_idx": 0.05},
+        "features": {"tmin_k": 189.0, "tmax_k": 293.0, "litho_class": 1, "ice_idx": 0.0},
+        "sd": {"tmin_k": 8.0, "tmax_k": 8.0, "ice_idx": 0.05},
         "grades": {
-            "ti_class": "B",     # THEMIS orbital; MEDA ground truth covers only the rover traverse,
-            "albedo": "B",       #   a tiny part of the 30 km window (Eduard's audit, Sat 15:13)
+            "tmin_k": "B",       # measured on the ground, but only along the traverse and only Ls 13-203
+            "tmax_k": "B",       #   (same reasoning as Eduard's Jezero audit, Sat 15:13)
             "litho_class": "B",  # Perseverance analysed the floor rocks along its traverse only;
                                  #   over the 30 km window the class rests on orbital mapping
             "ice_idx": "C",      # inferred from the ice-stability latitude, not measured here
         },
         "sources": [
-            "ti_class: THEMIS TI ~200-400 around the rover traverse (Vicente-Retortillo et al., EPSC2026-1140); "
-            "MEDA TI 180-605 (Martinez et al. 2023, JGR Planets, doi:10.1029/2022JE007537); "
-            "Mars bins 100/250/600/1200 -> class 2",
-            "albedo: OMEGA regional mean ~0.16, MEDA noon albedo 0.10-0.23 (Vicente-Retortillo et al., EPSC2026-1140)",
+            MEDA_TEMPS,
             "litho_class: crater floor is igneous - Seitah olivine cumulate, Maaz lava flows (Farley et al. 2022, "
             "Science, doi:10.1126/science.abo2196); the delta in the west of the window is sedimentary (class 3) "
             "- Sofia to confirm",
@@ -295,14 +305,13 @@ OTHER: dict[str, dict] = {
         ],
     },
     "mars_gale": {
-        "features": {"ti_class": 2, "tmin_k": 175.0, "tmax_k": 285.0, "albedo": 0.20,
+        "features": {"ti_class": 2, "tmin_k": 175.0, "tmax_k": 285.0,
                      "litho_class": 3, "ice_idx": 0.0},
-        "sd": {"ti_class": 0.5, "tmin_k": 8.0, "tmax_k": 8.0, "albedo": 0.05, "ice_idx": 0.05},
+        "sd": {"ti_class": 0.5, "tmin_k": 8.0, "tmax_k": 8.0, "ice_idx": 0.05},
         "grades": {
             "ti_class": "B",     # THEMIS, orbital - the cited source has no ground truth
             "tmin_k": "A",       # REMS, measured on the surface
             "tmax_k": "A",
-            "albedo": "C",       # regional average used as a model input, not measured in our window
             "litho_class": "A",  # Curiosity ground truth
             "ice_idx": "C",      # inferred from the ice-stability latitude
         },
@@ -311,7 +320,6 @@ OTHER: dict[str, dict] = {
             "(Fergason et al. 2012, Space Sci Rev, doi:10.1007/s11214-012-9891-3) -> class 2",
             "tmin_k / tmax_k: REMS ground temperature, daily max ~250-290 K and daily min ~170-210 K over the year "
             "(Gomez-Elvira et al., Granada 2017 workshop) - measured on the crater floor; Mount Sharp is a bit colder",
-            "albedo: ~0.20 average for the Gale region, range 0.1-0.3 (used in REMS/Navcam radiative studies)",
             "litho_class: Aeolis Mons (Mount Sharp) is a thick stack of sedimentary rocks (Curiosity results) -> class 3",
             "ice_idx: 5S is far equatorward of the near-surface ice stability zone (Morgan et al. 2021)",
         ],
@@ -338,13 +346,16 @@ OTHER: dict[str, dict] = {
         ],
     },
     "mars_jezero_delta": {
-        "features": {"litho_class": 3, "ice_idx": 0.0},
-        "sd": {"ice_idx": 0.05},
+        "features": {"tmin_k": 189.0, "tmax_k": 293.0, "litho_class": 3, "ice_idx": 0.0},
+        "sd": {"tmin_k": 10.0, "tmax_k": 10.0, "ice_idx": 0.05},
         "grades": {
+            "tmin_k": "C",       # extrapolated: measured on the crater floor, not on the delta front
+            "tmax_k": "C",
             "litho_class": "A",  # Perseverance Delta Front campaign ground truth
             "ice_idx": "C",      # inferred from the ice-stability latitude
         },
         "sources": [
+            MEDA_TEMPS + " - extrapolated to the delta front, a few km from the crater-floor traverse",
             "litho_class: deltaic sedimentary rocks of the western fan front, deposited in a lake "
             "(Perseverance Delta Front campaign; Sun & Stack 2020, USGS SIM 3464, unit NHjf2) -> class 3",
             "ice_idx: 18N is far equatorward of the near-surface ice stability zone (Morgan et al. 2021)",
@@ -353,6 +364,32 @@ OTHER: dict[str, dict] = {
     # Shackleton and the Artemis regions get their non-terrain values from the
     # polar products below (polar_values, diviner_values), automatically for
     # every target south of 80S.
+}
+
+# Literature values that a product read now replaces. Each is used only if
+# that read fails, so a server being down never empties an MVP feature.
+# Sources are per feature, so only the line of a value actually used is kept.
+FALLBACK: dict[str, dict] = {
+    "mars_jezero": {
+        "features": {"ti_class": 2, "albedo": 0.16},
+        "sd": {"ti_class": 0.5, "albedo": 0.03},
+        "grades": {"ti_class": "B", "albedo": "B"},  # orbital; MEDA covers only the traverse (Eduard, Sat 15:13)
+        "sources": {
+            "ti_class": "ti_class: THEMIS TI ~200-400 around the rover traverse (Vicente-Retortillo et al., "
+                        "EPSC2026-1140); MEDA TI 180-605 (Martinez et al. 2023, JGR Planets, "
+                        "doi:10.1029/2022JE007537); Mars bins 100/250/600/1200 -> class 2",
+            "albedo": "albedo: OMEGA regional mean ~0.16, MEDA noon albedo 0.10-0.23 "
+                      "(Vicente-Retortillo et al., EPSC2026-1140)",
+        },
+    },
+    "mars_gale": {
+        "features": {"albedo": 0.20},
+        "sd": {"albedo": 0.05},
+        "grades": {"albedo": "C"},  # regional average used as a model input, not measured in our window
+        "sources": {
+            "albedo": "albedo: ~0.20 average for the Gale region, range 0.1-0.3 (used in REMS/Navcam radiative studies)",
+        },
+    },
 }
 
 # ---------------------------------------------------------------------------
@@ -588,28 +625,46 @@ _gcp: dict | None = None
 _gcp_error: str | None = None  # set after one failed load, so the other targets don't retry it
 
 
-def _download(url: str, path: Path, nbytes: int) -> None:
+def _download(url: str, path: Path, nbytes: int | None) -> None:
     req = urllib.request.Request(url, headers={"User-Agent": "analog-atlas (NASA Space Apps 2026)"})
     with urllib.request.urlopen(req, timeout=60) as r, open(path, "wb") as f:
-        done, step = 0, max(nbytes // 10, 1)
+        done, step = 0, max((nbytes or 0) // 10, 1)
         nxt = step
         while chunk := r.read(1 << 20):
             f.write(chunk)
             done += len(chunk)
-            if done >= nxt:
+            if nbytes and done >= nxt:
                 print(f"    {100 * done / nbytes:.0f} %", flush=True)
                 nxt += step
 
 
-def fetch_cached(url: str, nbytes: int) -> Path:
-    """Download `url` once into CACHE_DIR (checked by size) and return the local path."""
-    dest = CACHE_DIR / url.rsplit("/", 1)[-1]
-    if dest.exists() and dest.stat().st_size == nbytes:
+def _md5(path: Path) -> str:
+    h = hashlib.md5()
+    with open(path, "rb") as f:
+        while chunk := f.read(1 << 20):
+            h.update(chunk)
+    return h.hexdigest()
+
+
+def fetch_cached(url: str, nbytes: int | None = None, name: str | None = None, md5: str | None = None) -> Path:
+    """Download `url` once into CACHE_DIR and return the local path.
+
+    The file is checked by size (nbytes) and/or checksum (md5) when given;
+    `name` sets the cached file name when the URL ends in a query string.
+    """
+    dest = CACHE_DIR / (name or url.rsplit("/", 1)[-1])
+
+    def good(p: Path) -> bool:
+        return (p.exists() and p.stat().st_size > 0
+                and (nbytes is None or p.stat().st_size == nbytes)
+                and (md5 is None or _md5(p) == md5))
+
+    if good(dest):
         return dest
     CACHE_DIR.mkdir(parents=True, exist_ok=True)
     part = dest.with_name(dest.name + ".part")
-    print(f"  downloading {dest.name} ({nbytes / 1e6:.0f} MB) - first run only, kept in {CACHE_DIR}",
-          flush=True)
+    size = f"{nbytes / 1e6:.0f} MB" if nbytes else "small file"
+    print(f"  downloading {dest.name} ({size}) - first run only, kept in {CACHE_DIR}", flush=True)
     try:
         _download(url, part, nbytes)
     except Exception as e:  # noqa: BLE001 - e.g. Python's own certificate store on macOS
@@ -619,9 +674,9 @@ def fetch_cached(url: str, nbytes: int) -> Path:
         except (OSError, subprocess.CalledProcessError) as e2:
             raise OSError(f"could not download {dest.name} ({type(e2).__name__}) - check the "
                           "internet connection and run again") from None
-    got = part.stat().st_size
-    if got != nbytes:
-        raise OSError(f"{dest.name}: downloaded {got} bytes, expected {nbytes} - run again to retry")
+    if not good(part):
+        got = part.stat().st_size if part.exists() else 0
+        raise OSError(f"{dest.name}: download incomplete or corrupt ({got} bytes) - run again to retry")
     part.replace(dest)
     return dest
 
@@ -803,16 +858,27 @@ ALBEDO_CANDIDATES = {
         (LOLA_GDR + "CYLINDRICAL/FLOAT_IMG/LDAM_8_FLOAT.LBL", 4000.0),
     ],
 }
-ALBEDO_TEST_POINT = {"moon_south": (-85.99, -0.24), "moon": (20.19, 30.77)}  # Malapert, Apollo 17
+# Mars: one albedo definition for the three Mars targets too - TES Lambert
+# (bolometric) albedo, the Mars source named in feature_dictionary.yaml
+# (Christensen et al. 2001). It replaces the earlier literature values (kept
+# as fallbacks in FALLBACK). 7.4 km per pixel, sampled on a 1 km grid so even
+# the 10 km delta footprint averages the map by area.
+ALBEDO_CANDIDATES["mars"] = [
+    ("https://planetarymaps.usgs.gov/mosaic/Mars_MGS_TES_Albedo_mosaic_global_7410m.tif", 1000.0),
+]
+ALBEDO_TEST_POINT = {"moon_south": (-85.99, -0.24), "moon": (20.19, 30.77),  # Malapert, Apollo 17
+                     "mars": (18.4, 77.5)}                                    # Jezero
 ALBEDO_GRADE = "B"  # one orbital instrument, measured
+SPHERE = {"moon": "+R=1737400", "moon_south": "+R=1737400", "mars": "+R=3396190"}
 
 
 class RasterCopies:
     """Several published copies of one map: use the first that passes a small
     real read, and move to the next one if a later read fails."""
 
-    def __init__(self, label: str, candidates: list, test_point: tuple[float, float]):
-        self.label, self.candidates, self.test_point = label, candidates, test_point
+    def __init__(self, label: str, candidates: list, test_point: tuple[float, float],
+                 sphere: str = "+R=1737400"):
+        self.label, self.candidates, self.test_point, self.sphere = label, candidates, test_point, sphere
         self.bad: set[str] = set()
         self.current: dict | None = None
 
@@ -822,7 +888,7 @@ class RasterCopies:
         for url, res in self.candidates:
             if url in self.bad:
                 continue
-            cfg = {"url": "/vsicurl/" + url, "res_m": res, "sphere": "+R=1737400",
+            cfg = {"url": "/vsicurl/" + url, "res_m": res, "sphere": self.sphere,
                    "name": url.rsplit("/", 1)[-1]}
             try:
                 test = read_local_raster(cfg, *self.test_point, 3 * res)
@@ -850,10 +916,17 @@ class RasterCopies:
                 self.current = None
 
 
-ALBEDO_MAPS = {k: RasterCopies("LOLA albedo map", v, ALBEDO_TEST_POINT[k]) for k, v in ALBEDO_CANDIDATES.items()}
+ALBEDO_LABEL = {"moon": "LOLA albedo map", "moon_south": "LOLA albedo map", "mars": "TES albedo map"}
+ALBEDO_MAPS = {k: RasterCopies(ALBEDO_LABEL[k], v, ALBEDO_TEST_POINT[k], SPHERE[k])
+               for k, v in ALBEDO_CANDIDATES.items()}
 
 
-def albedo_source(name: str, side_km: float) -> str:
+def albedo_source(key: str, name: str, side_km: float) -> str:
+    if key == "mars":
+        return (f"albedo: TES Lambert (bolometric) albedo, global map {name} (7.4 km/px), mean over the "
+                f"{side_km:g} km footprint (Christensen et al. 2001, JGR 106(E10):23823, doi:10.1029/2000JE001370; "
+                "USGS Astrogeology mosaic). One definition for every Mars target; a 10 km footprint holds only "
+                "a few TES pixels")
     return (f"albedo: LOLA normal albedo at 1064 nm, GDR map {name}, mean over the {side_km:g} km footprint "
             "(Lucey et al. 2014, JGR Planets 119:1665, doi:10.1002/2013JE004592). LOLA lights the ground with "
             "its own laser at zero phase, so one definition works in polar shadow and at Apollo 17. Not the Earth "
@@ -862,12 +935,13 @@ def albedo_source(name: str, side_km: float) -> str:
 
 
 def albedo_values(key: str, lat: float, lon: float, radius_km: float) -> dict:
-    """LOLA albedo for a lunar target, in the same shape as OTHER ({} if no map works)."""
+    """Albedo for a Moon (LOLA) or Mars (TES) target, in the same shape as OTHER ({} if no map works)."""
+    label = ALBEDO_LABEL[key].removesuffix(" map")
     half = radius_km * 1000.0
     shift = min(MAX_SHIFT_M, half / 3.0)
     m, big = ALBEDO_MAPS[key].read(lat, lon, half + shift)
     if m is None:
-        print("  WARNING: no LOLA albedo map could be opened - albedo left out for this target")
+        print(f"  WARNING: no {label} map could be opened - albedo left out for this target")
         return {}
     res = m["res_m"]
     n = int(round(2 * half / res))
@@ -880,15 +954,75 @@ def albedo_values(key: str, lat: float, lon: float, radius_km: float) -> dict:
         ok = np.isfinite(w) & (w > 0) & (w < 2)  # 0 / negative = no data in these maps
         means.append(float(w[ok].mean()) if ok.mean() >= 0.5 else np.nan)
     if not np.isfinite(means[0]):
-        print("  WARNING: LOLA albedo covers less than half of the footprint - albedo left out")
+        print(f"  WARNING: {label} covers less than half of the footprint - albedo left out")
         return {}
     shifted = [v for v in means if np.isfinite(v)]
-    print(f"  LOLA albedo (1064 nm normal albedo): {means[0]:.3f}")
+    print(f"  {label}: {means[0]:.3f}")
     return {
         "features": {"albedo": means[0]},
         "sd": {"albedo": float(np.std(shifted))} if len(shifted) >= 2 else {},
         "grades": {"albedo": ALBEDO_GRADE},
-        "sources": [albedo_source(m["name"], 2 * radius_km)],
+        "sources": [albedo_source(key, m["name"], 2 * radius_km)],
+    }
+
+
+# ---------------------------------------------------------------------------
+# Jezero targets: THEMIS thermal inertia -> ti_class
+# ---------------------------------------------------------------------------
+# THEMIS-derived thermal inertia mosaic of Jezero crater (Edwards & Buz 2021,
+# Zenodo, ~100 m/px, 0 = no data). It covers Jezero only, so it is used for the
+# two Jezero targets; Gale keeps its literature class. The class uses the Mars
+# bins from feature_dictionary.yaml (100 / 250 / 600 / 1200 SI -> class 0-4),
+# taken from the median TI of the footprint. The 1.7 MB file is downloaded once
+# into CACHE_DIR and checked by its published MD5.
+THEMIS_TI = {
+    "url": "https://zenodo.org/records/4931348/files/Jezero_Thermal_Inertia_v1.tiff?download=1",
+    "name": "Jezero_Thermal_Inertia_v1.tiff",
+    "md5": "53fec7c990a90629e98c871a7a0da474",
+    "res_m": 100.0,
+}
+THEMIS_TI_TARGETS = ("mars_jezero", "mars_jezero_delta")
+MARS_TI_BINS = (100.0, 250.0, 600.0, 1200.0)  # feature_dictionary.yaml, Mars ti_class edges
+
+
+def ti_class_of(ti: float) -> int:
+    """Thermal inertia (SI) -> Mars ti_class 0-4 (class 0 below 100, class 4 from 1200)."""
+    return int(np.searchsorted(MARS_TI_BINS, ti, side="right"))
+
+
+def themis_ti_values(lat: float, lon: float, radius_km: float) -> dict:
+    """ti_class from the THEMIS Jezero mosaic, in the same shape as OTHER ({} if not enough data)."""
+    path = fetch_cached(THEMIS_TI["url"], name=THEMIS_TI["name"], md5=THEMIS_TI["md5"])
+    cfg = {"url": str(path), "res_m": THEMIS_TI["res_m"], "sphere": "+R=3396190"}
+    res = cfg["res_m"]
+    half = radius_km * 1000.0
+    shift = min(MAX_SHIFT_M, half / 3.0)
+    big = read_local_raster(cfg, lat, lon, half + shift, nearest=True)  # nearest: never blend with the 0s
+    n = int(round(2 * half / res))
+    p = int(round(shift / res))
+    medians, cover = [], 0.0
+    for k, (dx, dy) in enumerate([(0, 0), (shift, 0), (-shift, 0), (0, shift), (0, -shift)]):
+        i0 = p - int(round(dy / res))
+        j0 = p + int(round(dx / res))
+        w = big[i0 : i0 + n, j0 : j0 + n]
+        ok = np.isfinite(w) & (w > 0)
+        if k == 0:
+            cover = float(ok.mean())
+        medians.append(float(np.median(w[ok])) if ok.mean() >= 0.5 else np.nan)
+    if not np.isfinite(medians[0]):
+        print(f"  WARNING: the THEMIS mosaic covers only {cover:.0%} of the footprint - ti_class not taken from it")
+        return {}
+    cls = ti_class_of(medians[0])
+    spread = [ti_class_of(v) for v in medians if np.isfinite(v)]
+    print(f"  THEMIS TI: median {medians[0]:.0f} SI over {cover:.0%} of the footprint -> ti_class {cls}")
+    return {
+        "features": {"ti_class": cls},
+        # at least half a class: a single class edge sits inside the TI uncertainty of the mosaic
+        "sd": {"ti_class": max(float(np.std(spread)), 0.5)},
+        "grades": {"ti_class": "B"},  # one orbital instrument over the whole footprint
+        "sources": [f"ti_class: THEMIS-derived thermal inertia of Jezero crater (Edwards & Buz 2021, Zenodo, "
+                    f"doi:10.5281/zenodo.4931348), median {medians[0]:.0f} SI over the {2 * radius_km:g} km "
+                    f"footprint ({cover:.0%} covered) -> class {cls} with the Mars bins 100/250/600/1200"],
     }
 
 
@@ -987,18 +1121,39 @@ def build() -> list[dict]:
                 print(f"  WARNING: Diviner temperatures left out - {e}")
 
         alb = {}
-        if key in ("moon", "moon_south"):
+        if key in ALBEDO_MAPS:
             try:
                 alb = albedo_values(key, lat, lon, radius_km)
             except Exception as e:  # noqa: BLE001 - never lose the whole build over one product
-                print(f"  WARNING: LOLA albedo left out - {e}")
+                print(f"  WARNING: albedo left out - {e}")
+
+        ti = {}
+        if t["id"] in THEMIS_TI_TARGETS:
+            try:
+                ti = themis_ti_values(lat, lon, radius_km)
+            except Exception as e:  # noqa: BLE001
+                print(f"  WARNING: THEMIS thermal inertia not used - {e}")
 
         extra = OTHER.get(t["id"], {})
-        parts = (polar, temps, alb, extra)
+        parts = (polar, temps, alb, ti, extra)
         feats.update(ZERO_BY_DEFINITION)
         for part in parts:
             feats.update(part.get("features", {}))
             sd.update(part.get("sd", {}))
+
+        # Literature fallbacks, only for what no product delivered above.
+        fb = FALLBACK.get(t["id"], {})
+        used = [k for k in fb.get("features", {}) if k not in feats]
+        if used:
+            print(f"  literature fallback used for: {', '.join(used)}")
+            parts = parts + ({
+                "features": {k: fb["features"][k] for k in used},
+                "sd": {k: fb["sd"][k] for k in used if k in fb.get("sd", {})},
+                "grades": {k: fb["grades"][k] for k in used},
+                "sources": [fb["sources"][k] for k in used],
+            },)
+            feats.update(parts[-1]["features"])
+            sd.update(parts[-1]["sd"])
 
         feats = clean(feats)
         sd = {k: v for k, v in clean(sd).items() if k in feats}
