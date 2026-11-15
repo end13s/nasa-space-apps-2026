@@ -18,6 +18,7 @@
       "rough_10km": 17.8501,
       "precip_mm": 0.0,
       "ndvi_max": 0.0,
+      "soil_moist": 0.0,
       "ti_class": 2.0,
       "albedo": 0.16,
       "litho_class": 1.0,
@@ -45,11 +46,12 @@
       "steep_frac": "B",
       "rough_2km": "B",
       "rough_10km": "B",
-      "precip_mm": "A",
-      "ndvi_max": "A",
-      "ti_class": "A",
-      "albedo": "A",
-      "litho_class": "A",
+      "precip_mm": "DEF",
+      "ndvi_max": "DEF",
+      "soil_moist": "DEF",
+      "ti_class": "B",
+      "albedo": "B",
+      "litho_class": "B",
       "ice_idx": "C"
     },
     "tags": [
@@ -84,6 +86,7 @@
       "rough_10km": 69.6056,
       "precip_mm": 0.0,
       "ndvi_max": 0.0,
+      "soil_moist": 0.0,
       "ti_class": 2.0,
       "tmin_k": 175.0,
       "tmax_k": 285.0,
@@ -115,8 +118,9 @@
       "steep_frac": "B",
       "rough_2km": "B",
       "rough_10km": "B",
-      "precip_mm": "A",
-      "ndvi_max": "A",
+      "precip_mm": "DEF",
+      "ndvi_max": "DEF",
+      "soil_moist": "DEF",
       "ti_class": "B",
       "tmin_k": "A",
       "tmax_k": "A",
@@ -157,6 +161,7 @@
       "rough_10km": 59.2059,
       "precip_mm": 0.0,
       "ndvi_max": 0.0,
+      "soil_moist": 0.0,
       "ti_class": 1.0,
       "tmin_k": 95.0,
       "tmax_k": 385.0,
@@ -186,9 +191,10 @@
       "steep_frac": "B",
       "rough_2km": "B",
       "rough_10km": "B",
-      "precip_mm": "A",
-      "ndvi_max": "A",
-      "ti_class": "A",
+      "precip_mm": "DEF",
+      "ndvi_max": "DEF",
+      "soil_moist": "DEF",
+      "ti_class": "B",
       "tmin_k": "C",
       "tmax_k": "C",
       "litho_class": "A",
@@ -225,6 +231,7 @@
       "rough_2km": 33.9649,
       "precip_mm": 0.0,
       "ndvi_max": 0.0,
+      "soil_moist": 0.0,
       "litho_class": 3.0,
       "ice_idx": 0.0
     },
@@ -246,8 +253,9 @@
       "flat_frac": "B",
       "steep_frac": "B",
       "rough_2km": "B",
-      "precip_mm": "A",
-      "ndvi_max": "A",
+      "precip_mm": "DEF",
+      "ndvi_max": "DEF",
+      "soil_moist": "DEF",
       "litho_class": "A",
       "ice_idx": "C"
     },
@@ -282,7 +290,10 @@
       "rough_2km": 124.3112,
       "rough_10km": 99.1742,
       "precip_mm": 0.0,
-      "ndvi_max": 0.0
+      "ndvi_max": 0.0,
+      "soil_moist": 0.0,
+      "litho_class": 2.0,
+      "ice_idx": 0.2736
     },
     "sd": {
       "relief_km": 0.0981,
@@ -292,7 +303,8 @@
       "flat_frac": 0.0199,
       "steep_frac": 0.0007,
       "rough_2km": 2.9226,
-      "rough_10km": 0.2218
+      "rough_10km": 0.2218,
+      "ice_idx": 0.0036
     },
     "grades": {
       "relief_km": "B",
@@ -303,8 +315,11 @@
       "steep_frac": "B",
       "rough_2km": "B",
       "rough_10km": "B",
-      "precip_mm": "A",
-      "ndvi_max": "A"
+      "precip_mm": "DEF",
+      "ndvi_max": "DEF",
+      "soil_moist": "DEF",
+      "litho_class": "C",
+      "ice_idx": "C"
     },
     "tags": [
       "polar",
@@ -313,7 +328,9 @@
     ],
     "sources": [
       "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
-      "centre: IAU Gazetteer of Planetary Nomenclature, Shackleton (feature 5450), diameter 20.9 km - the 15 km circle covers the whole crater and rim"
+      "centre: IAU Gazetteer of Planetary Nomenclature, Shackleton (feature 5450), diameter 20.9 km - the 15 km circle covers the whole crater and rim",
+      "ice_idx: share of the window in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030); permanent shadow is the cold-trap proxy - a model from LOLA topography, LEND hydrogen not folded in yet",
+      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do"
     ],
     "blurb": "Crater at the lunar south pole: near-permanently lit rim around a permanently shadowed floor."
   },
@@ -335,7 +352,10 @@
       "rough_2km": 84.1566,
       "rough_10km": 115.8162,
       "precip_mm": 0.0,
-      "ndvi_max": 0.0
+      "ndvi_max": 0.0,
+      "soil_moist": 0.0,
+      "litho_class": 2.0,
+      "ice_idx": 0.0066
     },
     "sd": {
       "relief_km": 0.2637,
@@ -345,7 +365,8 @@
       "flat_frac": 0.0105,
       "steep_frac": 0.0127,
       "rough_2km": 4.1577,
-      "rough_10km": 5.0296
+      "rough_10km": 5.0296,
+      "ice_idx": 0.0056
     },
     "grades": {
       "relief_km": "B",
@@ -356,8 +377,11 @@
       "steep_frac": "B",
       "rough_2km": "B",
       "rough_10km": "B",
-      "precip_mm": "A",
-      "ndvi_max": "A"
+      "precip_mm": "DEF",
+      "ndvi_max": "DEF",
+      "soil_moist": "DEF",
+      "litho_class": "C",
+      "ice_idx": "C"
     },
     "tags": [
       "polar",
@@ -366,7 +390,9 @@
     ],
     "sources": [
       "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
-      "centre: centre of the region's 1 km grid in USGS 'Down Selected Artemis III Candidate Landing Site Navigational Grids' (McClernan 2024, doi:10.5066/P1MEQ6UK; outlines from LROC QuickMap)"
+      "centre: centre of the region's 1 km grid in USGS 'Down Selected Artemis III Candidate Landing Site Navigational Grids' (McClernan 2024, doi:10.5066/P1MEQ6UK; outlines from LROC QuickMap)",
+      "ice_idx: share of the window in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030); permanent shadow is the cold-trap proxy - a model from LOLA topography, LEND hydrogen not folded in yet",
+      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do"
     ],
     "blurb": "Peak near Cabeus B, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   },
@@ -388,7 +414,10 @@
       "rough_2km": 58.8544,
       "rough_10km": 63.3544,
       "precip_mm": 0.0,
-      "ndvi_max": 0.0
+      "ndvi_max": 0.0,
+      "soil_moist": 0.0,
+      "litho_class": 2.0,
+      "ice_idx": 0.0169
     },
     "sd": {
       "relief_km": 0.3179,
@@ -398,7 +427,8 @@
       "flat_frac": 0.0111,
       "steep_frac": 0.0,
       "rough_2km": 0.8152,
-      "rough_10km": 2.9611
+      "rough_10km": 2.9611,
+      "ice_idx": 0.0133
     },
     "grades": {
       "relief_km": "B",
@@ -409,8 +439,11 @@
       "steep_frac": "B",
       "rough_2km": "B",
       "rough_10km": "B",
-      "precip_mm": "A",
-      "ndvi_max": "A"
+      "precip_mm": "DEF",
+      "ndvi_max": "DEF",
+      "soil_moist": "DEF",
+      "litho_class": "C",
+      "ice_idx": "C"
     },
     "tags": [
       "polar",
@@ -419,7 +452,9 @@
     ],
     "sources": [
       "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
-      "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)"
+      "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)",
+      "ice_idx: share of the window in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030); permanent shadow is the cold-trap proxy - a model from LOLA topography, LEND hydrogen not folded in yet",
+      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do"
     ],
     "blurb": "Haworth, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   },
@@ -441,7 +476,10 @@
       "rough_2km": 90.607,
       "rough_10km": 109.2568,
       "precip_mm": 0.0,
-      "ndvi_max": 0.0
+      "ndvi_max": 0.0,
+      "soil_moist": 0.0,
+      "litho_class": 2.0,
+      "ice_idx": 0.0065
     },
     "sd": {
       "relief_km": 0.4998,
@@ -451,7 +489,8 @@
       "flat_frac": 0.008,
       "steep_frac": 0.0137,
       "rough_2km": 5.5957,
-      "rough_10km": 11.1217
+      "rough_10km": 11.1217,
+      "ice_idx": 0.0028
     },
     "grades": {
       "relief_km": "B",
@@ -462,8 +501,11 @@
       "steep_frac": "B",
       "rough_2km": "B",
       "rough_10km": "B",
-      "precip_mm": "A",
-      "ndvi_max": "A"
+      "precip_mm": "DEF",
+      "ndvi_max": "DEF",
+      "soil_moist": "DEF",
+      "litho_class": "C",
+      "ice_idx": "C"
     },
     "tags": [
       "polar",
@@ -472,7 +514,9 @@
     ],
     "sources": [
       "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
-      "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)"
+      "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)",
+      "ice_idx: share of the window in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030); permanent shadow is the cold-trap proxy - a model from LOLA topography, LEND hydrogen not folded in yet",
+      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do"
     ],
     "blurb": "Malapert Massif, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   },
@@ -494,7 +538,10 @@
       "rough_2km": 65.739,
       "rough_10km": 78.92,
       "precip_mm": 0.0,
-      "ndvi_max": 0.0
+      "ndvi_max": 0.0,
+      "soil_moist": 0.0,
+      "litho_class": 2.0,
+      "ice_idx": 0.0158
     },
     "sd": {
       "relief_km": 0.8069,
@@ -504,7 +551,8 @@
       "flat_frac": 0.0526,
       "steep_frac": 0.0294,
       "rough_2km": 9.5395,
-      "rough_10km": 11.4476
+      "rough_10km": 11.4476,
+      "ice_idx": 0.0017
     },
     "grades": {
       "relief_km": "B",
@@ -515,8 +563,11 @@
       "steep_frac": "B",
       "rough_2km": "B",
       "rough_10km": "B",
-      "precip_mm": "A",
-      "ndvi_max": "A"
+      "precip_mm": "DEF",
+      "ndvi_max": "DEF",
+      "soil_moist": "DEF",
+      "litho_class": "C",
+      "ice_idx": "C"
     },
     "tags": [
       "polar",
@@ -525,7 +576,9 @@
     ],
     "sources": [
       "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
-      "centre: centre of the region's 1 km grid in USGS 'Down Selected Artemis III Candidate Landing Site Navigational Grids' (McClernan 2024, doi:10.5066/P1MEQ6UK; outlines from LROC QuickMap)"
+      "centre: centre of the region's 1 km grid in USGS 'Down Selected Artemis III Candidate Landing Site Navigational Grids' (McClernan 2024, doi:10.5066/P1MEQ6UK; outlines from LROC QuickMap)",
+      "ice_idx: share of the window in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030); permanent shadow is the cold-trap proxy - a model from LOLA topography, LEND hydrogen not folded in yet",
+      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do"
     ],
     "blurb": "Mons Mouton, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   },
@@ -547,7 +600,10 @@
       "rough_2km": 81.7978,
       "rough_10km": 112.6697,
       "precip_mm": 0.0,
-      "ndvi_max": 0.0
+      "ndvi_max": 0.0,
+      "soil_moist": 0.0,
+      "litho_class": 2.0,
+      "ice_idx": 0.0123
     },
     "sd": {
       "relief_km": 0.6726,
@@ -557,7 +613,8 @@
       "flat_frac": 0.0211,
       "steep_frac": 0.0111,
       "rough_2km": 3.66,
-      "rough_10km": 6.6617
+      "rough_10km": 6.6617,
+      "ice_idx": 0.0071
     },
     "grades": {
       "relief_km": "B",
@@ -568,8 +625,11 @@
       "steep_frac": "B",
       "rough_2km": "B",
       "rough_10km": "B",
-      "precip_mm": "A",
-      "ndvi_max": "A"
+      "precip_mm": "DEF",
+      "ndvi_max": "DEF",
+      "soil_moist": "DEF",
+      "litho_class": "C",
+      "ice_idx": "C"
     },
     "tags": [
       "polar",
@@ -578,7 +638,9 @@
     ],
     "sources": [
       "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
-      "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)"
+      "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)",
+      "ice_idx: share of the window in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030); permanent shadow is the cold-trap proxy - a model from LOLA topography, LEND hydrogen not folded in yet",
+      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do"
     ],
     "blurb": "Nobile Rim 1, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   },
@@ -600,7 +662,10 @@
       "rough_2km": 85.5792,
       "rough_10km": 69.141,
       "precip_mm": 0.0,
-      "ndvi_max": 0.0
+      "ndvi_max": 0.0,
+      "soil_moist": 0.0,
+      "litho_class": 2.0,
+      "ice_idx": 0.1609
     },
     "sd": {
       "relief_km": 0.1688,
@@ -610,7 +675,8 @@
       "flat_frac": 0.0357,
       "steep_frac": 0.0187,
       "rough_2km": 6.9744,
-      "rough_10km": 2.5988
+      "rough_10km": 2.5988,
+      "ice_idx": 0.058
     },
     "grades": {
       "relief_km": "B",
@@ -621,8 +687,11 @@
       "steep_frac": "B",
       "rough_2km": "B",
       "rough_10km": "B",
-      "precip_mm": "A",
-      "ndvi_max": "A"
+      "precip_mm": "DEF",
+      "ndvi_max": "DEF",
+      "soil_moist": "DEF",
+      "litho_class": "C",
+      "ice_idx": "C"
     },
     "tags": [
       "polar",
@@ -631,7 +700,9 @@
     ],
     "sources": [
       "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
-      "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)"
+      "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)",
+      "ice_idx: share of the window in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030); permanent shadow is the cold-trap proxy - a model from LOLA topography, LEND hydrogen not folded in yet",
+      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do"
     ],
     "blurb": "Nobile Rim 2, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   },
@@ -653,7 +724,10 @@
       "rough_2km": 67.4407,
       "rough_10km": 60.2778,
       "precip_mm": 0.0,
-      "ndvi_max": 0.0
+      "ndvi_max": 0.0,
+      "soil_moist": 0.0,
+      "litho_class": 2.0,
+      "ice_idx": 0.0369
     },
     "sd": {
       "relief_km": 0.1043,
@@ -663,7 +737,8 @@
       "flat_frac": 0.0501,
       "steep_frac": 0.0062,
       "rough_2km": 5.0079,
-      "rough_10km": 4.318
+      "rough_10km": 4.318,
+      "ice_idx": 0.023
     },
     "grades": {
       "relief_km": "B",
@@ -674,8 +749,11 @@
       "steep_frac": "B",
       "rough_2km": "B",
       "rough_10km": "B",
-      "precip_mm": "A",
-      "ndvi_max": "A"
+      "precip_mm": "DEF",
+      "ndvi_max": "DEF",
+      "soil_moist": "DEF",
+      "litho_class": "C",
+      "ice_idx": "C"
     },
     "tags": [
       "polar",
@@ -684,7 +762,9 @@
     ],
     "sources": [
       "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
-      "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)"
+      "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)",
+      "ice_idx: share of the window in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030); permanent shadow is the cold-trap proxy - a model from LOLA topography, LEND hydrogen not folded in yet",
+      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do"
     ],
     "blurb": "de Gerlache Rim 2, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   },
@@ -706,7 +786,10 @@
       "rough_2km": 63.0725,
       "rough_10km": 41.3193,
       "precip_mm": 0.0,
-      "ndvi_max": 0.0
+      "ndvi_max": 0.0,
+      "soil_moist": 0.0,
+      "litho_class": 2.0,
+      "ice_idx": 0.0873
     },
     "sd": {
       "relief_km": 0.1957,
@@ -716,7 +799,8 @@
       "flat_frac": 0.0326,
       "steep_frac": 0.0,
       "rough_2km": 3.7127,
-      "rough_10km": 2.9619
+      "rough_10km": 2.9619,
+      "ice_idx": 0.0128
     },
     "grades": {
       "relief_km": "B",
@@ -727,8 +811,11 @@
       "steep_frac": "B",
       "rough_2km": "B",
       "rough_10km": "B",
-      "precip_mm": "A",
-      "ndvi_max": "A"
+      "precip_mm": "DEF",
+      "ndvi_max": "DEF",
+      "soil_moist": "DEF",
+      "litho_class": "C",
+      "ice_idx": "C"
     },
     "tags": [
       "polar",
@@ -737,7 +824,9 @@
     ],
     "sources": [
       "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
-      "centre: centre of the region's 1 km grid in USGS 'Down Selected Artemis III Candidate Landing Site Navigational Grids' (McClernan 2024, doi:10.5066/P1MEQ6UK; outlines from LROC QuickMap)"
+      "centre: centre of the region's 1 km grid in USGS 'Down Selected Artemis III Candidate Landing Site Navigational Grids' (McClernan 2024, doi:10.5066/P1MEQ6UK; outlines from LROC QuickMap)",
+      "ice_idx: share of the window in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030); permanent shadow is the cold-trap proxy - a model from LOLA topography, LEND hydrogen not folded in yet",
+      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do"
     ],
     "blurb": "Slater Plain, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   }

@@ -201,8 +201,9 @@ for _tid, _name, _centre, _src in ARTEMIS:
     )
 
 # Real zeros on the Moon and Mars ("0 by definition" in feature_dictionary.yaml).
-# These are genuine values, not placeholders.
-ZERO_BY_DEFINITION = {"precip_mm": 0.0, "ndvi_max": 0.0}
+# These are genuine values, not placeholders. soil_moist is a stretch feature,
+# but it is just as exactly zero, so it goes in with the other two.
+ZERO_BY_DEFINITION = {"precip_mm": 0.0, "ndvi_max": 0.0, "soil_moist": 0.0}
 
 # ---------------------------------------------------------------------------
 # Evidence grades (adopted at the Saturday sync). Every value in targets.json
@@ -212,17 +213,20 @@ ZERO_BY_DEFINITION = {"precip_mm": 0.0, "ndvi_max": 0.0}
 #   B  single orbital instrument, no ground truth
 #   C  model-derived or extrapolated - incl. anything inferred from latitude
 #   D  poorly constrained - e.g. a literature constant instead of a measurement
+#   DEF exact by definition, not measured (engine/score.py GRADE_SIGMA)
 # Grade by SOURCE, not by value: "__terrain__" covers every DEM-derived
 # feature (TERRAIN_KEYS) in one line, and each DEM below carries its grade.
-# A grade is a summary of what the citation in "sources" already says.
+# A grade is a summary of what the citation in "sources" already says, and it
+# describes how well we know the value over the whole footprint, not at one
+# rover position.
 # ---------------------------------------------------------------------------
-GRADES = ("A", "B", "C", "D")
+GRADES = ("A", "B", "C", "D", "DEF")
 TERRAIN_KEYS = ("relief_km", "slope_med_deg", "slope_p90_deg", "hypso_int",
                 "flat_frac", "steep_frac", "rough_2km", "rough_10km")
-# The by-definition zeros are physically certain (no liquid rain, no plants on
-# the Moon or Mars), so they are graded A. Eduard: veto if you want them
-# marked differently.
-ZERO_GRADE = "A"
+# The by-definition zeros (no rain, no plants, no soil moisture on the Moon or
+# Mars) are exact but not evidence of anything, so they get DEF - A keeps
+# meaning "measured, with ground truth".
+ZERO_GRADE = "DEF"
 
 # Non-terrain MVP features still to fill per target:
 #   ti_class, tmin_k, tmax_k, albedo, litho_class, ice_idx
@@ -251,8 +255,8 @@ OTHER: dict[str, dict] = {
         "grades": {
             "ti_class": "B",     # THEMIS orbital; MEDA ground truth covers only the rover traverse,
             "albedo": "B",       #   a tiny part of the 30 km window (Eduard's audit, Sat 15:13)
-            "litho_class": "A",  # Perseverance in-situ analysis of the floor rocks - same kind of
-                                 #   evidence as Curiosity's litho at Gale, which is A
+            "litho_class": "B",  # Perseverance analysed the floor rocks along its traverse only;
+                                 #   over the 30 km window the class rests on orbital mapping
             "ice_idx": "C",      # inferred from the ice-stability latitude, not measured here
         },
         "sources": [
@@ -331,18 +335,72 @@ OTHER: dict[str, dict] = {
 # South-polar targets (Shackleton + Artemis regions)
 # ---------------------------------------------------------------------------
 # ice_idx = share of the target window in permanent shadow, from the PGDA PSR
-# map (75-90S, 120 m/px, cloud-optimized GeoTIFF). Permanent shadow is where
-# water ice can be cold-trapped, which is why these regions are candidates.
-# Still to fold in: LEND hydrogen. Still to add for these targets: tmin_k /
-# tmax_k (Diviner polar products), albedo, ti_class.
-PSR_MAP = {
-    "url": "/vsicurl/https://pgda.gsfc.nasa.gov/data/MoonIllumination/LPSR_75S_120M_201608_COG.TIF",
-    "res_m": 120.0,
-    "sphere": "+R=1737400",
-}
-PSR_SOURCE = ("ice_idx: share of the window in permanent shadow, PGDA PSR map LPSR_75S_120M "
-              "(Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030); permanent "
-              "shadow is the cold-trap proxy - a model from LOLA topography, LEND hydrogen not folded in yet")
+# maps (Mazarico et al. 2011). Permanent shadow is where water ice can be
+# cold-trapped, which is why these regions are candidates. Still to fold in:
+# LEND hydrogen. Still to add for these targets: tmin_k / tmax_k (Diviner
+# polar products), albedo, ti_class.
+#
+# The same PSR map is published in several copies. On Sat 16:08-16:14 the
+# PGDA COG link would not open and the PGDA TIF opened but failed reading
+# tiles ("got 0 bytes"), so each copy is now tested with a small real read
+# before it is used, and a read failure later on moves to the next copy.
+# If none works, the build does NOT stop: ice_idx is left out for the polar
+# targets and everything else is still written.
+PSR_CANDIDATES = [
+    # (url, metres per pixel) - 75-90S at 120 m first, then 65-90S at 240 m
+    ("http://imbrium.mit.edu/EXTRAS/ILLUMINATION/JP2/LPSR_75S_120M_201608.JP2", 120.0),
+    ("https://pgda.gsfc.nasa.gov/data/MoonIllumination/LPSR_75S_120M_201608.TIF", 120.0),
+    ("https://pgda.gsfc.nasa.gov/data/MoonIllumination/LPSR_75S_120M_201608_COG.TIF", 120.0),
+    ("https://pgda.gsfc.nasa.gov/data/MoonIllumination/LPSR_65S_240M_201608.TIF", 240.0),
+    ("https://pgda.gsfc.nasa.gov/data/MoonIllumination/LPSR_65S_240M_201608_COG.TIF", 240.0),
+]
+_psr_bad: set[str] = set()
+_psr_current: dict | None = None
+
+
+def psr_map() -> dict | None:
+    """The first PSR copy that passes a small real read (near Shackleton), or None."""
+    global _psr_current
+    if _psr_current is not None:
+        return _psr_current
+    for url, res in PSR_CANDIDATES:
+        if url in _psr_bad:
+            continue
+        cfg = {"url": "/vsicurl/" + url, "res_m": res, "sphere": "+R=1737400",
+               "name": url.rsplit("/", 1)[-1]}
+        try:
+            test = read_local_raster(cfg, -89.67, 129.78, 3000.0, nearest=True)
+            if not np.isfinite(test).any():
+                raise ValueError("test read returned no data")
+        except Exception as e:  # noqa: BLE001 - any failure means "try the next copy"
+            print(f"  PSR map not usable, trying the next copy: {url} ({type(e).__name__})")
+            _psr_bad.add(url)
+            continue
+        print(f"  using PSR map {url}")
+        _psr_current = cfg
+        return cfg
+    return None
+
+
+def read_psr(lat: float, lon: float, half_m: float) -> tuple[dict | None, np.ndarray | None]:
+    """PSR window around (lat, lon); moves to the next copy if a read fails."""
+    global _psr_current
+    while True:
+        m = psr_map()
+        if m is None:
+            return None, None
+        try:
+            return m, read_local_raster(m, lat, lon, half_m, nearest=True)
+        except Exception as e:  # noqa: BLE001
+            print(f"  PSR read failed on {m['name']} ({type(e).__name__}) - trying the next copy")
+            _psr_bad.add(m["url"].removeprefix("/vsicurl/"))
+            _psr_current = None
+
+
+def psr_source(name: str) -> str:
+    return (f"ice_idx: share of the window in permanent shadow, PGDA PSR map {name} "
+            "(Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030); permanent "
+            "shadow is the cold-trap proxy - a model from LOLA topography, LEND hydrogen not folded in yet")
 POLAR_LITHO_SOURCE = ("litho_class: south-polar terrain is feldspathic highland (crater, basin and massif "
                       "material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) "
                       "-> class 2; regional call, per-target unit check still to do")
@@ -368,7 +426,8 @@ def read_local_raster(cfg: dict, lat: float, lon: float, half_m: float, nearest:
     local = CRS.from_proj4(
         f"+proj=aeqd +lat_0={lat} +lon_0={lon} {cfg['sphere']} +units=m +no_defs"
     )
-    with rasterio.Env(GDAL_DISABLE_READDIR_ON_OPEN="EMPTY_DIR", VSI_CACHE=True):
+    with rasterio.Env(GDAL_DISABLE_READDIR_ON_OPEN="EMPTY_DIR", VSI_CACHE=True,
+                      GDAL_HTTP_MAX_RETRY="3", GDAL_HTTP_RETRY_DELAY="1"):
         with rasterio.open(cfg["url"]) as src:
             with WarpedVRT(
                 src,
@@ -392,18 +451,28 @@ def read_local_dem(key: str, lat: float, lon: float, half_m: float) -> np.ndarra
     return read_local_raster(DEM[key], lat, lon, half_m)
 
 
-def polar_values(lat: float, lon: float, radius_km: float) -> tuple[dict, list]:
+def polar_values(lat: float, lon: float, radius_km: float) -> tuple[dict, list | None]:
     """Non-terrain values for a south-polar target, in the same shape as OTHER.
 
-    ice_idx is the PSR share of the window, with sd from the same four
-    shifted footprints as the terrain. The share is taken over ALL pixels of
-    the window, so a map that stores "not shadowed" as nodata still gives the
-    right number.
+    litho_class is always set. ice_idx is the PSR share of the window, with sd
+    from the same four shifted footprints as the terrain; it is left out (and
+    `seen` is None) when no PSR map could be opened. The share is taken over
+    ALL pixels of the window, so a map that stores "not shadowed" as nodata
+    still gives the right number.
     """
-    res = PSR_MAP["res_m"]
+    values = {
+        "features": {"litho_class": 2},
+        "sd": {},
+        "grades": {"litho_class": "C"},  # regional call from the map, not yet checked target by target
+        "sources": [POLAR_LITHO_SOURCE],
+    }
     half = radius_km * 1000.0
     shift = min(MAX_SHIFT_M, half / 3.0)
-    big = read_local_raster(PSR_MAP, lat, lon, half + shift, nearest=True)
+    m, big = read_psr(lat, lon, half + shift)
+    if m is None:
+        return values, None
+
+    res = m["res_m"]
     n = int(round(2 * half / res))
     p = int(round(shift / res))
 
@@ -415,15 +484,10 @@ def polar_values(lat: float, lon: float, radius_km: float) -> tuple[dict, list]:
         shares.append(np.count_nonzero(np.isfinite(w) & (w > 0)) / w.size)
     seen = sorted({float(v) for v in np.unique(big[np.isfinite(big)])[:6]})
 
-    values = {
-        "features": {"ice_idx": shares[0], "litho_class": 2},
-        "sd": {"ice_idx": float(np.std(shares))},
-        "grades": {
-            "ice_idx": "C",      # PSR is modelled from LOLA topography; ice itself is not measured here
-            "litho_class": "C",  # regional call from the map, not yet checked target by target
-        },
-        "sources": [PSR_SOURCE, POLAR_LITHO_SOURCE],
-    }
+    values["features"]["ice_idx"] = shares[0]
+    values["sd"]["ice_idx"] = float(np.std(shares))
+    values["grades"]["ice_idx"] = "C"  # PSR is modelled from LOLA topography; ice itself is not measured
+    values["sources"].insert(0, psr_source(m["name"]))
     return values, seen
 
 
@@ -497,10 +561,13 @@ def build() -> list[dict]:
         polar = {}
         if key == "moon_south":
             polar, seen = polar_values(lat, lon, radius_km)
-            share = polar["features"]["ice_idx"]
-            print(f"  PSR map values seen: {seen} -> ice_idx (PSR share of the window) = {share:.3f}")
-            if share > 0.9:
-                print("  WARNING: >90 % of the window counted as permanent shadow - check the PSR map encoding")
+            if seen is None:
+                print("  WARNING: no PSR map could be opened - ice_idx left out for this target")
+            else:
+                share = polar["features"]["ice_idx"]
+                print(f"  PSR map values seen: {seen} -> ice_idx (PSR share of the window) = {share:.3f}")
+                if share > 0.9:
+                    print("  WARNING: >90 % of the window counted as permanent shadow - check the PSR map encoding")
 
         extra = OTHER.get(t["id"], {})
         feats.update(ZERO_BY_DEFINITION)
