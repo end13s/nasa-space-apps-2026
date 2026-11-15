@@ -187,6 +187,29 @@ def pack(
         (out_dir / "targets.json").write_text(json.dumps(targets), encoding="utf-8")
     synthetic = synthetic_grid or synthetic_targets
 
+    # --- the app's "nice to have" files: known analogs, validation, deep dives ---
+    if analogs is not None and len(analogs):
+        cols = [c for c in ("id", "name", "lat", "lon", "analog_for", "analog_type",
+                            "accessible_by_design", "reference_url") if c in analogs.columns]
+        rows = analogs[cols].where(analogs[cols].notna(), None).to_dict(orient="records")
+        (out_dir / "known_analogs.json").write_text(json.dumps(rows), encoding="utf-8")
+
+    deep_src = Path("science/deep_dives")
+    if deep_src.is_dir():
+        cards = sorted(x for x in deep_src.glob("*.md") if not x.name.startswith("_"))
+        if cards:
+            dd = out_dir / "deep_dives"
+            dd.mkdir(exist_ok=True)
+            index = []
+            for md in cards:
+                shutil.copyfile(md, dd / md.name)
+                first = next((ln.lstrip("# ").strip()
+                              for ln in md.read_text(encoding="utf-8").splitlines()
+                              if ln.startswith("#")), md.stem)
+                index.append({"id": md.stem, "title": first, "file": md.name})
+            (dd / "index.json").write_text(json.dumps(index), encoding="utf-8")
+            print(f"  deep dives: {len(index)}")
+
     for name, src in (extra_json or {}).items():
         if Path(src).exists():
             shutil.copyfile(src, out_dir / name)
@@ -267,6 +290,8 @@ def main() -> None:
     ap.add_argument("--out", default="web/public/data")
     ap.add_argument("--targets", default=None)
     ap.add_argument("--analogs", default="science/known_analogs.csv")
+    ap.add_argument("--validation", default="validation/validation.json",
+                    help="validate.py output, copied into the bundle for the UI tab")
     ap.add_argument("--science-dir", default="science",
                     help="copy missions.json / breaks_text.json from here")
     args = ap.parse_args()
@@ -275,6 +300,8 @@ def main() -> None:
     extra = {
         "missions.json": science / "missions.json",
         "breaks_text.json": science / "breaks_text.json",
+        # written by engine/validate.py; the Validation tab is empty without it
+        "validation.json": Path(args.validation),
     }
     pack(
         grid_path=Path(args.grid),

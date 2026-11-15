@@ -1,0 +1,146 @@
+{
+  "headline": {
+    "moon": {
+      "body": "moon",
+      "n_sites": 7,
+      "median_percentile": 44.350768954302254,
+      "null_median_percentile": 52.118964365632685,
+      "recall_top5": 0.0,
+      "recall_top10": 0.0,
+      "sites": [
+        {
+          "id": "mauna_kea_apollo",
+          "name": "Mauna Kea (Hawaii)",
+          "percentile": 85.94444045497725,
+          "accessible_by_design": false
+        },
+        {
+          "id": "craters_of_the_moon",
+          "name": "Craters of the Moon (Idaho)",
+          "percentile": 5.862087636257413,
+          "accessible_by_design": true
+        },
+        {
+          "id": "meteor_crater",
+          "name": "Meteor Crater (Arizona)",
+          "percentile": 40.20776489671419,
+          "accessible_by_design": true
+        },
+        {
+          "id": "sp_crater_black_point",
+          "name": "SP Crater / Black Point lava flow (Arizona)",
+          "percentile": 26.75564760616071,
+          "accessible_by_design": true
+        },
+        {
+          "id": "ries_crater",
+          "name": "Ries Crater (Germany)",
+          "percentile": 44.350768954302254,
+          "accessible_by_design": true
+        },
+        {
+          "id": "sudbury",
+          "name": "Sudbury Basin (Canada)",
+          "percentile": 45.27676047253999,
+          "accessible_by_design": true
+        },
+        {
+          "id": "askja",
+          "name": "Askja (Iceland)",
+          "percentile": 68.5069828192227,
+          "accessible_by_design": false
+        }
+      ]
+    },
+    "mars": {
+      "body": "mars",
+      "n_sites": 9,
+      "median_percentile": 24.93963784699594,
+      "null_median_percentile": 51.53548865346883,
+      "recall_top5": 0.1111111111111111,
+      "recall_top10": 0.1111111111111111,
+      "sites": [
+        {
+          "id": "haughton",
+          "name": "Haughton Crater (Devon Island)",
+          "percentile": 87.81323514343744,
+          "accessible_by_design": false
+        },
+        {
+          "id": "atacama_yungay",
+          "name": "Atacama Desert - Yungay",
+          "percentile": 99.39443903308702,
+          "accessible_by_design": false
+        },
+        {
+          "id": "mcmurdo_dry_valleys",
+          "name": "McMurdo Dry Valleys",
+          "percentile": 17.96511754152402,
+          "accessible_by_design": false
+        },
+        {
+          "id": "svalbard_bockfjord",
+          "name": "Svalbard - Bockfjord volcanic complex",
+          "percentile": 13.749127659057349,
+          "accessible_by_design": false
+        },
+        {
+          "id": "rio_tinto",
+          "name": "Rio Tinto",
+          "percentile": 53.49597251050796,
+          "accessible_by_design": true
+        },
+        {
+          "id": "mdrs_utah",
+          "name": "Mars Desert Research Station (Utah)",
+          "percentile": 24.93963784699594,
+          "accessible_by_design": true
+        },
+        {
+          "id": "death_valley",
+          "name": "Death Valley / Mojave",
+          "percentile": 6.4233472763377515,
+          "accessible_by_design": true
+        },
+        {
+          "id": "holuhraun",
+          "name": "Holuhraun lava field (Iceland)",
+          "percentile": 42.407991079513224,
+          "accessible_by_design": false
+        },
+        {
+          "id": "lanzarote",
+          "name": "Lanzarote (Canary Islands)",
+          "percentile": 9.273016331000859,
+          "accessible_by_design": true
+        }
+      ]
+    }
+  },
+  "ablation": {
+    "moon": {
+      "without_T": 10.97,
+      "without_H": -9.33,
+      "without_M": 0.0,
+      "without_W": 3.98,
+      "without_B": 0.0,
+      "without_C": 1.88,
+      "without_A": 0.0,
+      "without_I": 0.0,
+      "gravity_scaling_on": 0.0
+    },
+    "mars": {
+      "without_T": 31.83,
+      "without_H": 8.63,
+      "without_M": 0.0,
+      "without_W": 9.46,
+      "without_B": 0.0,
+      "without_C": 39.25,
+      "without_A": 0.0,
+      "without_I": 0.0,
+      "gravity_scaling_on": 0.0
+    }
+  },
+  "grade_d_sensitivity": {},
+  "synthetic": false
+}

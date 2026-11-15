@@ -1,0 +1,78 @@
+{
+  "_comment": "Site-card language. Owner: Julia (task J5). Eduard's placeholder so the UI renders; Julia rewrites every string, Sofia reviews the science and Finn the construction lines. {site} and {target} are substituted by the UI. Keep each line under 30 words.",
+  "version": 2,
+  "dimensions": {
+    "T": {
+      "why": "Terrain decides where a lander can touch down and where a rover can drive.",
+      "strong": "Slopes and roughness at {site} sit inside the range measured at {target}.",
+      "partial": "Broad landforms match {target}, but the fine roughness differs.",
+      "breaks": "The ground at {site} is a different shape from {target} - expect different mobility behaviour."
+    },
+    "H": {
+      "why": "Thermal inertia tells you how loose or rocky the surface is, and temperature sets the engineering envelope.",
+      "strong": "Surface material at {site} responds to heating much like {target}.",
+      "partial": "Similar material class, different absolute temperatures.",
+      "breaks": "Temperatures and surface response at {site} are nothing like {target}."
+    },
+    "M": {
+      "why": "Rock type and albedo drive instrument response, sample science and dust behaviour.",
+      "strong": "Lithology and brightness at {site} match {target}.",
+      "partial": "Related rock types, but not the same family.",
+      "breaks": "Different rock chemistry from {target} - mineralogy tests will not transfer."
+    },
+    "W": {
+      "why": "Where water ice sits, and how dry the place is, drives ISRU and biosignature work.",
+      "strong": "Ice presence and dryness at {site} are close to {target}.",
+      "partial": "Dry, but not as dry as {target} - or ice is present in a different form.",
+      "breaks": "Water behaves completely differently here than at {target}."
+    },
+    "B": {
+      "why": "Life changes soil chemistry and contaminates biosignature tests.",
+      "strong": "Almost no vegetation, as at {target}.",
+      "partial": "Sparse vegetation - usable, but biology is present.",
+      "breaks": "This is a living landscape; {target} is not."
+    },
+    "C": {
+      "why": "Buildability decides whether a permanent base can be founded, excavated and landed on at all.",
+      "strong": "Flat, firm ground at {site} matches what a builder would face at {target}.",
+      "partial": "Buildable in places, but the ground differs from {target} in firmness or flatness.",
+      "breaks": "This ground could not stand in for {target}: the slopes or the soil behave differently."
+    },
+    "A": {
+      "why": "Dust loading and wind shape visibility, solar power and equipment wear.",
+      "strong": "Dust and wind regime comparable to {target}.",
+      "partial": "Dusty, but the particle transport regime differs.",
+      "breaks": "Atmospheric conditions here do not resemble {target}."
+    },
+    "I": {
+      "why": "Low sun angles produce long shadows and extreme contrast, which is what polar operations have to cope with.",
+      "strong": "Sun geometry at {site} reproduces the grazing-light conditions of {target}.",
+      "partial": "Low sun for part of the year only.",
+      "breaks": "The sun climbs far higher here than at {target}."
+    }
+  },
+  "always_on": {
+    "moon": [
+      "Gravity is 1/6 of Earth's: dust ballistics, slope stability and crew movement all differ.",
+      "Hard vacuum, so heat moves only by radiation and conduction, never by air.",
+      "No magnetosphere and no atmosphere: cosmic rays and solar particle events hit the surface directly.",
+      "Permanently shadowed regions reach 25-40 K; no place on Earth is that cold.",
+      "A lunar day lasts about 29.5 Earth days, with two weeks of darkness.",
+      "Lunar regolith is sharp, unweathered and agglutinate-rich; Earth soil has been rounded by water and wind."
+    ],
+    "mars": [
+      "Gravity is about 3/8 of Earth's.",
+      "The atmosphere is about 6 mbar of CO2: enough for dust storms, far too thin to breathe or to carry heat like Earth air.",
+      "No global magnetic field, so surface radiation is far higher than anywhere on Earth.",
+      "Martian soil contains perchlorate salts, which Earth analog soils generally do not.",
+      "Surface temperatures run roughly 140-300 K."
+    ],
+    "earth_side": [
+      "Earth biology is everywhere, so any site is a contamination source for biosignature tests."
+    ],
+    "construction_note": [
+      "Earth gravity means foundation loads, excavation forces and dust settling all differ from 1/6 g or 3/8 g.",
+      "No Earth site reproduces vacuum welding, regolith abrasiveness or the thermal cycling a lunar structure sees."
+    ]
+  }
+}
