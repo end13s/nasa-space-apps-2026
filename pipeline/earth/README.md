@@ -7,16 +7,71 @@ into one `earth_grid.parquet` by Saturday 23:00.
 |---|---|---|---|
 | `gee_features.py` | Clara | C2–C6 | Soil (construction), thermal, material, water/ice/biology, logistics. |
 | `gee_terrain.py` | Sofia | S3 | Terrain + buildability on Copernicus GLO-30, from the shared definitions in `engine/terrain_features.py`. |
-| `export_tasks.py` | Clara | C7 | Launch 3–4 separate `Export.image.toDrive` tasks so one failure does not block everything. Post task ids in `#data`. |
+| `export_tasks.py` | Clara | C7 | Launch six separate `Export.image.toDrive` task groups (seven when GLiM is ready) so one failure does not block everything. Post task ids in `#data`. |
 | `tif_to_parquet.py` | Clara | C8 | Multiband GeoTIFFs (hers **and** Sofia's) → one parquet with `cell_id`, `lat`, `lon`, feature columns, `__sd` columns, `qa_flags`. |
-| `qc_maps.ipynb` | Clara | C8–C9 | One PNG map per feature, posted in `#data`. |
+| `qc_maps.py` | Clara | C8–C9 | One PNG map per feature, with regional sanity checks. |
 
-`gee_features.py` contains importable image builders; initialize Earth Engine
-in the calling notebook or script, then export the returned images with the
-shared grid settings. It currently builds soil, thermal, water/biology, ice,
-logistics, and protected-area layers. The contract features `ti_class`,
-`litho_class`, `mafic_idx`, and `soil_moist` still need their calibration or
-source ingestion before they can be exported; do not substitute proxy bands.
+`gee_features.py` contains importable image builders. `export_tasks.py` starts
+separate Earth Engine tasks and prints each task ID. Continuous feature
+builders emit a within-cell spatial standard deviation as
+`<feature>__sd`; this describes sub-cell heterogeneity, not sensor accuracy.
+`build_thermal()` also emits `ati_raw`; it emits the scored `ti_class` only
+when given four calibrated breakpoints.
+
+The planned `science/calibration_sites.geojson` is not present in the repo;
+Julia owns that J3 deliverable. Ask Julia/Eduard for the reviewed sites with
+known `ti_class` labels. Upload the GeoJSON as an Earth Engine table asset,
+then run `calibrate_ti.py --sites-asset <asset-id>` to export per-site ATI
+medians. Agree on the four increasing cutoffs with the science owners and save
+them as JSON, e.g. `{"ati_breakpoints": [b0, b1, b2, b3]}`. Do not invent
+cutoffs or infer labels from unlabeled sites.
+
+`build_lithology()` needs a GLiM Earth Engine FeatureCollection asset with a
+code property matching `contract/lithology_classes.yaml`'s `earth_glim` keys.
+The function maps those codes and uses a 1 km rasterization followed by mode
+reduction to the common grid. The GLiM source/asset is not currently in the
+repo; upload the source before requesting that export. `mafic_idx` and
+`soil_moist` remain unavailable until their source data are added.
+
+Country ISO3 codes are read locally by `tif_to_parquet.py` from a Natural
+Earth admin-0 vector containing an `ISO_A3` field (or from a
+`cell_id,country_iso3` CSV). `USDOS/LSIB_SIMPLE/2017` has FIPS two-letter
+codes, not ISO3, so do not relabel its codes as ISO3.
+
+Install optional tools with
+`python -m pip install -r requirements.txt -r pipeline/earth/requirements.txt`.
+Authenticate Earth Engine in the environment where you run the scripts.
+Example:
+
+```bash
+python pipeline/earth/export_tasks.py \
+    --ti-breakpoints data_work/ati_breakpoints.json \
+    --glim-asset projects/<project>/assets/glim
+```
+
+Until thresholds and the GLiM asset are ready, omit the corresponding options;
+the launcher explicitly reports that `ti_class` or `litho_class` is not being
+exported. It never substitutes guessed classes.
+
+After all canonical TIFFs, including `earth_land_quality.tif` and Sofia's
+`earth_terrain.tif`, are in one directory:
+
+```bash
+python pipeline/earth/tif_to_parquet.py \
+    --tif-dir data_work/earth_exports \
+    --country-vector data_raw/ne_10m_admin_0_countries.geojson \
+    --out data_work/earth_grid.parquet
+python pipeline/earth/qc_maps.py \
+    --grid data_work/earth_grid.parquet \
+    --out data_work/qc_maps
+```
+
+The parquet builder verifies that every raster is exactly 1440 × 720 with the
+contract transform, keeps coastal land cells and sets QA bit 2 below 50% land,
+and sets bit 8 for incomplete DEM coverage. Pass `--require-complete` to fail
+if any MVP feature, required spatial spread, or country code is missing. The QC
+script checks Sahara/Atacama NDVI, Amazon NDVI, and Greenland `ice_idx`,
+validates the grid/QA flags, and writes one PNG per numeric feature.
 
 Sofia needs access to Clara's Earth Engine project — add her as a member in
 the first ten minutes, it is a common half-hour sink.
@@ -32,9 +87,10 @@ the first ten minutes, it is a common half-hour sink.
 - **Band names = feature ids**, spelled exactly as in
   `contract/feature_dictionary.yaml`. The packer looks columns up by name and
   prints a WARNING for missing MVP features — read its output.
-- **Two-stage reduction**: 100 m → 1 km → 0.25°. Earth Engine caps
-  `reduceResolution` at 65,536 input pixels per output pixel, so a single jump
-  from 30 m silently fails.
+- **High-resolution mask reduction**: 10–30 m land/DEM masks are staged through
+  100 m and 1 km before the 0.25° grid. Every `reduceResolution` call is capped
+  at 65,536 inputs. Other source layers use their native 500 m–9 km grids and
+  reduce directly when the input count stays within that cap.
 - **Land mask**: GLO-30 not null and land fraction > 50 %. Flag coastal cells
   (`qa_flags` bit 2) rather than dropping them.
 - Launch exports by **18:00**. They take 1–4 hours; this is the critical path.
@@ -48,8 +104,8 @@ dimension, so Finn's panel is empty without them.
 Thermal (C3), material (C4), water/ice/biology (C5), logistics (C6). Scale
 factors are easy to get wrong and expensive to discover late: MODIS LST
 `× 0.02` → K, NDVI `× 0.0001`, albedo `× 0.001`, ERA5-Land precipitation is
-metres per month (`× 1000 × 12` for mm/yr). Mask ΔT < 5 K in the ATI
-calculation or cloud and water artifacts poison the thermal-inertia classes.
+metres per month (`× 1000 × 12` for mm/yr). ATI masks ΔT < 5 K; it is a
+calibration diagnostic until the approved `ti_class` breakpoints are supplied.
 
 **Terrain is not yours** — Sofia exports it on the same grid and hands you the
 GeoTIFF for the merge.
@@ -60,47 +116,6 @@ GeoTIFF for the merge.
 same grid: `relief_km`, `slope_med_deg`, `slope_p90_deg`, `rough_2km`,
 `rough_10km`, the four gravity-scaled baselines, `hypso_int`, and the
 buildability pair `flat_frac` / `steep_frac`.
-
-The shared NumPy API reports p10/p50/p90 across 1 km windows and a separate
-measurement-error estimate. The Earth Engine export writes p50 under each
-feature id, the window standard deviation as `<feature>__sd`, and p10/p90
-bands separately. Gravity-scaled roughness is a sensitivity output, not part of
-`compute()`; the export marks those bands in its image metadata. The
-gravity-scaled baselines use a 100 m intermediate DEM to retain resolution
-below the 330 m lunar baseline.
-
-Run the export after Earth Engine authentication (optionally provide a Cloud
-project):
-
-```bash
-python -m pipeline.earth.gee_terrain --project <earth-engine-project>
-```
-
-Earth Engine creates a Drive export task; confirm its completion before
-cross-checking. For each cross-check tile, provide a JSON config with a local
-metric-projection DEM and a JSON file of GEE feature values:
-
-```json
-{"dem_path": "tiles/tile.tif", "gee_json": "tiles/gee.json",
- "dem_vertical_error_m": 1.0}
-```
-
-```bash
-python -m engine.cross_check --config tiles/tile.json --out tiles/check.json
-```
-
-The local target-clip handoff is deliberately separate from Michal's
-`targets.json` build. Put projected clips in `<target_id>.tif` files, then
-write an updated copy rather than overwriting the shared source:
-
-```bash
-python -m engine.targets_terrain --clips-dir clips \
-  --targets contract/targets.json --out data_work/targets_terrain.json
-```
-
-`terrain_windows` preserves the full quantile/error records; the existing
-`features` values receive p50 only. Do not copy window spread into `sd`, which
-is a different uncertainty quantity.
 
 The cross-check (S4) is the most important validity test in the project:
 compute the same tiles locally from the open AWS bucket `copernicus-dem-30m`

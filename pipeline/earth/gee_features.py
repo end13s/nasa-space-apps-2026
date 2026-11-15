@@ -7,7 +7,12 @@ Export tasks are intentionally kept separate from these image builders.
 
 from __future__ import annotations
 
+import math
+from collections.abc import Sequence
+from pathlib import Path
+
 import ee
+import yaml
 
 GRID = {
     "crs": "EPSG:4326",
@@ -25,11 +30,63 @@ _MONTHS = range(1, 13)
 
 # These contract features need a calibrated or ingested source before this
 # module can produce them. Do not substitute an uncalibrated proxy.
-UNAVAILABLE_FEATURES = ("ti_class", "litho_class", "mafic_idx", "soil_moist")
+UNAVAILABLE_FEATURES = ("mafic_idx", "soil_moist")
 
 
-def _to_grid(image: ee.Image, source_projection: ee.Projection) -> ee.Image:
-    """Reduce a source image onto the contract's fixed 0.25-degree grid."""
+def _to_grid(
+    image: ee.Image,
+    source_projection: ee.Projection,
+    band_names: Sequence[str],
+) -> ee.Image:
+    """Reduce source bands to cell means and within-cell spatial standard deviations."""
+    mean = (
+        image.setDefaultProjection(source_projection)
+        .reduceResolution(reducer=ee.Reducer.mean(), maxPixels=65536)
+        .reproject(**GRID)
+    )
+    spatial_sd = (
+        image.setDefaultProjection(source_projection)
+        .reduceResolution(reducer=ee.Reducer.stdDev(), maxPixels=65536)
+        .reproject(**GRID)
+        .rename([f"{name}__sd" for name in band_names])
+    )
+    return mean.addBands(spatial_sd)
+
+
+def _validate_ti_breakpoints(breakpoints: Sequence[float]) -> tuple[float, ...]:
+    values = tuple(float(value) for value in breakpoints)
+    if len(values) != 4 or any(not math.isfinite(value) for value in values):
+        raise ValueError("ti_class needs exactly four finite ATI breakpoints")
+    if any(value < 0 for value in values):
+        raise ValueError("ATI breakpoints cannot be negative")
+    if any(left >= right for left, right in zip(values, values[1:])):
+        raise ValueError("ATI breakpoints must be strictly increasing")
+    return values
+
+
+def _reduce_fraction(
+    image: ee.Image, source_projection: ee.Projection
+) -> ee.Image:
+    """Reduce 10-30 m masks via 100 m and 1 km before the Earth grid."""
+    at_100m = (
+        image.setDefaultProjection(source_projection)
+        .reduceResolution(reducer=ee.Reducer.mean(), maxPixels=65536)
+        .reproject(crs=source_projection, scale=100)
+    )
+    at_1km = (
+        at_100m.reduceResolution(
+            reducer=ee.Reducer.mean(), maxPixels=65536
+        ).reproject(crs=source_projection, scale=1000)
+    )
+    return (
+        at_1km.reduceResolution(
+            reducer=ee.Reducer.mean(), maxPixels=65536
+        )
+        .reproject(**GRID)
+    )
+
+
+def _mean_to_grid(image: ee.Image, source_projection: ee.Projection) -> ee.Image:
     return (
         image.setDefaultProjection(source_projection)
         .reduceResolution(reducer=ee.Reducer.mean(), maxPixels=65536)
@@ -72,11 +129,13 @@ def build_soil() -> ee.Image:
     return bulk_grid.addBands(sand_grid).toFloat()
 
 
-def build_thermal() -> ee.Image:
-    """Return tmin_k, tmax_k, diurnal_amp_k, and albedo.
+def build_thermal(ti_breakpoints: Sequence[float] | None = None) -> ee.Image:
+    """Return thermal features, spatial spreads, and ATI for calibration.
 
     Monthly MODIS composites are formed across 2021-2025 before selecting
-    each cell's coldest night and warmest day month.
+    each cell's coldest night and warmest day month. Supply four calibrated
+    ATI cutoffs to include the scored ``ti_class`` band; without calibration,
+    only the raw ATI diagnostic is emitted.
     """
     lst = ee.ImageCollection("MODIS/061/MYD11A2").filterDate(
         _START_DATE, _END_DATE
@@ -105,8 +164,11 @@ def build_thermal() -> ee.Image:
         .median()
         .rename("diurnal_amp_k")
     )
+    temperature_bands = tmin.addBands(tmax).addBands(diurnal_amp)
     temperatures = _to_grid(
-        tmin.addBands(tmax).addBands(diurnal_amp), lst_projection
+        temperature_bands,
+        lst_projection,
+        ("tmin_k", "tmax_k", "diurnal_amp_k"),
     )
 
     albedo_collection = (
@@ -119,8 +181,150 @@ def build_thermal() -> ee.Image:
         .multiply(0.001)
         .rename("albedo")
     )
-    albedo_grid = _to_grid(albedo, albedo_collection.first().projection())
-    return temperatures.addBands(albedo_grid).toFloat()
+    albedo_grid = _to_grid(
+        albedo, albedo_collection.first().projection(), ("albedo",)
+    )
+
+    temperature_means = temperatures.select(
+        ["tmin_k", "tmax_k", "diurnal_amp_k"]
+    )
+    albedo_mean = albedo_grid.select("albedo")
+    ati = (
+        ee.Image(1)
+        .subtract(albedo_mean)
+        .divide(
+            temperature_means.select("diurnal_amp_k").updateMask(
+                temperature_means.select("diurnal_amp_k").gt(5)
+            )
+        )
+        .rename("ati_raw")
+    )
+    result = temperatures.addBands(albedo_grid).addBands(ati)
+
+    if ti_breakpoints is not None:
+        cuts = _validate_ti_breakpoints(ti_breakpoints)
+        classes = (
+            ati.gt(cuts[0])
+            .add(ati.gt(cuts[1]))
+            .add(ati.gt(cuts[2]))
+            .add(ati.gt(cuts[3]))
+            .rename("ti_class")
+            .toFloat()
+        )
+        result = result.addBands(classes)
+    return result.toFloat()
+
+
+def build_lithology(asset_id: str, code_property: str) -> ee.Image:
+    """Map an uploaded GLiM feature asset to majority ``litho_class`` cells.
+
+    The GLiM source is not hosted in this repository or as a known public
+    Earth Engine asset. Upload it first and pass its asset ID and code field.
+    """
+    if not asset_id.strip() or not code_property.strip():
+        raise ValueError("GLiM asset ID and lithology-code property are required")
+    contract_path = (
+        Path(__file__).resolve().parents[2]
+        / "contract"
+        / "lithology_classes.yaml"
+    )
+    with contract_path.open(encoding="utf-8") as source:
+        code_mapping = yaml.safe_load(source)["earth_glim"]
+
+    collection = ee.FeatureCollection(asset_id)
+    mapping = ee.Dictionary(code_mapping)
+    recognized = collection.filter(
+        ee.Filter.inList(code_property, list(code_mapping))
+    )
+
+    def assign_class(feature: ee.Feature) -> ee.Feature:
+        class_id = mapping.get(ee.String(feature.get(code_property)))
+        return feature.set("class_id", class_id)
+
+    classes = recognized.map(assign_class).reduceToImage(
+        properties=["class_id"], reducer=ee.Reducer.first()
+    )
+    return (
+        classes.reproject(crs="EPSG:4326", scale=1000)
+        .reduceResolution(reducer=ee.Reducer.mode(), maxPixels=65536)
+        .reproject(**GRID)
+        .rename("litho_class")
+        .toFloat()
+    )
+
+
+def build_land_quality() -> ee.Image:
+    """Return land/DEM coverage and the per-cell QA bitmask.
+
+    Coastal cells with land coverage below 50% are retained and receive bit 2.
+    Cells with no land or no valid GLO-30 data are masked in the parquet stage.
+    """
+    worldcover = ee.ImageCollection("ESA/WorldCover/v200").first()
+    worldcover_projection = worldcover.select("Map").projection()
+    land = worldcover.select("Map").neq(80).unmask(0).rename("land")
+    land_fraction = _reduce_fraction(land, worldcover_projection).rename(
+        "land_fraction"
+    )
+
+    dem_collection = ee.ImageCollection("COPERNICUS/DEM/GLO30")
+    dem = dem_collection.mosaic().select("DEM")
+    dem_projection = dem_collection.first().select("DEM").projection()
+    valid_dem = (
+        dem.mask()
+        .reduce(ee.Reducer.min())
+        .unmask(0)
+        .rename("dem_valid")
+    )
+    dem_valid_fraction = _reduce_fraction(
+        valid_dem, dem_projection
+    ).rename("dem_valid_fraction")
+
+    lst = ee.ImageCollection("MODIS/061/MYD11A2").filterDate(
+        _START_DATE, _END_DATE
+    )
+
+    def qa_observation(image: ee.Image) -> ee.Image:
+        day_quality = image.select("QC_Day").bitwiseAnd(3)
+        night_quality = image.select("QC_Night").bitwiseAnd(3)
+        return (
+            day_quality.eq(2)
+            .Or(night_quality.eq(2))
+            .rename("cloudy")
+            .addBands(
+                night_quality.eq(3).rename("unavailable")
+            )
+        )
+
+    qa_collection = lst.map(qa_observation)
+    qa_projection = lst.first().select("QC_Day").projection()
+    cloud_fraction = _mean_to_grid(
+        qa_collection.select("cloudy").mean(), qa_projection
+    )
+    unavailable_fraction = _mean_to_grid(
+        qa_collection.select("unavailable").mean(), qa_projection
+    )
+    latitude = ee.Image.pixelLonLat().select("latitude").abs()
+
+    qa_flags = (
+        cloud_fraction.gt(0.5)
+        .multiply(1)
+        .add(land_fraction.gt(0).And(land_fraction.lt(0.5)).multiply(2))
+        .add(
+            latitude.gte(66.56)
+            .And(unavailable_fraction.gt(0.5))
+            .multiply(4)
+        )
+        .add(dem_valid_fraction.lt(1).multiply(8))
+        .rename("qa_flags")
+        .toUint16()
+    )
+    return (
+        land_fraction.addBands(dem_valid_fraction)
+        .addBands(cloud_fraction.rename("lst_cloud_gap_fraction"))
+        .addBands(unavailable_fraction.rename("lst_unavailable_fraction"))
+        .addBands(qa_flags)
+        .toFloat()
+    )
 
 
 def build_water_biology() -> ee.Image:
@@ -136,8 +340,8 @@ def build_water_biology() -> ee.Image:
         .rename("precip_mm")
     )
 
-    ndvi_collection = ee.ImageCollection("MODIS/061/MOD13A2").select("NDVI")
-    ndvi_projection = ndvi_collection.first().projection()
+    ndvi_collection = ee.ImageCollection("MODIS/061/MOD13A2")
+    ndvi_projection = ndvi_collection.first().select("NDVI").projection()
 
     def good_ndvi(image: ee.Image) -> ee.Image:
         quality = image.select("SummaryQA")
@@ -156,8 +360,8 @@ def build_water_biology() -> ee.Image:
     )
 
     return (
-        _to_grid(precipitation, era_projection)
-        .addBands(_to_grid(ndvi, ndvi_projection))
+        _to_grid(precipitation, era_projection, ("precip_mm",))
+        .addBands(_to_grid(ndvi, ndvi_projection, ("ndvi_max",)))
         .toFloat()
     )
 
@@ -168,7 +372,6 @@ def build_ice() -> ee.Image:
         "2015-01-01", "2025-01-01"
     )
     soil_temperature = era.select("soil_temperature_level_1")
-    era_projection = soil_temperature.first().projection()
     annual_maxima = [
         soil_temperature.filterDate(f"{year}-01-01", f"{year + 1}-01-01").max()
         for year in range(2015, 2025)
@@ -215,12 +418,12 @@ def build_ice() -> ee.Image:
     )
 
     ice_index = (
-        _to_grid(frozen_ground, era_projection)
-        .max(_to_grid(perennial_snow, snow_projection))
-        .max(_to_grid(glacier_fraction, snow_projection))
+        frozen_ground.setDefaultProjection(snow_projection)
+        .max(perennial_snow)
+        .max(glacier_fraction)
         .rename("ice_idx")
     )
-    return ice_index.toFloat()
+    return _to_grid(ice_index, snow_projection, ("ice_idx",)).toFloat()
 
 
 def build_logistics() -> ee.Image:
@@ -229,7 +432,9 @@ def build_logistics() -> ee.Image:
         "Oxford/MAP/accessibility_to_cities_2015_v1_0"
     ).select("accessibility")
     travel = _to_grid(
-        accessibility.rename("travel_min"), accessibility.projection()
+        accessibility.rename("travel_min"),
+        accessibility.projection(),
+        ("travel_min",),
     )
 
     viirs_collection = (
@@ -239,7 +444,9 @@ def build_logistics() -> ee.Image:
     )
     viirs = viirs_collection.first()
     radiance = _to_grid(
-        viirs.rename("viirs_rad"), viirs_collection.first().projection()
+        viirs.rename("viirs_rad"),
+        viirs_collection.first().projection(),
+        ("viirs_rad",),
     )
     return travel.addBands(radiance).toFloat()
 
@@ -257,8 +464,7 @@ def build_protected() -> ee.Image:
         .paint(ee.FeatureCollection("WCMC/WDPA/current/polygons"), 1)
     )
     return (
-        _to_grid(protected, source_projection)
-        .rename("protected_frac")
+        _to_grid(protected, source_projection, ("protected_frac",))
         .toFloat()
     )
 
@@ -284,6 +490,8 @@ __all__ = [
     "GRID_REGION_BOUNDS",
     "UNAVAILABLE_FEATURES",
     "build_ice",
+    "build_land_quality",
+    "build_lithology",
     "build_logistics",
     "build_protected",
     "build_soil",
