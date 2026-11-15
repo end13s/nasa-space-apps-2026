@@ -1,4 +1,7 @@
-/* Colours, fonts and radii: web/src/tokens.css */
+/* Colours, fonts and radii: web/src/tokens.css. Layout values stay here. */
+:root {
+  --panel-w: 340px;
+}
 
 * { box-sizing: border-box; }
 
