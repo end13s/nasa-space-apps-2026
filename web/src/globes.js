@@ -80,7 +80,10 @@ export function homeView(viewer, body, lon = 0, lat = 15) {
   const fovy = frustum.fovy ?? frustum.fov;
   const fovx = 2 * Math.atan(Math.tan(fovy / 2) * aspect);
   const halfFov = Math.min(fovx, fovy) / 2;
-  const distance = (1.08 * r) / Math.sin(halfFov);
+  let distance = (1.08 * r) / Math.sin(halfFov);
+  // A pane with no size yet (hidden tab, 0x0 iframe) gives Cesium a NaN
+  // aspect ratio; setView would then throw and stop the app from starting.
+  if (!Number.isFinite(distance)) distance = 3 * r;
   viewer.camera.setView({
     destination: Cesium.Cartesian3.fromDegrees(lon, lat, distance - r, body.ellipsoid),
   });
