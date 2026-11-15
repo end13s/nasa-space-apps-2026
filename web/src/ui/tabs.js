@@ -120,7 +120,7 @@ export function renderDiscoveries(el, deepDives, hotspots, onOpen) {
         (d, k) => `
       <article class="discovery">
         <h3>${esc(d.name)}</h3>
-        <p class="hint">${d.lat.toFixed(2)}, ${d.lon.toFixed(2)}${d.body ? ` · analog for ${esc(d.body)}` : ''}</p>
+        <p class="hint">${d.lat.toFixed(2)}, ${d.lon.toFixed(2)}${d.body ? ` · proxy for ${esc(d.body)}` : ''}</p>
         <p>${esc(d.summary)}</p>
         <button type="button" class="btn" data-k="${k}">Open site</button>
       </article>`,
@@ -141,7 +141,7 @@ export function renderDiscoveries(el, deepDives, hotspots, onOpen) {
             .map(
               (h, k) => `
       <article class="discovery">
-        <h3>#${k + 1} · score ${h.score.toFixed(2)}</h3>
+        <h3>#${k + 1} · proxy strength ${h.score.toFixed(2)}</h3>
         <p class="hint">${h.lat.toFixed(2)}, ${h.lon.toFixed(2)}</p>
         <button type="button" class="btn" data-k="${k}">Open site</button>
       </article>`,

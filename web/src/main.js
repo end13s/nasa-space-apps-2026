@@ -162,7 +162,7 @@ async function runScore() {
     const top = res.hotspots[0];
     panel.setStatus(
       top
-        ? `Best match ${top.score.toFixed(2)}. Click a numbered pin, or anywhere on land, for the site card.`
+        ? `Top proxy strength ${top.score.toFixed(2)}. Click a numbered pin, or anywhere on land, for the site card.`
         : 'No cells pass the current filters.',
     );
     if (tabs.current === 'discoveries') {

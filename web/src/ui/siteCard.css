@@ -164,40 +164,27 @@
   color: var(--accent, #f4b740);
 }
 
-.sc-score {
-  flex: none;
-  min-width: 76px;
-  padding: 6px 10px 5px;
-  border-radius: var(--sc-r);
-  text-align: center;
-  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.08);
-}
-
-.sc-score-num {
-  font-size: 28px;
-  font-weight: 750;
-  line-height: 1.05;
-  font-variant-numeric: tabular-nums;
-}
-
-.sc-score-label {
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
-  text-transform: uppercase;
-  opacity: 0.8;
-}
-
 @container (max-width: 300px) {
   .sc-coords {
     font-size: 16px;
   }
 }
 
-.sc-uncertainty {
+/* Proxy strength: a secondary field under the header, not a headline. */
+.sc-strength {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 12px;
   color: var(--muted, #8b95a7);
   font-variant-numeric: tabular-nums;
+}
+
+.sc-strength-dot {
+  flex: none;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
 }
 
 /* ------------------------------------------------------------ radar */
@@ -271,28 +258,44 @@
   font-size: 12px;
 }
 
-/* ------------------------------------------------------------ verdicts */
+/* ------------------------------------------------------------ proxy card */
 
-.sc-verdicts {
+.sc-proxy {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 8px;
 }
 
-.sc-vtitle {
+/* Supports and Conditional side by side when the card is wide enough;
+   stacked in the 340px side panel. */
+.sc-ptop {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@container (min-width: 460px) {
+  .sc-ptop {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.sc-ptitle,
+.sc-cannot-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
   font-size: 11px;
   font-weight: 650;
   letter-spacing: 0.07em;
   text-transform: uppercase;
-  margin-bottom: 6px;
+  margin-bottom: 8px;
 }
 
-.sc-vgroup-strong .sc-vtitle { color: var(--sc-good); }
-.sc-vgroup-partial .sc-vtitle { color: var(--accent, #f4b740); }
-.sc-vgroup-breaks .sc-vtitle { color: var(--sc-bad); }
-.sc-vgroup-nodata .sc-vtitle { color: var(--muted, #8b95a7); }
+.sc-pcol-supports .sc-ptitle { color: var(--sc-good); }
+.sc-pcol-conditional .sc-ptitle { color: var(--accent, #f4b740); }
 
-.sc-vlist {
+.sc-plist {
   list-style: none;
   padding: 0;
   display: flex;
@@ -300,56 +303,106 @@
   gap: 8px;
 }
 
-.sc-vitem {
-  display: flex;
-  gap: 8px;
+.sc-prow {
   min-width: 0;
 }
 
-.sc-mark {
-  flex: none;
-  width: 18px;
-  text-align: center;
-  font-size: 13px;
-  line-height: 1.45;
-}
-
-.sc-mark-partial {
-  color: var(--accent, #f4b740);
-  font-size: 15px;
-  line-height: 1.25;
-}
-
-.sc-mark-nodata {
-  color: var(--muted, #8b95a7);
-}
-
-.sc-vbody {
-  flex: 1;
-  min-width: 0;
-}
-
-.sc-vhead {
+.sc-prow-head {
   display: flex;
   align-items: baseline;
-  justify-content: space-between;
-  gap: 8px;
+  gap: 6px;
 }
 
-.sc-vname {
-  font-weight: 650;
+.sc-prow-name {
+  font-weight: 600;
+  min-width: 0;
 }
 
-.sc-vscore {
+.sc-prow-score {
+  margin-left: auto;
   flex: none;
   font-size: 12px;
   color: var(--muted, #8b95a7);
   font-variant-numeric: tabular-nums;
 }
 
-.sc-vtext {
+.sc-prow-text {
   color: var(--muted, #8b95a7);
   font-size: 12.5px;
+  margin-top: 2px;
+}
+
+/* not_matched: kept visible under Supports, but quiet. */
+.sc-pdim {
+  margin-top: 12px;
+  padding-top: 10px;
+  border-top: 1px dashed var(--border, #2a3242);
+  opacity: 0.55;
+}
+
+.sc-pdim-title {
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--muted, #8b95a7);
+  margin: 0 0 6px;
+}
+
+.sc-pdim .sc-prow-name {
+  font-weight: 500;
+}
+
+/* Cannot test: the most prominent block on the card. Never collapsed. */
+.sc-cannot {
+  background: rgb(255 133 137 / 0.07);
+  border: 1px solid rgb(255 133 137 / 0.45);
+  border-left: 4px solid var(--sc-bad);
+  border-radius: var(--sc-r);
+  padding: 14px;
+}
+
+.sc-cannot-title {
+  font-size: 13px;
+  color: var(--sc-bad);
+  margin-bottom: 10px;
+}
+
+.sc-cannot .sc-prow-name {
+  font-size: 13.5px;
+}
+
+.sc-cannot .sc-prow-text {
+  color: var(--text, #e6e9ef);
+  font-size: 13px;
+}
+
+/* Evidence grade chip: small and quiet, context not decoration. */
+.sc-grade {
+  flex: none;
+  display: inline-block;
+  min-width: 16px;
+  padding: 0 4px;
+  border: 1px solid var(--border, #2a3242);
+  border-radius: 4px;
+  font-size: 10px;
+  font-weight: 650;
+  line-height: 14px;
+  text-align: center;
+  color: var(--muted, #8b95a7);
+  cursor: help;
+}
+
+.sc-grade-a { color: var(--text, #e6e9ef); border-color: #4a5568; }
+.sc-grade-d { border-style: dashed; }
+.sc-grade-def { border-color: transparent; }
+
+.sc-glegend {
+  font-size: 11px;
+  line-height: 1.7;
+  color: var(--muted, #8b95a7);
+}
+
+.sc-glegend .sc-grade {
+  cursor: default;
 }
 
 /* ------------------------------------------------------------ always-on */

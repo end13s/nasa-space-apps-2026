@@ -112,7 +112,114 @@
       "viirs_rad": 2.0849192454175105,
       "known_analog_km": 4000.000000000002
     },
-    "country": "HHH"
+    "country": "HHH",
+    "proxy": {
+      "supports": [
+        {
+          "id": "hypso_int",
+          "label": "Hypsometric integral",
+          "dim": "T",
+          "score": 0.884,
+          "grade": "C"
+        }
+      ],
+      "conditional": [
+        {
+          "id": "litho_class",
+          "label": "Rock class",
+          "dim": "M",
+          "score": 1,
+          "grade": "A",
+          "correction": "Define and review the Earth-to-Moon class mapping and similarity matrix before scoring."
+        },
+        {
+          "id": "precip_mm",
+          "label": "Precipitation",
+          "dim": "W",
+          "score": 1,
+          "grade": "DEF",
+          "correction": "Transfer not yet assessed - treat as conditional."
+        },
+        {
+          "id": "flat_frac",
+          "label": "Flat-ground fraction",
+          "dim": "C",
+          "score": 0.996,
+          "grade": "C",
+          "correction": "Match slope thresholds and map resolution. Assess bearing capacity and grading separately under target conditions."
+        }
+      ],
+      "cannot_test": [
+        {
+          "id": "ti_class",
+          "label": "Thermal inertia class",
+          "dim": "H",
+          "score": 1,
+          "grade": "C",
+          "reason": "Physics does not carry over to this body."
+        },
+        {
+          "id": "tmin_k",
+          "label": "Minimum surface temperature",
+          "dim": "H",
+          "score": 0,
+          "grade": "C",
+          "reason": "Physics does not carry over to this body."
+        },
+        {
+          "id": "gravity",
+          "label": "Target gravity",
+          "score": null,
+          "grade": null,
+          "reason": "Lunar gravity is approximately 1.62 m/s2. Earth field tests require separate scaling or reduced-gravity validation.",
+          "never_testable": true
+        },
+        {
+          "id": "radiation",
+          "label": "Target radiation environment",
+          "score": null,
+          "grade": null,
+          "reason": "Earth's shielding prevents direct reproduction of lunar surface radiation. Radiation effects require dedicated measurements, modeling, or irradiation tests.",
+          "never_testable": true
+        },
+        {
+          "id": "pressure",
+          "label": "Target atmospheric pressure",
+          "score": null,
+          "grade": null,
+          "reason": "Outdoor Earth sites cannot reproduce lunar vacuum. Gas heat transfer, outgassing, and sublimation require controlled testing.",
+          "never_testable": true
+        }
+      ],
+      "not_matched": [
+        {
+          "id": "rough_10km",
+          "label": "Roughness at 10 km",
+          "dim": "T",
+          "score": 0.293,
+          "grade": "D",
+          "reason": "measured, does not match this target"
+        },
+        {
+          "id": "rough_2km",
+          "label": "Roughness at 2 km",
+          "dim": "T",
+          "score": 0.263,
+          "grade": "C",
+          "reason": "measured, does not match this target"
+        },
+        {
+          "id": "steep_frac",
+          "label": "Steep-ground fraction",
+          "dim": "C",
+          "score": 0.158,
+          "grade": "C",
+          "reason": "measured, does not match this target"
+        }
+      ],
+      "proxy_strength": 0.603,
+      "partial": false
+    }
   },
   "_comment": "Dev fixture: one real worker cellInfo card (synthetic bundle), the target it was scored against and the weights used (base_construction profile). Captured Sat Nov 14 from the running app."
 }

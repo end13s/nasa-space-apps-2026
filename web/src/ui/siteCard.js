@@ -26,6 +26,7 @@ import {
   Tooltip,
 } from 'chart.js';
 import { colorFor } from '../heatmap.js';
+import { GRADE_LABELS } from '../worker/score_core.js';
 import './siteCard.css';
 
 Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip);
@@ -45,18 +46,11 @@ export const CONSTRUCTION_TESTS = {
   ],
 };
 
-const SITE_LABEL = 'this site';
 const DIM_FALLBACK_ORDER = ['T', 'H', 'M', 'W', 'B', 'C', 'A', 'I'];
 const SITE_COLOR = '#5ab0f0';
 const BODY_COLOR = { mars: '#e8835a', moon: '#c3cbd8' };
 const BODY_NAME = { mars: 'Mars', moon: 'Moon', earth: 'Earth' };
 const MARKER = { strong: '✅', partial: '◐', breaks: '❌', nodata: '○' };
-const GROUPS = [
-  ['strong', 'Strong analog for'],
-  ['partial', 'Partial'],
-  ['breaks', 'Breaks down on'],
-  ['nodata', 'No data for'],
-];
 
 // ---------------------------------------------------------------- helpers
 
@@ -108,13 +102,6 @@ function inkFor(rgb) {
   if (!m) return '#fff';
   const [r, g, b] = m.map(Number);
   return 0.2126 * r + 0.7152 * g + 0.0722 * b > 140 ? '#0b0e14' : '#ffffff';
-}
-
-function fillTemplate(str, targetName) {
-  const s = String(str ?? '')
-    .replaceAll('{site}', SITE_LABEL)
-    .replaceAll('{target}', targetName);
-  return s.charAt(0).toUpperCase() + s.slice(1);
 }
 
 /** Two-line radar label for long names, split at the space nearest the middle. */
@@ -170,8 +157,7 @@ function cssVar(el, name, fallback) {
 
 function renderHeader(ctx) {
   const { card, target, meta, onClose } = ctx;
-  const overall = num(card.overall);
-  const bg = colorFor(overall);
+  const strength = num(card.proxy?.proxy_strength ?? card.overall);
 
   const chips = h('div', { class: 'sc-chips' });
   if (card.country && card.country !== '---') chips.append(chip(card.country, 'country', 'Country code'));
@@ -214,26 +200,23 @@ function renderHeader(ctx) {
         }),
         chips.childElementCount ? chips : null,
       ),
-      h(
-        'div',
-        {
-          class: 'sc-score',
-          style: { background: bg, color: inkFor(bg) },
-          title: 'Overall similarity, 0 to 1, same colour as the heatmap',
-        },
-        h('div', { class: 'sc-score-num', text: fmt(overall) }),
-        h('div', { class: 'sc-score-label', text: 'overall match' }),
-      ),
     ),
   );
 
-  const uncertainty = h('div', { class: 'sc-uncertainty', 'data-slot': 'uncertainty' });
-  if (fin(card.p10) && fin(card.p90)) {
-    uncertainty.textContent = `P10 to P90: ${fmt(card.p10)} to ${fmt(card.p90)}`;
-  } else {
-    uncertainty.hidden = true;
-  }
-  header.append(uncertainty);
+  // Secondary field, not the headline: the columns below are the claim.
+  const band = fin(card.p10) && fin(card.p90) ? ` (P10 to P90: ${fmt(card.p10)} to ${fmt(card.p90)})` : '';
+  header.append(
+    h(
+      'div',
+      {
+        class: 'sc-strength',
+        'data-slot': 'uncertainty',
+        title: 'Weighted similarity for this experiment, 0 to 1, same colour as the heatmap',
+      },
+      h('span', { class: 'sc-strength-dot', style: { background: colorFor(strength) } }),
+      `Proxy strength ${fmt(strength)}${band}`,
+    ),
+  );
   return header;
 }
 
@@ -378,47 +361,114 @@ function renderRadar(ctx) {
   return section;
 }
 
-function renderVerdicts(ctx) {
-  const { card, target, dims, dimName, breaksText } = ctx;
-  const targetName = target?.name ?? 'the target';
-  const section = h('section', { class: 'sc-section sc-verdicts' });
+/** Evidence chip for one variable. DEF (exact by definition) is a dash, not a grade. */
+function gradeChip(grade) {
+  if (!grade) return null;
+  const g = String(grade).toUpperCase();
+  const title = `Evidence: ${GRADE_LABELS[g] ?? 'not graded'}`;
+  if (g === 'DEF') return h('span', { class: 'sc-grade sc-grade-def', title, text: '–' });
+  return h('span', { class: `sc-grade sc-grade-${g.toLowerCase()}`, title, text: g });
+}
 
-  const byGroup = {};
-  for (const d of dims) {
-    const v = card.verdict?.[d] ?? (fin(card.dims?.[d]) ? null : 'nodata');
-    if (!v) continue;
-    (byGroup[v] ??= []).push(d);
+/** One proxy row: name, evidence chip, score, then its note/correction/reason verbatim. */
+function proxyRow(row, { showScore = true, text } = {}) {
+  return h(
+    'li',
+    { class: 'sc-prow' },
+    h(
+      'div',
+      { class: 'sc-prow-head' },
+      h('strong', { class: 'sc-prow-name', text: row.label ?? row.id }),
+      gradeChip(row.grade),
+      showScore && fin(row.score) ? h('span', { class: 'sc-prow-score', text: fmt(row.score) }) : null,
+    ),
+    text ? h('p', { class: 'sc-prow-text', text }) : null,
+  );
+}
+
+function proxyColumn(kind, title, rows, opts) {
+  const col = h(
+    'div',
+    { class: `sc-pcol sc-pcol-${kind}` },
+    h(
+      'h4',
+      { class: 'sc-ptitle' },
+      h('span', { text: title }),
+      h('span', { class: 'sc-count', text: String(rows.length) }),
+    ),
+  );
+  if (rows.length) {
+    col.append(h('ul', { class: 'sc-plist' }, rows.map((r) => proxyRow(r, opts(r)))));
+  } else {
+    col.append(h('p', { class: 'sc-note', text: 'None for this site.' }));
+  }
+  return col;
+}
+
+/**
+ * Proxy card: Supports / Conditional / Cannot test, straight from card.proxy
+ * (worker, score_core.js proxyCard). All text comes from the worker rows;
+ * Cannot test is the most prominent block and never collapses.
+ */
+function renderProxy(ctx) {
+  const p = ctx.card.proxy;
+  if (!p) {
+    return h(
+      'section',
+      { class: 'sc-section' },
+      h('p', { class: 'sc-note', text: 'No proxy breakdown in this data bundle. Rebuild it with the current engine.' }),
+    );
+  }
+  const supports = p.supports ?? [];
+  const conditional = p.conditional ?? [];
+  const cannot = p.cannot_test ?? [];
+  const notMatched = p.not_matched ?? [];
+
+  const supportsCol = proxyColumn('supports', 'Supports', supports, (r) => ({ text: r.note }));
+  if (notMatched.length) {
+    supportsCol.append(
+      h(
+        'div',
+        { class: 'sc-pdim' },
+        h('h5', { class: 'sc-pdim-title', text: `Measured, no match (${notMatched.length})` }),
+        h('ul', { class: 'sc-plist' }, notMatched.map((r) => proxyRow(r))),
+      ),
+    );
   }
 
-  for (const [key, title] of GROUPS) {
-    const list = byGroup[key];
-    if (!list?.length) continue;
-    const ul = h('ul', { class: 'sc-vlist' });
-    for (const d of list) {
-      const tpl = breaksText?.dimensions?.[d];
-      const line = key === 'nodata' ? 'No measurement for this cell.' : fillTemplate(tpl?.[key], targetName);
-      ul.append(
-        h(
-          'li',
-          { class: 'sc-vitem' },
-          h('span', { class: `sc-mark sc-mark-${key}`, 'aria-hidden': 'true', text: MARKER[key] }),
-          h(
-            'div',
-            { class: 'sc-vbody' },
-            h(
-              'div',
-              { class: 'sc-vhead' },
-              h('strong', { class: 'sc-vname', title: tpl?.why, text: dimName(d) }),
-              h('span', { class: 'sc-vscore', text: fmt(num(card.dims?.[d])) }),
-            ),
-            line ? h('p', { class: 'sc-vtext', text: line }) : null,
-          ),
-        ),
-      );
-    }
-    section.append(h('div', { class: `sc-vgroup sc-vgroup-${key}` }, h('h4', { class: 'sc-vtitle', text: title }), ul));
-  }
-  return section.childElementCount ? section : null;
+  const top = h(
+    'div',
+    { class: 'sc-ptop' },
+    supportsCol,
+    proxyColumn('conditional', 'Conditional', conditional, (r) => ({ text: r.correction })),
+  );
+
+  const cannotBlock = h(
+    'section',
+    { class: 'sc-cannot', 'aria-label': 'Cannot test here' },
+    h(
+      'h4',
+      { class: 'sc-cannot-title' },
+      h('span', { text: 'Cannot test here' }),
+      h('span', { class: 'sc-count', text: String(cannot.length) }),
+    ),
+    cannot.length
+      ? h('ul', { class: 'sc-plist' }, cannot.map((r) => proxyRow(r, { showScore: false, text: r.reason })))
+      : h('p', { class: 'sc-note', text: 'Nothing flagged for this target.' }),
+  );
+
+  const legend = h(
+    'p',
+    { class: 'sc-glegend' },
+    'Evidence: ',
+    ['A', 'B', 'C', 'D', 'DEF'].flatMap((g, i) => [
+      i ? ' · ' : null,
+      gradeChip(g),
+      ` ${GRADE_LABELS[g] ?? ''}`,
+    ]),
+  );
+
+  return h('div', { class: 'sc-proxy' }, h('section', { class: 'sc-section' }, top), cannotBlock, legend);
 }
 
 function renderAlwaysOn(ctx) {
@@ -830,7 +880,7 @@ export function renderSiteCard(container, opts = {}) {
     ...[
       renderHeader(ctx),
       dims.length ? renderRadar(ctx) : null,
-      renderVerdicts(ctx),
+      renderProxy(ctx),
       renderAlwaysOn(ctx),
       (weights.C ?? 0) > 0 ? renderConstruction(ctx) : null,
       renderLogistics(ctx),
