@@ -1,17 +1,17 @@
 id,name,lat,lon,analog_for,analog_type,accessible_by_design,verified,reference_url
-haughton,Haughton Crater (Devon Island),75.38,-89.68,mars,polar desert; impact crater,no,no,
-atacama_yungay,Atacama Desert - Yungay,-24.10,-69.90,mars,hyperarid desert; dry limit of life,no,no,
-mcmurdo_dry_valleys,McMurdo Dry Valleys,-77.50,162.50,mars,cold hyperarid desert; permafrost,no,no,
-svalbard_bockfjord,Svalbard - Bockfjord volcanic complex,79.40,13.30,mars,carbonate globules; periglacial,no,no,
-rio_tinto,Rio Tinto,37.70,-6.60,mars,acid mine drainage; iron/sulfate mineralogy,yes,no,
-mdrs_utah,Mars Desert Research Station (Utah),38.40,-110.80,mars,layered sediments; crew analog station,yes,no,
-death_valley,Death Valley / Mojave,36.50,-116.90,mars,evaporite playa; hyperarid basin,yes,no,
-holuhraun,Holuhraun lava field (Iceland),64.87,-16.83,mars,fresh basaltic lava; fluvial-volcanic interaction,no,no,
-lanzarote,Lanzarote (Canary Islands),29.00,-13.70,mars,basaltic volcanic terrain; lava tubes,yes,no,
-mauna_kea_hiseas,Mauna Kea / HI-SEAS (Hawaii),19.54,-155.46,moon,basaltic tephra; regolith simulant source,yes,no,
-craters_of_the_moon,Craters of the Moon (Idaho),43.42,-113.52,moon,basaltic lava field; lava tubes,yes,no,
-meteor_crater,Meteor Crater (Arizona),35.03,-111.02,moon,simple impact crater; ejecta,yes,no,
-sp_crater_black_point,SP Crater / Black Point lava flow (Arizona),35.58,-111.63,moon,cinder cone and lava flow; field test site,yes,no,
-ries_crater,Ries Crater (Germany),48.88,10.57,moon,complex impact crater; suevite breccia,yes,no,
-sudbury,Sudbury Basin (Canada),46.60,-81.20,moon,large impact melt sheet,yes,no,
-askja,Askja (Iceland),65.03,-16.75,moon,caldera; basaltic plains; Apollo training site,no,no,
+haughton,Haughton Crater (Devon Island),75.4167,-89.8167,mars,polar desert; impact crater,no,no,https://www.hou.usra.edu/meetings/analogs2013/pdf/4029.pdf
+atacama_yungay,Atacama Desert - Yungay,-24.10,-69.90,mars,hyperarid desert; dry limit of life,no,no,https://astrobiology.nasa.gov/news/preservation-of-functionalized-lipid-biomarkers-in-hyperarid-soils/
+mcmurdo_dry_valleys,McMurdo Dry Valleys,-77.50,161.00,mars,cold hyperarid desert; permafrost,no,no,https://science.nasa.gov/earth/earth-observatory/martian-landscape-antarctica-4420/
+svalbard_bockfjord,Svalbard - Bockfjord volcanic complex,79.40,13.30,mars,carbonate globules; periglacial,no,no,https://ntrs.nasa.gov/api/citations/20110008112/downloads/20110008112.pdf
+rio_tinto,Rio Tinto,37.70,-6.60,mars,acid mine drainage; iron/sulfate mineralogy,yes,no,https://astrobiology.nasa.gov/research-locations/
+mdrs_utah,Mars Desert Research Station (Utah),38.40,-110.80,mars,layered sediments; crew analog station,yes,no,https://www.lpi.usra.edu/lpi/contribution_docs/LPI-001612.pdf
+death_valley,Death Valley / Mojave,36.50,-116.90,mars,evaporite playa; hyperarid basin,yes,no,https://www.nps.gov/deva/nasa.htm
+holuhraun,Holuhraun lava field (Iceland),64.87,-16.83,mars,fresh basaltic lava; fluvial-volcanic interaction,no,no,https://pubs.usgs.gov/publication/70275623
+lanzarote,Lanzarote (Canary Islands),29.00,-13.70,mars,basaltic volcanic terrain; lava tubes,yes,no,https://doi.org/10.1016/j.scitotenv.2023.169583
+mauna_kea_apollo,Mauna Kea (Hawaii),19.82,-155.47,moon,volcanic terrain; Apollo geology training,no,no,https://pubs.usgs.gov/of/2005/1190/of2005-1190.pdf
+craters_of_the_moon,Craters of the Moon (Idaho),43.42,-113.52,moon,basaltic lava field; lava tubes,yes,no,https://www.nps.gov/crmo/learn/historyculture/space-exploration-research-and-astronaut-training.htm
+meteor_crater,Meteor Crater (Arizona),35.03,-111.02,moon,simple impact crater; ejecta,yes,no,https://science.nasa.gov/resource/meteor-crater-arizona-usa/
+sp_crater_black_point,SP Crater / Black Point lava flow (Arizona),35.6929,-111.46,moon,cinder cone and lava flow; field test site,yes,no,https://www.lpi.usra.edu/lunar/analogs/blackpoint/
+ries_crater,Ries Crater (Germany),48.88,10.57,moon,complex impact crater; suevite breccia,yes,no,https://www.nasa.gov/history/50-years-ago-apollo-14-and-15-preparations/
+sudbury,Sudbury Basin (Canada),46.60,-81.20,moon,large impact structure; Apollo geology training,yes,no,https://www.asc-csa.gc.ca/eng/astronauts/about-the-job/space-mission-simulations/training-in-geology.asp
+askja,Askja (Iceland),65.03,-16.75,moon,caldera; basaltic plains; Apollo training site,no,no,https://www.explorationmuseum.com/astronaut-training/
