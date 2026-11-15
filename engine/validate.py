@@ -27,9 +27,139 @@ from pathlib import Path
 import numpy as np
 import pandas as pd
 
-from score import DIM_ORDER, haversine_km, load_contract, score_grid
+from score import (
+    DIM_ORDER,
+    GRADE_SIGMA,
+    TERRAIN_DERIVED,
+    haversine_km,
+    load_contract,
+    score_grid,
+)
 
 NULL_SAMPLES = 1000
+
+
+def grade_d_overrides(target, contract):
+    """Sigma overrides for only the target's grade-D features."""
+    grades = dict(target.get("grades", {}) or {})
+    terrain_grade = str(grades.get("__terrain__", "")).upper()
+    overrides = {}
+    for spec in contract.features:
+        grade = str(grades.get(spec.id, "")).upper()
+        if not grade and spec.id in TERRAIN_DERIVED:
+            grade = terrain_grade
+        if (
+            grade == "D"
+            and spec.sigma_mode != "matrix"
+            and spec.id in target.get("features", {})
+        ):
+            overrides[spec.id] = spec.sigma * GRADE_SIGMA["D"]
+    return overrides
+
+
+def grade_d_sensitivity(
+    grid, target, contract, *, top_k=20, weights=None, cell_ids=None
+):
+    """Report top-k ranking changes when grade-D tolerances are widened."""
+    if top_k < 0:
+        raise ValueError("top_k must be non-negative")
+    overrides = grade_d_overrides(target, contract)
+    body = target.get("body")
+    base = score_grid(
+        grid, target["features"], contract, weights=weights, body=body
+    ).overall
+    widened = score_grid(
+        grid,
+        target["features"],
+        contract,
+        weights=weights,
+        body=body,
+        sigma_overrides=overrides,
+    ).overall
+    k = min(
+        int(top_k),
+        int(np.isfinite(base).sum()),
+        int(np.isfinite(widened).sum()),
+    )
+
+    def ordered(scores):
+        valid = np.flatnonzero(np.isfinite(scores))
+        order = np.argsort(-scores[valid], kind="stable")
+        return valid[order[:k]]
+
+    before, after = ordered(base), ordered(widened)
+    before_set, after_set = set(before.tolist()), set(after.tolist())
+    ids = np.asarray(cell_ids) if cell_ids is not None else None
+    if ids is not None and len(ids) != len(base):
+        raise ValueError("cell_ids must have one entry per grid cell")
+    before_out = ids[before].tolist() if ids is not None else before.tolist()
+    after_out = ids[after].tolist() if ids is not None else after.tolist()
+    entered = sorted(after_set - before_set)
+    left = sorted(before_set - after_set)
+    entered_out = ids[entered].tolist() if ids is not None else entered
+    left_out = ids[left].tolist() if ids is not None else left
+    return {
+        "target_id": target.get("id"),
+        "grade_d_features": sorted(overrides),
+        "top_k": k,
+        "top_before": before_out,
+        "top_after": after_out,
+        "entered": entered_out,
+        "left": left_out,
+        "overlap_fraction": (
+            len(before_set & after_set) / k if k else 1.0
+        ),
+    }
+
+
+def rank_experiment(
+    grid,
+    target,
+    contract,
+    *,
+    experiment_id,
+    filters,
+    weights=None,
+    k=3,
+    cell_ids=None,
+):
+    """Rank the best cells for one experiment after its explicit feature filters."""
+    if k < 0:
+        raise ValueError("k must be non-negative")
+    scores = score_grid(
+        grid,
+        target["features"],
+        contract,
+        weights=weights,
+        body=target.get("body"),
+    ).overall
+    eligible = np.isfinite(scores)
+    for feature, bounds in filters.items():
+        if feature not in grid:
+            raise ValueError(f"{experiment_id}: filter feature {feature!r} is absent")
+        values = np.asarray(grid[feature], dtype=np.float64)
+        if len(values) != len(scores):
+            raise ValueError(f"{experiment_id}: {feature!r} has the wrong cell count")
+        eligible &= np.isfinite(values)
+        if bounds.get("min") is not None:
+            eligible &= values >= float(bounds["min"])
+        if bounds.get("max") is not None:
+            eligible &= values <= float(bounds["max"])
+    indices = np.flatnonzero(eligible)
+    order = np.argsort(-scores[indices], kind="stable")
+    selected = indices[order[:int(k)]]
+    ids = np.asarray(cell_ids) if cell_ids is not None else None
+    if ids is not None and len(ids) != len(scores):
+        raise ValueError("cell_ids must have one entry per grid cell")
+    return [
+        {
+            "experiment_id": experiment_id,
+            "index": int(index),
+            "cell_id": int(ids[index]) if ids is not None else int(index),
+            "score": float(scores[index]),
+        }
+        for index in selected
+    ]
 
 
 def best_score_per_cell(grid, targets, contract, body, weights=None, gravity=False, drop_dim=None):
@@ -140,7 +270,17 @@ def main() -> None:
     out_dir = Path(args.out)
     out_dir.mkdir(parents=True, exist_ok=True)
 
-    report = {"headline": {}, "ablation": {}, "synthetic": any(t.get("synthetic") for t in targets)}
+    report = {
+        "headline": {},
+        "ablation": {},
+        "grade_d_sensitivity": {},
+        "synthetic": any(t.get("synthetic") for t in targets),
+    }
+    for target in targets:
+        if grade_d_overrides(target, contract):
+            report["grade_d_sensitivity"][target["id"]] = grade_d_sensitivity(
+                grid, target, contract, cell_ids=df["cell_id"].to_numpy()
+            )
     for body in ("moon", "mars"):
         base = evaluate(grid, lat, lon, targets, analogs, contract, body)
         if base is None:
@@ -203,6 +343,11 @@ def main() -> None:
     for body, r in report["headline"].items():
         print(f"  {body}: median percentile {r['median_percentile']:.1f}, "
               f"top-10% recall {100 * r['recall_top10']:.0f} %")
+    for target_id, sensitivity in report["grade_d_sensitivity"].items():
+        print(
+            f"  {target_id}: grade-D top-{sensitivity['top_k']} overlap "
+            f"{100 * sensitivity['overlap_fraction']:.0f}%"
+        )
 
 
 if __name__ == "__main__":

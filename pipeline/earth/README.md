@@ -52,6 +52,47 @@ same grid: `relief_km`, `slope_med_deg`, `slope_p90_deg`, `rough_2km`,
 `rough_10km`, the four gravity-scaled baselines, `hypso_int`, and the
 buildability pair `flat_frac` / `steep_frac`.
 
+The shared NumPy API reports p10/p50/p90 across 1 km windows and a separate
+measurement-error estimate. The Earth Engine export writes p50 under each
+feature id, the window standard deviation as `<feature>__sd`, and p10/p90
+bands separately. Gravity-scaled roughness is a sensitivity output, not part of
+`compute()`; the export marks those bands in its image metadata. The
+gravity-scaled baselines use a 100 m intermediate DEM to retain resolution
+below the 330 m lunar baseline.
+
+Run the export after Earth Engine authentication (optionally provide a Cloud
+project):
+
+```bash
+python -m pipeline.earth.gee_terrain --project <earth-engine-project>
+```
+
+Earth Engine creates a Drive export task; confirm its completion before
+cross-checking. For each cross-check tile, provide a JSON config with a local
+metric-projection DEM and a JSON file of GEE feature values:
+
+```json
+{"dem_path": "tiles/tile.tif", "gee_json": "tiles/gee.json",
+ "dem_vertical_error_m": 1.0}
+```
+
+```bash
+python -m engine.cross_check --config tiles/tile.json --out tiles/check.json
+```
+
+The local target-clip handoff is deliberately separate from Michal's
+`targets.json` build. Put projected clips in `<target_id>.tif` files, then
+write an updated copy rather than overwriting the shared source:
+
+```bash
+python -m engine.targets_terrain --clips-dir clips \
+  --targets contract/targets.json --out data_work/targets_terrain.json
+```
+
+`terrain_windows` preserves the full quantile/error records; the existing
+`features` values receive p50 only. Do not copy window spread into `sd`, which
+is a different uncertainty quantity.
+
 The cross-check (S4) is the most important validity test in the project:
 compute the same tiles locally from the open AWS bucket `copernicus-dem-30m`
 with `engine/terrain_features.py`, then compare against the GEE export.

@@ -78,12 +78,16 @@ grids. There is no backend to host, to pay for, or to fall over during judging.
 | `contract/body_constants.json` | Michal | Gravity, pressure, obliquity, day length, temperature ranges — drives the always-on "where it breaks" lines. |
 | `contract/targets.json` | Michal | Moon/Mars target fingerprints (M5). |
 | `engine/score.py` | Eduard | Reference implementation of the score. |
-| `engine/terrain_features.py` | **Sofia** | The one shared definition of every terrain and buildability feature. Michal imports it; Sofia reimplements it in GEE and proves the two agree. |
+| `engine/terrain_features.py` | **Sofia** | Shared window-statistics definition for terrain/buildability; scalar-p50 adapter retained for planetary callers. |
+| `engine/cross_check.py` | **Sofia** | Per-feature NumPy/GEE tile comparison with contract tolerances. |
+| `engine/targets_terrain.py` | **Sofia** | Applies local DEM clips to a separate copy of the planetary target fingerprints. |
+| `engine/fact_check.py` | **Sofia** | Checks project-page identifiers and transfer-rule wording against the contracts. |
 | `engine/illumination.py` | Eduard | Analytic sun geometry, shared across bodies. |
 | `engine/fake_data.py` | Eduard | Synthetic grid + targets so nobody is blocked. |
 | `engine/pack_web.py` | Eduard | parquet → `.bin` + `meta.json` for the browser. |
-| `engine/validate.py` | Eduard | Validation protocol and ablation table (E9). |
+| `engine/validate.py` | Eduard / Sofia | Validation, ablation, grade-D ranking sensitivity and filtered per-experiment rankings. |
 | `engine/tests/` | Eduard | Unit tests + Python↔JS parity. |
+| `tests/test_sofia_tasks.py` | Sofia | Terrain spread/error, cross-check, target handoff, discovery ranking and fact-check tests. |
 | `pipeline/earth/gee_features.py` | Clara | Earth Engine extraction of the non-terrain layers: thermal, albedo, lithology, ice, water, vegetation, soil, logistics. |
 | `pipeline/earth/gee_terrain.py` | Sofia | Earth Engine terrain export on the same grid, from the shared definitions. |
 | `construction/` | Finn (criteria), Clara (soil), Julia (constants) | The Construction dimension: what a builder checks, mapped to features. |
@@ -168,6 +172,10 @@ We use AI tools as accelerators and we say exactly where:
 
 ## Honest limitations
 
+- Terrain values are p50s across non-overlapping 1 km windows after 500 m
+  resampling; p10/p90 describe within-footprint variability, not measurement
+  error. A separate `err` field is populated only where vertical accuracy is
+  provided. Fewer than nine windows marks a result provisional.
 - Earth cannot reproduce lunar permanently-shadowed-region temperatures
   (~25–40 K), the two-week lunar night, 1/6 g, vacuum, or the unshielded
   radiation environment. Those are reported as breaks on **every** site card,

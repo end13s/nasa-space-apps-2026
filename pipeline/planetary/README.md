@@ -17,12 +17,12 @@ the coarse global grids for click-anywhere on Sunday morning.
 
 ## Non-negotiables
 
-- **Terrain code is shared and it is Sofia's.** Import
-  `engine/terrain_features.compute(dem_m, px_m, nodata)`; do not re-derive
-  relief, slope, roughness or the buildability pair. Sofia reimplements the
-  same definitions in Earth Engine for the whole Earth and cross-checks both
-  against your output on the test tiles (S4). If they drift, every cross-body
-  score is meaningless and nothing in the UI shows it.
+- **Terrain code is shared and it is Sofia's.** Use
+  `engine/terrain_features.compute(dem, px_m, nodata=...)` for window
+  quantiles and measurement-error records. `terrain_features(...)` remains a
+  scalar-p50 compatibility helper for existing planetary code. Do not
+  re-derive relief, slope, roughness or buildability. Sofia reimplements the
+  definitions in Earth Engine and cross-checks test tiles (S4).
 - **The lunar south pole is a hand-off, not a solo task** (M4): you reproject
   the LOLA polar clips to a local equidistant projection, Sofia runs the
   terrain module on them and writes the terrain fields into `targets.json`.
@@ -39,6 +39,11 @@ the coarse global grids for click-anywhere on Sunday morning.
   equidistant projection centred on the target (polar stereographic for the
   lunar south pole), never on a lat/lon grid — at 85°S a degree of longitude is
   9 km, and roughness in "degrees" means nothing.
+- **Sofia's target-clip handoff.** After clips are ready, put one projected
+  `<target_id>.tif` per target in a directory and run
+  `python -m engine.targets_terrain --clips-dir <dir> --targets
+  contract/targets.json --out <new-file>`. It writes p50 feature values and
+  full quantile/error records separately; it never overwrites Michal's source.
 - **Never download a whole 10 GB DEM**: use GDAL `/vsicurl/` windowed reads
   (`gdal.Warp(..., outputBounds=..., dstSRS=<local equidistant>)`).
 - **Do not guess Artemis region coordinates.** Take the region outlines from
