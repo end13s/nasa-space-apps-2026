@@ -12,8 +12,10 @@
  */
 import * as Cesium from 'cesium';
 import { BODIES } from './globes.js';
+import { token } from './token.js';
 
-const TARGET_COLOR = Cesium.Color.fromCssColorString('#f4b740');
+// HDS selection state: white, read from web/src/tokens.css.
+const TARGET_COLOR = () => Cesium.Color.fromCssColorString(token('--text'));
 
 /** Points on a small circle of radiusKm around (lat, lon), on a sphere of radius R. */
 function circlePositions(lat, lon, radiusKm, ellipsoid, n = 128) {
@@ -94,7 +96,7 @@ export class TargetPicker {
       polyline: {
         positions: circlePositions(target.lat, target.lon, target.radius_km ?? 15, ellipsoid),
         width: 2.5,
-        material: TARGET_COLOR,
+        material: TARGET_COLOR(),
         arcType: Cesium.ArcType.NONE,
       },
     });
@@ -102,7 +104,7 @@ export class TargetPicker {
       position: Cesium.Cartesian3.fromDegrees(target.lon, target.lat, 300, ellipsoid),
       point: {
         pixelSize: 9,
-        color: TARGET_COLOR,
+        color: TARGET_COLOR(),
         outlineColor: Cesium.Color.BLACK,
         outlineWidth: 2,
       },

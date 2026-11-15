@@ -16,6 +16,7 @@
  * the next frame shows exactly one heatmap: no gap, no double draw.
  */
 import * as Cesium from 'cesium';
+import { token } from './token.js';
 
 /** Scores below this are transparent. The colormap spans [MIN_SCORE, 1]. */
 export const MIN_SCORE = 0.2;
@@ -76,7 +77,7 @@ function paletteT(score) {
  * Scores below MIN_SCORE get the bottom colour; NaN gets neutral grey.
  */
 export function colorFor(score) {
-  if (!Number.isFinite(score)) return 'rgb(128, 128, 128)';
+  if (!Number.isFinite(score)) return token('--data-neutral');
   const k = Math.round(paletteT(score) * 255) * 4;
   return `rgb(${COLORMAP[k]}, ${COLORMAP[k + 1]}, ${COLORMAP[k + 2]})`;
 }

@@ -49,9 +49,12 @@ python pipeline/earth/fallback_grid.py --out data_work/earth_fallback.parquet
 python pipeline/planetary/build_targets.py --grid-m 1855
 
 # 3. validate, write the Discoveries cards, pack for the browser
-python engine/validate.py --grid data_work/earth_fallback.parquet     --targets contract/targets.json --out validation
+python engine/validate.py --grid data_work/earth_fallback.parquet \
+    --targets contract/targets.json --out validation
 python engine/deep_dives.py --grid data_work/earth_fallback.parquet
-python engine/pack_web.py --grid data_work/earth_fallback.parquet     --targets contract/targets.json --validation validation/validation.json     --out web/public/data
+python engine/pack_web.py --grid data_work/earth_fallback.parquet \
+    --targets contract/targets.json --validation validation/validation.json \
+    --out web/public/data
 
 # 4. prove the maths
 python engine/tests/test_score.py          # engine unit tests
@@ -253,6 +256,11 @@ We use AI tools as accelerators and we say exactly where:
 | Sat 14 Nov | Kept the Gaussian kernel; deferred distribution-based divergence | Comparing distributions needs per-cell quantiles, which would require re-running the Earth export and would exceed the browser data budget. Listed as future work |
 | Sat 14 Nov | Validation percentiles area-weighted | Equal-angle cells over-count high latitudes |
 | Sat 14 Nov | Hotspots exclude cells missing an MVP feature | Missing features are renormalised away, so incomplete cells were outranking complete ones |
+| Sun 15 Nov | Earth grid from ETOPO 2022 + WorldClim 2.1 | The Earth Engine export could not be run in time; the open-data grid is real, with its deviations stated |
+| Sun 15 Nov | Targets rebuilt at a 1855 m terrain baseline | Must match the Earth grid's slope baseline; validation ablation exposed the mismatch |
+| Sun 15 Nov | Terrain scalars computed over the whole footprint | Per-window medians drove target relief to zero at a one-pixel window; the contract defines footprint statistics |
+| Sun 15 Nov | **Deviation:** lunar validation reported by target group | The documented lunar analogs are equatorial training sites; scoring them only against polar targets tests something they were never chosen for. Both numbers are reported |
+| Sun 15 Nov | Discoveries exclude coastal cells | A showcased site should describe one place, not an average of desert and ocean |
 
 ## Honest limitations
 

@@ -240,18 +240,35 @@ def terrain_features(
     """
     summaries = compute(dem_m, px_m, nodata=nodata, grid_m=grid_m)
     out = {key: float(summary["p50"]) for key, summary in summaries.items()}
-    # flat_frac / steep_frac are defined in the contract as the SHARE of the
-    # area below 5 deg / above 25 deg. The median of per-window shares is a
-    # different statistic - and with one-pixel windows it collapses to 0 or 1.
-    # Equal-size windows make the mean of window shares exactly the area share.
-    if any(k in summaries for k in AREA_SHARE_FEATURES):
-        with warnings.catch_warnings():
-            warnings.simplefilter("ignore", RuntimeWarning)
-            grid, px_g = _resample(_fill(dem_m, nodata), px_m, grid_m)
+    # The contract defines each scalar over the WHOLE footprint (the target
+    # circle / the Earth cell): relief is P95 - P5 of the footprint, slope_p90
+    # is the 90th percentile of its slopes, flat_frac is the share of its area
+    # below 5 deg. compute() instead summarises per 1 km window and reports the
+    # median across windows - a different statistic, and a degenerate one once
+    # a window is a single pixel (relief inside one pixel is zero). The Earth
+    # grid is computed over the whole cell, so these must be too. Same resample,
+    # slope, residual and thresholds as compute(); only the statistic differs.
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore", RuntimeWarning)
+        grid, px_g = _resample(_fill(dem_m, nodata), px_m, grid_m)
+        if np.isfinite(grid).sum() >= 4:
+            z = grid[np.isfinite(grid)]
+            p5, p95 = np.percentile(z, [5, 95])
+            out["relief_km"] = float((p95 - p5) / 1000.0)
+            span = float(z.max() - z.min())
+            out["hypso_int"] = float((z.mean() - z.min()) / span) if span > 1e-6 else float("nan")
             slope = _slope(grid, px_g)
-            if np.isfinite(slope).any():
-                out["flat_frac"] = float(np.nanmean(np.where(np.isfinite(slope), slope < FLAT_DEG, np.nan)))
-                out["steep_frac"] = float(np.nanmean(np.where(np.isfinite(slope), slope > STEEP_DEG, np.nan)))
+            sv = slope[np.isfinite(slope)]
+            if sv.size:
+                out["slope_med_deg"] = float(np.median(sv))
+                out["slope_p90_deg"] = float(np.percentile(sv, 90))
+                out["flat_frac"] = float(np.mean(sv < FLAT_DEG))
+                out["steep_frac"] = float(np.mean(sv > STEEP_DEG))
+            for key, length in (("rough_2km", L_2KM), ("rough_10km", L_10KM)):
+                if key in out and length / px_g >= 0.5:
+                    res = _residual(grid, px_g, length)
+                    if np.isfinite(res).any():
+                        out[key] = float(np.sqrt(np.nanmean(res ** 2)) / length * 1000.0)
     for key in baselines:
         if key in out:
             continue

@@ -1,5 +1,5 @@
 {
-  "_comment": "Site-card language. Owner: Julia (task J5). Eduard's placeholder so the UI renders; Julia rewrites every string, Sofia reviews the science and Finn the construction lines. {site} and {target} are substituted by the UI. Keep each line under 30 words.",
+  "_comment": "Site-card language per dimension, plus the always-on limits. {site} and {target} are substituted by the UI. Each line under 30 words (checked by engine/fact_check.py).",
   "version": 2,
   "dimensions": {
     "T": {

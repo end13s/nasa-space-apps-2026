@@ -2,62 +2,65 @@
 
 ## Moon (7 known analogs)
 
-- median percentile of known analogs: **70.3** (null baseline 51.5)
-- recall in the top 5 % of land cells: **0 %**
-- recall in the top 10 % of land cells: **29 %** (target: 70 %)
+- median percentile of known analogs: **40.5** (null baseline 52.0)
+- recall in the top 5 % of land cells: **14 %**
+- recall in the top 10 % of land cells: **14 %** (target: 70 %)
+
+- by target group: equatorial (Apollo 17) median 68.3; polar (Artemis, Shackleton) median 40.5
+- The known lunar analogs are Apollo-era training sites for equatorial mare and impact geology. Against the equatorial target they rank well above chance; against the polar Artemis targets they do not - there is no documented set of Earth analogs for the lunar south pole to validate against.
 
 | site | percentile | accessible by design |
 |---|---:|---|
-| Mauna Kea (Hawaii) | 94.6 | no |
-| Askja (Iceland) | 92.8 | no |
-| Ries Crater (Germany) | 73.3 | yes |
-| Sudbury Basin (Canada) | 70.3 | yes |
-| Meteor Crater (Arizona) | 26.4 | yes |
-| Craters of the Moon (Idaho) | 25.0 | yes |
-| SP Crater / Black Point lava flow (Arizona) | 18.5 | yes |
+| Mauna Kea (Hawaii) | 96.5 | no |
+| Askja (Iceland) | 84.5 | no |
+| Meteor Crater (Arizona) | 54.1 | yes |
+| SP Crater / Black Point lava flow (Arizona) | 40.5 | yes |
+| Craters of the Moon (Idaho) | 30.1 | yes |
+| Sudbury Basin (Canada) | 29.7 | yes |
+| Ries Crater (Germany) | 27.0 | yes |
 
 ### Ablation (change in median percentile)
 
 | variant | delta |
 |---|---:|
-| without_T | -0.24 |
-| without_H | -14.59 |
+| without_T | +29.50 |
+| without_H | +7.73 |
 | without_M | +0.00 |
-| without_W | -9.81 |
+| without_W | -9.17 |
 | without_B | +0.00 |
-| without_C | +6.86 |
+| without_C | +1.78 |
 | without_A | +0.00 |
 | without_I | +0.00 |
 | gravity_scaling_on | +0.00 |
 
 ## Mars (9 known analogs)
 
-- median percentile of known analogs: **62.4** (null baseline 50.5)
+- median percentile of known analogs: **73.0** (null baseline 49.8)
 - recall in the top 5 % of land cells: **11 %**
 - recall in the top 10 % of land cells: **11 %** (target: 70 %)
 
 | site | percentile | accessible by design |
 |---|---:|---|
-| Atacama Desert - Yungay | 99.6 | no |
-| Haughton Crater (Devon Island) | 82.6 | no |
-| Holuhraun lava field (Iceland) | 82.3 | no |
-| Mars Desert Research Station (Utah) | 69.0 | yes |
-| Rio Tinto | 62.4 | yes |
-| Lanzarote (Canary Islands) | 26.7 | yes |
-| Svalbard - Bockfjord volcanic complex | 14.8 | no |
+| Atacama Desert - Yungay | 100.0 | no |
+| Holuhraun lava field (Iceland) | 84.0 | no |
+| Mars Desert Research Station (Utah) | 81.5 | yes |
+| Rio Tinto | 73.7 | yes |
+| Lanzarote (Canary Islands) | 73.0 | yes |
+| Haughton Crater (Devon Island) | 69.3 | no |
+| Svalbard - Bockfjord volcanic complex | 65.1 | no |
 | Death Valley / Mojave | 12.6 | yes |
-| McMurdo Dry Valleys | 11.5 | no |
+| McMurdo Dry Valleys | 11.6 | no |
 
 ### Ablation (change in median percentile)
 
 | variant | delta |
 |---|---:|
-| without_T | +0.22 |
-| without_H | -7.34 |
+| without_T | -10.37 |
+| without_H | -2.41 |
 | without_M | +0.00 |
-| without_W | -0.61 |
+| without_W | +0.30 |
 | without_B | +0.00 |
-| without_C | -2.49 |
+| without_C | +4.26 |
 | without_A | +0.00 |
 | without_I | +0.00 |
 | gravity_scaling_on | +0.00 |

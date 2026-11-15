@@ -1,54 +1,56 @@
-# Mars astrobiology and sample science: an Earth proxy for Jezero western delta front
+# Northern Atacama Desert, Chile
 
-> **Draft generated from the engine.** Every number below comes from the scores; the place name and the access notes need a human check before this card is shown.
+**Experiment.** Mars astrobiology and sample science, against **Jezero western delta front** (Mars).
 
-**Question.** Where on Earth can a sampling team rehearse work on dry, unvegetated, sediment-dominated ground like the Jezero delta?
+**Question.** Where on Earth can a sampling team rehearse work on dry, unvegetated, low-relief ground like the Jezero delta?
 
-**Candidate.** 24.875°, 28.375° — [open in Worldview](https://worldview.earthdata.nasa.gov/?v=27.38,23.88,29.38,25.88). 3086 km from the nearest documented analog site, so this is not a place the field already uses.
+**Where.** -21.125°, -69.875° — Tarapacá Region, northern Chile, in the hyperarid core of the Atacama, about 330 km north of the Yungay analog site. [Open in Worldview](https://worldview.earthdata.nasa.gov/?v=-70.88,-22.12,-68.88,-20.12). 331 km from the nearest documented analog site — not a place the field already uses.
 
-**Proxy strength for this experiment:** 0.895 (geometric mean over the experiment's weighted dimensions; a secondary figure — the columns below are the claim).
+**Proxy strength:** 0.89. A secondary figure; the three columns below are the claim.
+
+## Why this site
+
+Zero annual precipitation, no vegetation, no ice, a 1.9° median slope and 0.47 km of relief — the profile of the Jezero delta floor at the same baseline. Novelty mode hid everything within 100 km of the documented Yungay site, so this is a separate part of the desert, reached independently.
 
 ## Target vs candidate
 
 | feature | target | candidate | similarity | grade |
 |---|---:|---:|---:|---|
-| relief_km (km) | 0.00 | 0.07 | 0.993 | B |
-| slope_med_deg (deg) | 2.20 | 0.40 | 0.923 | B |
-| slope_p90_deg (deg) | 2.20 | 0.80 | 0.983 | B |
-| tmin_k (K) | 189.00 | 276.94 | 0.372 | C |
-| tmax_k (K) | 293.00 | 311.90 | 0.955 | C |
+| relief_km (km) | 0.38 | 0.47 | 0.988 | B |
+| slope_med_deg (deg) | 2.20 | 1.89 | 0.998 | B |
+| slope_p90_deg (deg) | 6.37 | 3.87 | 0.946 | B |
+| hypso_int (0-1) | 0.31 | 0.38 | 0.898 | B |
+| tmin_k (K) | 189.00 | 281.19 | 0.337 | C |
+| tmax_k (K) | 293.00 | 299.11 | 0.995 | C |
 | ice_idx (0-1) | 0.00 | 0.00 | 1.000 | C |
-| precip_mm (mm/yr) | 0.00 | 0.11 | 0.996 | DEF |
-| flat_frac (0-1) | 0.76 | 1.00 | 0.566 | B |
+| precip_mm (mm/yr) | 0.00 | 0.33 | 0.969 | DEF |
+| flat_frac (0-1) | 0.76 | 0.99 | 0.590 | B |
 | steep_frac (0-1) | 0.00 | 0.00 | 1.000 | B |
 | lowsun_frac (0-1) | 0.00 | 0.00 | 1.000 | A |
 
 ## Supports
 
-- **Low-sun fraction of the year** — similarity 1.00.
-- **Elevation range** — similarity 0.99.
+- **Low-sun fraction of the year** — similarity 1.00. Supports solar-angle frequency comparisons with identical thresholds and time weighting. Irradiance and atmospheric scattering require separate assessment.
+- **Elevation range** — similarity 0.99. Elevation range supports geometric comparisons when footprint, resolution, and processing match. It does not establish mechanical performance.
+- **Hypsometric integral** — similarity 0.90. Supports normalized elevation-distribution comparisons with matched boundaries and processing. Equal values do not establish equal geological histories.
 
 ## Conditional — usable with the stated correction
 
-- **ice_idx** — similarity 1.00. Comparable as ground ice, but Martian ice is stable only beneath a desiccated regolith lag.
+- **Near-surface ice** — similarity 1.00. Comparable as ground ice, but Martian ice is stable only beneath a desiccated regolith lag.
 - **Steep-ground fraction** — similarity 1.00. Match thresholds and resolution. Assess stability using Martian gravity, cohesion, friction, geometry, and loading.
-- **Precipitation** — similarity 1.00. Transfer not yet assessed - treat as conditional.
-- **Steep slope (90th percentile)** — similarity 0.98. Match resolution and slope definitions, then assess Martian stability and mobility using material properties and loading.
-- **Maximum surface temperature** — similarity 0.95. Match measurement definitions and solar exposure, then model atmospheric and subsurface heat-transfer differences.
-- **Median slope** — similarity 0.92. Match map resolution and evaluate stability using Martian gravity, cohesion, friction, and loading.
+- **Median slope** — similarity 1.00. Match map resolution and evaluate stability using Martian gravity, cohesion, friction, and loading.
+- **Maximum surface temperature** — similarity 0.99. Match measurement definitions and solar exposure, then model atmospheric and subsurface heat-transfer differences.
+- **Steep slope (90th percentile)** — similarity 0.95. Match resolution and slope definitions, then assess Martian stability and mobility using material properties and loading.
 
-## Cannot test
+## Cannot test here
 
 - **Target gravity**. Martian gravity is approximately 3.71 m/s2. Earth field tests require separate scaling or reduced-gravity validation.
 - **Target radiation environment**. Earth sites cannot reproduce Martian radiation spectra and shielding. Radiation effects require dedicated measurements, modeling, or irradiation tests.
 - **Target atmospheric pressure**. Outdoor Earth sites cannot reproduce approximately 6 mbar carbon dioxide conditions. Atmospheric heat transfer requires separate characterization.
 - **Day length**. 24.66 h - close enough to Earth that this one is nearly testable
 
-## Before this card is shown
+## The field campaign this enables
 
-- [ ] Name the place and the nearest settlement (Worldview link above)
-- [ ] Check the cell on imagery: is it the terrain the numbers say, or a data artifact?
-- [ ] Note access: road, permits, protected-area status
-- [ ] One sentence on the field campaign this site would enable
+Sample-handling and caching rehearsals, contamination-control protocols and autonomous site survey on dry, low-relief ground with road access. It cannot test a 6 mbar CO₂ atmosphere, the Martian radiation environment or three-eighths gravity, and Earth biology here is still a contamination source for any biosignature test.
 
-*Generated by `engine/deep_dives.py` from `earth_fallback.parquet` and `targets.json`.*
+*Numbers generated by `engine/deep_dives.py` from the shipped Earth grid and `contract/targets.json`; place and campaign text reviewed by the team.*

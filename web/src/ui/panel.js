@@ -176,6 +176,11 @@ export function createPanel(el, { meta, targets, missions, state, on }) {
   $('known').addEventListener('change', (e) => on.known(e.target.checked));
 
   return {
+    /** Programmatic profile change (a Discoveries card switches experiment). */
+    setProfile(id) {
+      showProfile(id);
+      showWeights(state.weights);
+    },
     setTarget(t) {
       $('target').value = t?.id ?? '';
       $('blurb').hidden = !t?.blurb;

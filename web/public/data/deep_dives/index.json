@@ -1,1 +1,41 @@
-[{"id": "base_site_prep", "title": "Base construction and site prep: an Earth proxy for Artemis candidate landing region: Haworth", "file": "base_site_prep.md"}, {"id": "lunar_polar_ops", "title": "Lunar south-pole operations: an Earth proxy for Shackleton crater and rim", "file": "lunar_polar_ops.md"}, {"id": "mars_lake_sediments", "title": "Mars astrobiology and sample science: an Earth proxy for Jezero western delta front", "file": "mars_lake_sediments.md"}]
+[
+ {
+  "id": "lunar_polar_ops",
+  "name": "Queen Maud Mountains, Antarctica",
+  "lat": -86.375,
+  "lon": -159.125,
+  "body": "moon",
+  "summary": "Rugged polar mountains at 86\u00b0S: the closest Earth comes to steep terrain under a low Sun. Still a weak proxy (0.23): permanent-shadow cold, vacuum and lunar gravity all break.",
+  "target": "moon_shackleton_rim",
+  "profile": "lunar_south_pole_ops",
+  "file": "lunar_polar_ops.md",
+  "proxy_strength": 0.225,
+  "reviewed": true
+ },
+ {
+  "id": "mars_lake_sediments",
+  "name": "Northern Atacama Desert, Chile",
+  "lat": -21.125,
+  "lon": -69.875,
+  "body": "mars",
+  "summary": "A flat, rainless, unvegetated plain in the Atacama's hyperarid core \u2014 a strong proxy (0.89) for sampling work like the Jezero delta, found without the engine knowing the Atacama is a famous Mars analog.",
+  "target": "mars_jezero_delta",
+  "profile": "mars_astrobiology",
+  "file": "mars_lake_sediments.md",
+  "proxy_strength": 0.888,
+  "reviewed": true
+ },
+ {
+  "id": "base_site_prep",
+  "name": "Ross Island, Antarctica",
+  "lat": -77.375,
+  "lon": 168.375,
+  "body": "moon",
+  "summary": "Sloping volcanic ground at 77\u00b0S that matches the Haworth region's slope and roughness \u2014 and the island where polar infrastructure is actually built. A moderate proxy (0.52).",
+  "target": "moon_artemis_haworth",
+  "profile": "base_construction",
+  "file": "base_site_prep.md",
+  "proxy_strength": 0.524,
+  "reviewed": true
+ }
+]

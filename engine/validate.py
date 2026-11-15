@@ -299,6 +299,36 @@ def main() -> None:
             abl["gravity_scaling_on"] = round(g["median_percentile"] - base["median_percentile"], 2)
         report["ablation"][body] = abl
 
+    # Target groups. The documented lunar analogs are Apollo-era training sites
+    # for EQUATORIAL mare and impact geology; there is no documented set of
+    # Earth analogs for the lunar south pole. Scoring them against the polar
+    # targets tests something they were never chosen for, so both groups are
+    # reported - never only the flattering one. Logged in the README decision
+    # record as a deviation from the pre-specified all-targets protocol.
+    groups = {
+        "moon": {
+            "equatorial (Apollo 17)": [t for t in targets if t.get("body") == "moon" and abs(t.get("lat", 0)) < 60],
+            "polar (Artemis, Shackleton)": [t for t in targets if t.get("body") == "moon" and abs(t.get("lat", 0)) >= 60],
+        }
+    }
+    for body, gs in groups.items():
+        if body not in report["headline"]:
+            continue
+        report["headline"][body]["by_group"] = {}
+        for name, sub in gs.items():
+            if sub:
+                g = evaluate(grid, lat, lon, sub, analogs, contract, body)
+                report["headline"][body]["by_group"][name] = {
+                    "median_percentile": g["median_percentile"],
+                    "recall_top10": g["recall_top10"],
+                    "n_targets": len(sub),
+                }
+        report["headline"][body]["note"] = (
+            "The known lunar analogs are Apollo-era training sites for equatorial mare and impact "
+            "geology. Against the equatorial target they rank well above chance; against the polar "
+            "Artemis targets they do not - there is no documented set of Earth analogs for the "
+            "lunar south pole to validate against.")
+
     (out_dir / "validation.json").write_text(json.dumps(report, indent=2), encoding="utf-8")
 
     lines = ["# Validation report", ""]
@@ -315,6 +345,9 @@ def main() -> None:
             f"- recall in the top 10 % of land cells: **{100 * r['recall_top10']:.0f} %** "
             f"(target: 70 %)",
             "",
+            *([f"- by target group: " + "; ".join(
+                f"{k} median {v['median_percentile']:.1f}" for k, v in r.get("by_group", {}).items()),
+               f"- {r['note']}", ""] if r.get("by_group") else []),
             "| site | percentile | accessible by design |",
             "|---|---:|---|",
         ]

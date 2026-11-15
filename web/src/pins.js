@@ -7,10 +7,15 @@
  *   through onSelect, so main.js can open the site card.
  */
 import * as Cesium from 'cesium';
+import { token } from './token.js';
 
-const PIN_COLOR = Cesium.Color.fromCssColorString('#ff5a36');
-const PIN_SELECTED = Cesium.Color.fromCssColorString('#f4b740');
-const KNOWN_COLOR = Cesium.Color.fromCssColorString('#c7ccd6');
+// Colours from web/src/tokens.css. Hotspots are Earth data marks, so Earth
+// blue; the selected one is white (HDS selection); documented analog sites
+// belong to no world, so neutral grey.
+const css = (name) => Cesium.Color.fromCssColorString(token(name));
+const PIN_COLOR = () => css('--data-earth');
+const PIN_SELECTED = () => css('--text');
+const KNOWN_COLOR = () => css('--data-neutral');
 
 /**
  * @param {Cesium.Viewer} viewer   Earth viewer
@@ -38,7 +43,7 @@ export function createPins(viewer, meta, index, { onSelect, onMiss }) {
   let hotspots = [];
 
   function pinImage(rank, selected) {
-    return pinBuilder.fromText(String(rank + 1), selected ? PIN_SELECTED : PIN_COLOR, 38);
+    return pinBuilder.fromText(String(rank + 1), selected ? PIN_SELECTED() : PIN_COLOR(), 38);
   }
 
   function setHotspots(list) {
@@ -81,14 +86,14 @@ export function createPins(viewer, meta, index, { onSelect, onMiss }) {
         position: Cesium.Cartesian3.fromDegrees(r.lon, r.lat),
         point: {
           pixelSize: 7,
-          color: KNOWN_COLOR,
+          color: KNOWN_COLOR(),
           outlineColor: Cesium.Color.BLACK,
           outlineWidth: 1.5,
         },
         label: {
           text: r.name,
           font: '12px system-ui, sans-serif',
-          fillColor: KNOWN_COLOR,
+          fillColor: KNOWN_COLOR(),
           outlineColor: Cesium.Color.BLACK,
           outlineWidth: 3,
           style: Cesium.LabelStyle.FILL_AND_OUTLINE,

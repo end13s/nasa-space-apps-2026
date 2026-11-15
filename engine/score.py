@@ -497,7 +497,7 @@ def proxy_card(
     labels = (transfer or {}).get("feature_labels", {}) or {}
     spec_of = {f.id: f for f in contract.features}
 
-    supports, conditional, cannot, unmatched = [], [], [], []
+    supports, conditional, cannot, unmatched, not_applicable = [], [], [], [], []
 
     for fid, arr in result.features.items():
         s_f = float(arr[index])
@@ -511,9 +511,17 @@ def proxy_card(
         }
         rule = (rules.get(fid) or {}).get(body) or {}
         status = rule.get("status", "unassessed")
+        # rules may explain themselves as "note" or "rationale"
+        why = rule.get("note") or rule.get("rationale")
 
+        if status == "not_applicable":
+            # the quantity does not exist on this body (rain on the Moon):
+            # neither evidence for nor against the site, so not in any column
+            row["reason"] = why or "Not a meaningful quantity on this body."
+            not_applicable.append(row)
+            continue
         if status == "not_transferable":
-            row["reason"] = rule.get("note", "Physics does not carry over to this body.")
+            row["reason"] = why or "Physics does not carry over to this body."
             cannot.append(row)
             continue
         if not np.isfinite(s_f) or s_f < MATCH_FEATURE:
@@ -521,8 +529,8 @@ def proxy_card(
             unmatched.append(row)
             continue
         if status == "transferable":
-            if rule.get("note"):
-                row["note"] = rule["note"]
+            if why:
+                row["note"] = why
             supports.append(row)
         else:
             row["correction"] = rule.get(
@@ -547,6 +555,7 @@ def proxy_card(
         "conditional": sorted(conditional, key=key),
         "cannot_test": cannot,
         "not_matched": sorted(unmatched, key=key),
+        "not_applicable": not_applicable,
         "proxy_strength": float(result.overall[index]),
         "partial": bool(result.partial[index]),
     }

@@ -27,6 +27,7 @@ feature_labels:
   shadow_frac_lowsun: Terrain shadowing at low sun
   day_length: Solar-day duration
   biological_contamination: Biological contamination
+  ice_idx: Near-surface ice
 rules:
   relief_km:
     moon:

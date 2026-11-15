@@ -97,28 +97,35 @@ an evidence chip per variable, the logistics of reaching the site, and the
 always-present physical limits.
 
 **Validation.** Without being told where they are, the method places documented
-analog sites well above chance: known lunar analogs land at a median **70th
-percentile** of Earth's land area and known Mars analogs at the **62nd**, against
-an area-weighted null of 50. The sites chosen for *physical* similarity rank far
-higher than those chosen partly for *access*: for Mars, the Atacama (99.6th),
-Haughton Crater (82.6th) and Holuhraun (82.3rd) against a median of 45 for the
-accessible-by-design sites; for the Moon, the Apollo geology training sites
-Mauna Kea (94.6th) and Askja (92.8th) against a median of 26. With 7–9 sites per
-body this is a pattern, not a statistic, and we report it as one.
+**Mars** analog sites at a median **73rd percentile** of Earth's land area,
+against an area-weighted null of 50 — the Atacama at the 100th, Holuhraun at the
+84th, the Mars Desert Research Station at the 82nd. Two sites rank low, and we
+can say why: Death Valley and the McMurdo Dry Valleys, where a 0.25° cell
+averages the analog with surrounding mountains or ice.
 
-Validation also found two of our own errors, which is what it is for. The first
-ablation showed that removing terrain *improved* Mars validation by 32 points
-and removing construction by 39. The causes: the Earth grid measured slope over
-a 1.85 km baseline while the targets used 500 m — slope over a longer baseline
-reads lower — and the buildable-ground fraction was being summarised as a
-median of window values rather than an area share. After matching the baseline
-and correcting the statistic, both penalties disappeared (+0.2 and −2.5), and
-thermal became the strongest contributor, as the physics predicts.
+For the **Moon** the answer depends on what is being tested, and we report both
+numbers. The documented lunar analogs are Apollo-era training sites for
+*equatorial* mare and impact geology. Against our equatorial target (Apollo 17)
+they rank at the **68th percentile**. Against the polar Artemis targets they rank
+at the **41st** — below chance — because none of them was ever chosen as a
+south-pole analog. There is no documented set of Earth analogs for the lunar
+south pole to validate against, which is part of why the question is worth
+asking; our own search finds only weak proxies there (strength 0.23 at best).
+
+**Validation caught our own errors.** Ablation — removing one dimension at a
+time — first showed terrain and construction making Mars results *worse*, by 32
+and 39 points. Three causes, all fixed: Earth slopes were measured over a
+1.85 km baseline while targets used 500 m; the terrain statistics were medians
+of 1 km sub-windows rather than values over the whole footprint, which drove
+target relief to zero once a window was one pixel; and buildable ground was a
+median of windows rather than an area share. After matching both sides, terrain
+became the strongest contributor for Mars (removing it costs 10 points).
 
 Percentiles are area-weighted, because a 0.25° cell at 70° latitude covers a
 third of an equatorial one. Cells missing a required measurement are scored but
-excluded from ranked findings, because a missing feature is renormalised away
-and would otherwise let an unmeasured cell outrank a complete one.
+excluded from ranked findings, because a missing feature would otherwise let an
+unmeasured cell outrank a complete one. Showcased discoveries also exclude
+coastal cells, which average land with sea.
 
 **Limitations.** Known analog sites were chosen partly because they are
 *reachable*, so recall against them measures agreement with existing practice,

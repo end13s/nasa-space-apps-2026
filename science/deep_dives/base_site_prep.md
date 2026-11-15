@@ -1,58 +1,61 @@
-# Base construction and site prep: an Earth proxy for Artemis candidate landing region: Haworth
+# Ross Island, Antarctica
 
-> **Draft generated from the engine.** Every number below comes from the scores; the place name and the access notes need a human check before this card is shown.
+**Experiment.** Base construction and site prep, against **Artemis candidate landing region: Haworth** (Moon).
 
-**Question.** Where on Earth can construction robots rehearse site preparation on ground that is as flat, firm and dry as the Haworth candidate region?
+**Question.** Where on Earth can construction robots rehearse site preparation on ground shaped like the Haworth region?
 
-**Candidate.** -77.375°, 166.875° — [open in Worldview](https://worldview.earthdata.nasa.gov/?v=165.88,-78.38,167.88,-76.38). 143 km from the nearest documented analog site, so this is not a place the field already uses.
+**Where.** -77.375°, 168.375° — Northern flank of Mount Terror, Ross Island, about 65 km from McMurdo Station. [Open in Worldview](https://worldview.earthdata.nasa.gov/?v=167.38,-78.38,169.38,-76.38). 179 km from the nearest documented analog site — not a place the field already uses.
 
-**Proxy strength for this experiment:** 0.514 (geometric mean over the experiment's weighted dimensions; a secondary figure — the columns below are the claim).
+**Proxy strength:** 0.52. A secondary figure; the three columns below are the claim.
+
+## Why this site
+
+A 9.4° median slope against Haworth's 7.8°, with comparable roughness at 10 km and a similar share of flat ground: the shape of the ground a lunar base would be graded and founded on. Our ice layer reads only 7% ice here, but much of Ross Island is in fact snow and ice covered, so this match rests on the shape of the terrain, not its surface material.
 
 ## Target vs candidate
 
 | feature | target | candidate | similarity | grade |
 |---|---:|---:|---:|---|
-| relief_km (km) | 0.00 | 1.14 | 0.166 | B |
-| slope_med_deg (deg) | 7.77 | 8.95 | 0.966 | B |
-| slope_p90_deg (deg) | 7.77 | 13.55 | 0.743 | B |
-| rough_10km (permille) | 41.34 | 33.17 | 0.908 | B |
-| tmin_k (K) | 52.36 | 237.03 | 0.000 | B |
-| tmax_k (K) | 217.01 | 264.65 | 0.446 | B |
-| diurnal_amp_k (K) | 164.65 | 6.81 | 0.000 | B |
-| ice_idx (0-1) | 0.02 | 0.05 | 0.998 | C |
-| precip_mm (mm/yr) | 0.00 | 123.11 | 0.000 | DEF |
-| flat_frac (0-1) | 0.21 | 0.09 | 0.858 | B |
+| relief_km (km) | 2.25 | 2.13 | 0.980 | B |
+| slope_med_deg (deg) | 7.77 | 9.41 | 0.936 | B |
+| slope_p90_deg (deg) | 15.47 | 11.86 | 0.890 | B |
+| rough_10km (permille) | 59.23 | 37.03 | 0.707 | B |
+| hypso_int (0-1) | 0.57 | 0.49 | 0.869 | B |
+| tmin_k (K) | 52.36 | 236.13 | 0.000 | B |
+| tmax_k (K) | 217.01 | 263.43 | 0.465 | B |
+| diurnal_amp_k (K) | 164.65 | 6.38 | 0.000 | B |
+| ice_idx (0-1) | 0.02 | 0.07 | 0.997 | C |
+| precip_mm (mm/yr) | 0.00 | 116.00 | 0.000 | DEF |
+| flat_frac (0-1) | 0.21 | 0.00 | 0.638 | B |
 | steep_frac (0-1) | 0.00 | 0.00 | 1.000 | B |
 | lowsun_frac (0-1) | 1.00 | 0.46 | 0.002 | A |
 
 ## Supports
 
-_None._
+- **Elevation range** — similarity 0.98. Elevation range supports geometric comparisons when footprint, resolution, and processing match. It does not establish mechanical performance.
+- **Hypsometric integral** — similarity 0.87. Supports normalized elevation-distribution comparisons with matched boundaries and processing. Equal values do not establish equal geological histories.
 
 ## Conditional — usable with the stated correction
 
 - **Steep-ground fraction** — similarity 1.00. Match thresholds and resolution. Assess stability using lunar gravity, cohesion, friction, geometry, and loading.
-- **ice_idx** — similarity 1.00. For polar targets this is the permanently-shadowed fraction of the window, not ice content. Earth ice sits near 273 K; lunar cold-trap ice at 25-40 K in vacuum.
-- **Median slope** — similarity 0.97. Match map resolution and evaluate stability using lunar gravity, cohesion, friction, and loading.
-- **Roughness at 10 km** — similarity 0.91. Match resolution, filtering, and normalization at 10 km. Display any gravity-scaled comparison separately and document its assumptions.
-- **Flat-ground fraction** — similarity 0.86. Match slope thresholds and map resolution. Assess bearing capacity and grading separately under target conditions.
-- **Steep slope (90th percentile)** — similarity 0.74. Match resolution and slope definitions, then assess lunar stability and mobility using material properties and loading.
+- **Near-surface ice** — similarity 1.00. For polar targets this is the permanently-shadowed fraction of the window, not ice content. Earth ice sits near 273 K; lunar cold-trap ice at 25-40 K in vacuum.
+- **Median slope** — similarity 0.94. Match map resolution and evaluate stability using lunar gravity, cohesion, friction, and loading.
+- **Steep slope (90th percentile)** — similarity 0.89. Match resolution and slope definitions, then assess lunar stability and mobility using material properties and loading.
+- **Roughness at 10 km** — similarity 0.71. Match resolution, filtering, and normalization at 10 km. Display any gravity-scaled comparison separately and document its assumptions.
+- **Flat-ground fraction** — similarity 0.64. Match slope thresholds and map resolution. Assess bearing capacity and grading separately under target conditions.
 
-## Cannot test
+## Cannot test here
 
-- **Minimum surface temperature** — similarity 0.00. Physics does not carry over to this body.
-- **Maximum surface temperature** — similarity 0.45. Physics does not carry over to this body.
-- **Day-night temperature range** — similarity 0.00. Physics does not carry over to this body.
+- **Minimum surface temperature** — similarity 0.00. Outdoor Earth sites cannot reproduce the coldest lunar permanent shadows, including temperatures around 25-40 K.
+- **Maximum surface temperature** — similarity 0.47. Outdoor Earth sites cannot reproduce lunar daytime temperatures near 390 K together with vacuum and lunar heat-transfer conditions.
+- **Day-night temperature range** — similarity 0.00. Approximate equatorial temperatures of 100-390 K span 290 K over a lunar solar cycle. Earth field cycles do not reproduce these conditions.
 - **Target gravity**. Lunar gravity is approximately 1.62 m/s2. Earth field tests require separate scaling or reduced-gravity validation.
 - **Target radiation environment**. Earth's shielding prevents direct reproduction of lunar surface radiation. Radiation effects require dedicated measurements, modeling, or irradiation tests.
 - **Target atmospheric pressure**. Outdoor Earth sites cannot reproduce lunar vacuum. Gas heat transfer, outgassing, and sublimation require controlled testing.
 - **Day length**. 29.5 Earth days, with two weeks of continuous darkness
 
-## Before this card is shown
+## The field campaign this enables
 
-- [ ] Name the place and the nearest settlement (Worldview link above)
-- [ ] Check the cell on imagery: is it the terrain the numbers say, or a data artifact?
-- [ ] Note access: road, permits, protected-area status
-- [ ] One sentence on the field campaign this site would enable
+Grading, anchoring and foundation trials on frozen volcanic slopes in extreme cold, within reach of McMurdo's logistics. It cannot test excavation forces or bearing capacity at one-sixth gravity, vacuum, or the sharp, unweathered grains of lunar regolith.
 
-*Generated by `engine/deep_dives.py` from `earth_fallback.parquet` and `targets.json`.*
+*Numbers generated by `engine/deep_dives.py` from the shipped Earth grid and `contract/targets.json`; place and campaign text reviewed by the team.*

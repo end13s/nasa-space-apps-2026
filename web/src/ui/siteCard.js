@@ -26,29 +26,33 @@ import {
   Tooltip,
 } from 'chart.js';
 import { colorFor } from '../heatmap.js';
+import { token } from '../token.js';
 import { GRADE_LABELS } from '../worker/score_core.js';
 import './siteCard.css';
 
 Chart.register(RadarController, RadialLinearScale, PointElement, LineElement, Filler, Tooltip);
 
 /**
- * Construction test claims. Finn fills these from the expert call; any line
- * that starts with "TODO" renders as a dashed placeholder.
+ * Construction test claims. The planned expert call did not happen, so these
+ * come from the engineering literature and the transfer rules: an Earth site
+ * can rehearse construction PROCEDURES on matching ground, never the LOADS.
+ * Any line starting with "TODO" would still render as a dashed placeholder.
  */
 export const CONSTRUCTION_TESTS = {
   could: [
-    'TODO (Finn): what a foundation or landing-pad test on this ground would prove.',
-    'TODO (Finn): second claim from the expert call.',
+    'Procedures on matching ground: grading, excavation sequencing and laying out foundations or landing pads on the same slopes and roughness as the target.',
+    'Machine autonomy: whether robots can survey, plan and work on terrain with the same share of flat and steep ground, before flight hardware exists.',
   ],
   couldnt: [
-    'TODO (Finn): what this ground cannot tell you about building at the target.',
-    'TODO (Finn): second limit from the expert call.',
+    'Loads. At 1/6 g (Moon) or 3/8 g (Mars) soil keeps all its mass but loses most of its weight, so digging forces, bearing capacity and slope stability all change.',
+    'Soil behaviour. Lunar regolith is sharp, unweathered and vacuum-dry; Earth soil is rounded and damp, so compaction, cohesion and dust results do not carry over.',
   ],
 };
 
 const DIM_FALLBACK_ORDER = ['T', 'H', 'M', 'W', 'B', 'C', 'A', 'I'];
-const SITE_COLOR = '#5ab0f0';
-const BODY_COLOR = { mars: '#e8835a', moon: '#c3cbd8' };
+// Data colours come from web/src/tokens.css, read when a card is drawn.
+const siteColor = () => token('--data-earth');
+const bodyColor = (body) => token(body === 'mars' ? '--data-mars' : '--data-moon');
 const BODY_NAME = { mars: 'Mars', moon: 'Moon', earth: 'Earth' };
 const MARKER = { strong: '✅', partial: '◐', breaks: '❌', nodata: '○' };
 
@@ -99,9 +103,9 @@ function hexToRgba(hex, a) {
 /** Dark or light ink for text on a colorFor() background. */
 function inkFor(rgb) {
   const m = rgb.match(/\d+/g);
-  if (!m) return '#fff';
+  if (!m) return token('--text');
   const [r, g, b] = m.map(Number);
-  return 0.2126 * r + 0.7152 * g + 0.0722 * b > 140 ? '#0b0e14' : '#ffffff';
+  return 0.2126 * r + 0.7152 * g + 0.0722 * b > 140 ? token('--bg') : token('--text');
 }
 
 /** Two-line radar label for long names, split at the space nearest the middle. */
@@ -143,7 +147,7 @@ function chip(text, kind, title) {
 function unverifiedTag() {
   return h('span', {
     class: 'sc-unverified',
-    title: 'Placeholder value from regolith_constants.json, not yet checked against a source.',
+    title: 'Literature value (source in construction/regolith_constants.json), not re-checked against the original by the team.',
     text: 'unverified',
   });
 }
@@ -223,7 +227,7 @@ function renderHeader(ctx) {
 function renderRadar(ctx) {
   const { card, target, dims, dimName, root } = ctx;
   const section = h('section', { class: 'sc-section' }, sectionTitle('Similarity by dimension'));
-  const targetColor = BODY_COLOR[target?.body] ?? '#c3cbd8';
+  const targetColor = bodyColor(target?.body);
   const targetName = target?.name ?? 'Target';
 
   // A radar needs at least three axes; fewer get simple bars.
@@ -241,7 +245,7 @@ function renderRadar(ctx) {
             { class: 'sc-track' },
             h('span', {
               class: 'sc-fill',
-              style: { width: `${fin(v) ? clamp01(v) * 100 : 0}%`, background: SITE_COLOR },
+              style: { width: `${fin(v) ? clamp01(v) * 100 : 0}%`, background: siteColor() },
             }),
           ),
           h('span', { class: 'sc-val', text: fmt(v) }),
@@ -267,7 +271,7 @@ function renderRadar(ctx) {
     h(
       'span',
       { class: 'sc-legend-item' },
-      h('span', { class: 'sc-swatch', style: { background: SITE_COLOR } }),
+      h('span', { class: 'sc-swatch', style: { background: siteColor() } }),
       'This site',
     ),
     h(
@@ -281,9 +285,10 @@ function renderRadar(ctx) {
 
   // Build the chart once the section is in the document, so it can size itself.
   ctx.afterMount.push(() => {
-    const grid = cssVar(root, '--border', '#2a3242');
-    const text = cssVar(root, '--text', '#e6e9ef');
-    const family = getComputedStyle(root).fontFamily;
+    // HDS chart chrome: 1px gridlines in --border, labels in DM Mono.
+    const grid = token('--border');
+    const text = token('--text-secondary');
+    const family = token('--font-mono');
     const reduced = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
     const values = dims.map((d) => {
       const v = num(card.dims?.[d]);
@@ -301,13 +306,13 @@ function renderRadar(ctx) {
           {
             label: 'This site',
             data: values,
-            borderColor: SITE_COLOR,
-            backgroundColor: hexToRgba(SITE_COLOR, 0.28),
+            borderColor: siteColor(),
+            backgroundColor: hexToRgba(siteColor(), 0.28),
             borderWidth: 2,
             pointRadius: 3,
             pointHoverRadius: 5,
-            pointBackgroundColor: SITE_COLOR,
-            pointBorderColor: SITE_COLOR,
+            pointBackgroundColor: siteColor(),
+            pointBorderColor: siteColor(),
             fill: true,
             spanGaps: true,
             order: 1,
@@ -318,7 +323,7 @@ function renderRadar(ctx) {
             borderColor: hexToRgba(targetColor, 0.6),
             backgroundColor: hexToRgba(targetColor, 0.05),
             borderDash: [4, 4],
-            borderWidth: 1.5,
+            borderWidth: 2,
             pointRadius: 0,
             pointHoverRadius: 0,
             pointHitRadius: 0,
@@ -338,8 +343,8 @@ function renderRadar(ctx) {
             max: 1,
             beginAtZero: true,
             ticks: { display: false, stepSize: 0.25 },
-            grid: { color: grid },
-            angleLines: { color: grid },
+            grid: { color: grid, lineWidth: 1 },
+            angleLines: { color: grid, lineWidth: 1 },
             pointLabels: { color: text, padding: 4, font: { size: 11, family } },
           },
         },
@@ -452,6 +457,10 @@ function renderProxy(ctx) {
       h('span', { text: 'Cannot test here' }),
       h('span', { class: 'sc-count', text: String(cannot.length) }),
     ),
+    h('p', {
+      class: 'sc-cannot-sub',
+      text: 'Conditions no Earth site can reproduce, and variables whose physics does not carry over to the target - even when the numbers match.',
+    }),
     cannot.length
       ? h('ul', { class: 'sc-plist' }, cannot.map((r) => proxyRow(r, { showScore: false, text: r.reason })))
       : h('p', { class: 'sc-note', text: 'Nothing flagged for this target.' }),
@@ -539,7 +548,7 @@ function pairRow({ label, hint, tag, lo, hi, target, site, format, band, targetC
       tag,
     ),
     bar(target, targetColor, 'sc-bar-target', band),
-    bar(site, SITE_COLOR, 'sc-bar-site'),
+    bar(site, siteColor(), 'sc-bar-site'),
   );
 }
 
@@ -552,7 +561,7 @@ function renderConstruction(ctx) {
   const { card, target, meta, weights, breaksText, regolith } = ctx;
   const body = target?.body;
   const targetName = target?.name ?? 'Target';
-  const targetColor = BODY_COLOR[body] ?? '#c3cbd8';
+  const targetColor = bodyColor(body);
   const tf = target?.features ?? {};
   const sv = card.values ?? {};
   const reg = regolith?.[body] ?? null;
@@ -591,7 +600,7 @@ function renderConstruction(ctx) {
       'div',
       { class: 'sc-legend sc-legend-tight' },
       h('span', { class: 'sc-legend-item' }, h('span', { class: 'sc-swatch', style: { background: targetColor } }), targetName),
-      h('span', { class: 'sc-legend-item' }, h('span', { class: 'sc-swatch', style: { background: SITE_COLOR } }), 'This site'),
+      h('span', { class: 'sc-legend-item' }, h('span', { class: 'sc-swatch', style: { background: siteColor() } }), 'This site'),
     ),
   );
 

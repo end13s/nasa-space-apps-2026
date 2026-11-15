@@ -1,16 +1,4 @@
-:root {
-  --bg: #0b0e14;
-  --surface: #141923;
-  --surface-2: #1c2330;
-  --border: #2a3242;
-  --text: #e6e9ef;
-  --muted: #8b95a7;
-  --accent: #f4b740;
-  --radius: 8px;
-  --panel-w: 340px;
-  font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
-  color-scheme: dark;
-}
+/* Colours, fonts and radii: web/src/tokens.css */
 
 * { box-sizing: border-box; }
 
@@ -79,8 +67,8 @@ body {
 }
 
 .chip.error {
-  border-color: #e5484d;
-  color: #ff8589;
+  border-color: var(--nasa-red);
+  color: var(--nasa-red);
 }
 
 .layout {
@@ -101,7 +89,7 @@ body {
 .globe-pane {
   position: relative;
   min-height: 0;
-  background: #000;
+  background: var(--bg);
 }
 
 .globe {
@@ -118,7 +106,9 @@ body {
   font-weight: 600;
   padding: 3px 10px;
   border-radius: 999px;
-  background: rgb(11 14 20 / 0.7);
+  background: var(--bg);
+  border: 1px solid var(--border-strong);
+  color: var(--text);
   pointer-events: none;
 }
 
@@ -280,7 +270,7 @@ body {
 }
 
 .status[data-kind='error'] {
-  color: #ff8589;
+  color: var(--nasa-red);
 }
 
 .field input[type='range'],
@@ -434,7 +424,8 @@ body {
 }
 
 .abl .neg {
-  color: #7ad38f;
+  color: var(--text);
+  font-weight: 500;
 }
 
 .abl .pos {
@@ -484,3 +475,95 @@ body {
   cursor: pointer;
   margin-bottom: 10px;
 }
+
+
+/* ===========================================================================
+   HDS layer (NASA Horizon Design System): type, shape, borders, states.
+   Colours come only from web/src/tokens.css. Layout is untouched.
+   =========================================================================== */
+
+html, body { background: var(--bg); color: var(--text-body); }
+body { font-family: var(--font-body); font-weight: 400; line-height: 1.62; }
+
+h1, h2, h3, .brand { font-family: var(--font-heading); font-weight: 700; letter-spacing: -0.02em; color: var(--text); }
+h4, h5, h6 { font-family: var(--font-heading); font-weight: 600; letter-spacing: -0.02em; color: var(--text); }
+
+/* Data and small labels: DM Mono, tabular */
+.num, .mono, .weight output, .legend-labels, .ctl-title, .chip, .weight em,
+.stats span, .globe-label, .groups b {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.025em;
+}
+
+/* Big stat numbers: Inter 300 */
+.stats b {
+  font-family: var(--font-heading);
+  font-weight: 300;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  color: var(--text);
+}
+
+/* Shape: 0 on chrome, 2px on small controls */
+.chip, .globe-label, .field select, .body-toggle, .weight em { border-radius: var(--radius-sm); }
+.legend-bar, .rank-bar { border-radius: 0; }
+.chip { border-width: 2px; }
+.discovery, .stats div { border: 1px solid var(--border); }
+.field select { border: 1px solid var(--border-strong); }
+
+/* Controls: NASA blue, away from the globes and charts */
+.btn {
+  background: transparent;
+  border: 2px solid var(--nasa-blue-tint);
+  color: var(--text);
+  font-weight: 500;
+}
+.btn:hover { background: var(--surface-raised); border-color: var(--nasa-blue-tint); }
+.btn-link { color: var(--text); text-decoration: underline; text-decoration-color: var(--nasa-blue-tint); text-decoration-thickness: 2px; text-underline-offset: 3px; }  /* blue text would be 4.0:1 */
+input[type='range'], input[type='checkbox'] { accent-color: var(--nasa-blue-tint); }
+
+/* Selection: 2px white outline. Keyboard focus: 1px dashed white, 1px offset. */
+.tabs [role='tab'][aria-selected='true'] { color: var(--text); border-bottom-color: var(--text); }
+.body-toggle button[aria-pressed='true'] {
+  background: transparent;
+  color: var(--text);
+  outline: 2px solid var(--text);
+  outline-offset: -2px;
+}
+:focus-visible { outline: 1px dashed var(--text); outline-offset: 1px; }
+
+/* Which world: a data-colour dot, always next to the world's name */
+.globe-label[data-body]::before,
+.body-toggle button[data-body]::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 50%;
+}
+[data-body='earth']::before { background: var(--data-earth); }
+[data-body='moon']::before { background: var(--data-moon); }
+[data-body='mars']::before { background: var(--data-mars); }
+
+/* Status: icon + text, never colour alone */
+.chip.error::before, .status[data-kind='error']::before { content: '\26A0 \00a0'; }
+.chip.synthetic { border-color: var(--text-body); border-style: dashed; color: var(--text-body); }
+.chip.synthetic::before { content: '\25C7 \00a0'; }
+
+/* About tab and validation groups */
+.about h2 { font-size: 15px; margin: 18px 0 6px; }
+.about h2:first-child { margin-top: 0; }
+.about p, .about li { font-size: 13px; line-height: 1.62; color: var(--text-body); }
+.about ul { padding-left: 18px; margin: 0; }
+.groups { list-style: none; padding: 0; margin: 0 0 10px; display: grid; gap: 4px; font-size: 12.5px; }
+.groups li { display: flex; justify-content: space-between; gap: 8px; }
+
+/* Contrast fixes (WCAG): HDS red and blue tint are under 4.5:1 as text on
+   --surface, so the text stays white and the colour moves to the icon and the
+   border, which only need 3:1. */
+.chip.error, .status[data-kind='error'] { color: var(--text); }
+.chip.error::before, .status[data-kind='error']::before { color: var(--nasa-red); }
+.status[data-kind='error'] { border-left: 2px solid var(--nasa-red); padding-left: 8px; }
+.field select { border-color: var(--text-muted); }  /* --border-strong is 1.9:1 */

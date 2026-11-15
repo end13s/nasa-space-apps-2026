@@ -1,4 +1,5 @@
 import 'cesium/Build/Cesium/Widgets/widgets.css';
+import './tokens.css';
 import './style.css';
 import { createViewer, TargetGlobe, BODIES } from './globes.js';
 import { createScorer } from './scoring.js';
@@ -66,6 +67,7 @@ function setBody(body) {
     b.setAttribute('aria-pressed', String(b.dataset.body === body));
   });
   label.textContent = BODIES[body].name;
+  label.dataset.body = body;
   targetGlobe.setBody(body);
   if (tabs.current === 'validation') renderValidation(tabs.panel('validation'), state.validation, body);
 }
@@ -221,6 +223,19 @@ function flyPair(card) {
 }
 
 function openDiscovery(d) {
+  // A discovery card is a claim about one target and one experiment. Switch to
+  // them first, or the site would be scored against whatever was selected.
+  if (d.target) {
+    const t = state.targets.find((x) => x.id === d.target);
+    const prof = state.missions.find((m) => m.id === d.profile);
+    if (prof) {
+      state.profileId = prof.id;
+      state.weights = { ...defaultWeights(state.meta), ...prof.weights };
+      panel?.setProfile?.(prof.id);
+    }
+    if (t && state.target?.id !== t.id) selectTarget(t);
+    else if (prof) scheduleScore(0);
+  }
   if (d.i != null) {
     openSite(d.i);
     return;
@@ -245,8 +260,8 @@ function renderSite(el, card) {
 }
 
 // ---- Data bundle ------------------------------------------------------------
-// The About modal (Julia) will show this properly. Until then a chip makes it
-// impossible to demo a synthetic bundle as real.
+// The data-status chip makes it impossible to demo a synthetic bundle as real;
+// the About tab carries the full data credits.
 const status = document.getElementById('data-status');
 
 async function loadJson(name, optional = false) {

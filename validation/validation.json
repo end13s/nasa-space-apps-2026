@@ -3,115 +3,128 @@
     "moon": {
       "body": "moon",
       "n_sites": 7,
-      "median_percentile": 70.26478343746639,
-      "null_median_percentile": 51.52131192766654,
-      "recall_top5": 0.0,
-      "recall_top10": 0.2857142857142857,
+      "median_percentile": 40.51921472983046,
+      "null_median_percentile": 52.03442630908846,
+      "recall_top5": 0.14285714285714285,
+      "recall_top10": 0.14285714285714285,
       "sites": [
         {
           "id": "mauna_kea_apollo",
           "name": "Mauna Kea (Hawaii)",
-          "percentile": 94.61529363134275,
+          "percentile": 96.47705736453842,
           "accessible_by_design": false
         },
         {
           "id": "craters_of_the_moon",
           "name": "Craters of the Moon (Idaho)",
-          "percentile": 25.0129398534872,
+          "percentile": 30.066368274269625,
           "accessible_by_design": true
         },
         {
           "id": "meteor_crater",
           "name": "Meteor Crater (Arizona)",
-          "percentile": 26.408267672190146,
+          "percentile": 54.10261926436941,
           "accessible_by_design": true
         },
         {
           "id": "sp_crater_black_point",
           "name": "SP Crater / Black Point lava flow (Arizona)",
-          "percentile": 18.472189241364703,
+          "percentile": 40.51921472983046,
           "accessible_by_design": true
         },
         {
           "id": "ries_crater",
           "name": "Ries Crater (Germany)",
-          "percentile": 73.32517047668762,
+          "percentile": 27.026854420443055,
           "accessible_by_design": true
         },
         {
           "id": "sudbury",
           "name": "Sudbury Basin (Canada)",
-          "percentile": 70.26478343746639,
+          "percentile": 29.660841566549184,
           "accessible_by_design": true
         },
         {
           "id": "askja",
           "name": "Askja (Iceland)",
-          "percentile": 92.78994800933557,
+          "percentile": 84.54454161027533,
           "accessible_by_design": false
         }
-      ]
+      ],
+      "by_group": {
+        "equatorial (Apollo 17)": {
+          "median_percentile": 68.32935044637549,
+          "recall_top10": 0.14285714285714285,
+          "n_targets": 1
+        },
+        "polar (Artemis, Shackleton)": {
+          "median_percentile": 40.520065899394034,
+          "recall_top10": 0.14285714285714285,
+          "n_targets": 10
+        }
+      },
+      "note": "The known lunar analogs are Apollo-era training sites for equatorial mare and impact geology. Against the equatorial target they rank well above chance; against the polar Artemis targets they do not - there is no documented set of Earth analogs for the lunar south pole to validate against."
     },
     "mars": {
       "body": "mars",
       "n_sites": 9,
-      "median_percentile": 62.421132238374696,
-      "null_median_percentile": 50.507014423911606,
+      "median_percentile": 73.01698987975684,
+      "null_median_percentile": 49.78090782963798,
       "recall_top5": 0.1111111111111111,
       "recall_top10": 0.1111111111111111,
       "sites": [
         {
           "id": "haughton",
           "name": "Haughton Crater (Devon Island)",
-          "percentile": 82.58623878083903,
+          "percentile": 69.33767513773749,
           "accessible_by_design": false
         },
         {
           "id": "atacama_yungay",
           "name": "Atacama Desert - Yungay",
-          "percentile": 99.6169024846093,
+          "percentile": 99.9865206370916,
           "accessible_by_design": false
         },
         {
           "id": "mcmurdo_dry_valleys",
           "name": "McMurdo Dry Valleys",
-          "percentile": 11.477233220688841,
+          "percentile": 11.550310845359077,
           "accessible_by_design": false
         },
         {
           "id": "svalbard_bockfjord",
           "name": "Svalbard - Bockfjord volcanic complex",
-          "percentile": 14.834758468194888,
+          "percentile": 65.1133332004695,
           "accessible_by_design": false
         },
         {
           "id": "rio_tinto",
           "name": "Rio Tinto",
-          "percentile": 62.421132238374696,
+          "percentile": 73.72760895237364,
           "accessible_by_design": true
         },
         {
           "id": "mdrs_utah",
           "name": "Mars Desert Research Station (Utah)",
-          "percentile": 68.95398608576565,
+          "percentile": 81.54079114473095,
           "accessible_by_design": true
         },
         {
           "id": "death_valley",
           "name": "Death Valley / Mojave",
-          "percentile": 12.57068060617959,
+          "percentile": 12.63498848618899,
           "accessible_by_design": true
         },
         {
           "id": "holuhraun",
           "name": "Holuhraun lava field (Iceland)",
-          "percentile": 82.2675259471334,
+          "percentile": 84.03411847906963,
           "accessible_by_design": false
         },
         {
           "id": "lanzarote",
           "name": "Lanzarote (Canary Islands)",
-          "percentile": 26.67551962559715,
+          "percentile": 73.01698987975684,
           "accessible_by_design": true
         }
       ]
@@ -119,23 +132,23 @@
   },
   "ablation": {
     "moon": {
-      "without_T": -0.24,
-      "without_H": -14.59,
+      "without_T": 29.5,
+      "without_H": 7.73,
       "without_M": 0.0,
-      "without_W": -9.81,
+      "without_W": -9.17,
       "without_B": 0.0,
-      "without_C": 6.86,
+      "without_C": 1.78,
       "without_A": 0.0,
       "without_I": 0.0,
       "gravity_scaling_on": 0.0
     },
     "mars": {
-      "without_T": 0.22,
-      "without_H": -7.34,
+      "without_T": -10.37,
+      "without_H": -2.41,
       "without_M": 0.0,
-      "without_W": -0.61,
+      "without_W": 0.3,
       "without_B": 0.0,
-      "without_C": -2.49,
+      "without_C": 4.26,
       "without_A": 0.0,
       "without_I": 0.0,
       "gravity_scaling_on": 0.0

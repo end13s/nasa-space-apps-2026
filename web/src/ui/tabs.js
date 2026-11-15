@@ -2,10 +2,9 @@
  * Panel tabs (task F13): Explore, Site, Validation, Discoveries.
  *
  * Validation reads Eduard's validation.json (engine/validate.py, task E9).
- * Discoveries reads deep_dives/index.json when Sofia's write-ups land, and
+ * Discoveries reads deep_dives/index.json (written by engine/deep_dives.py), and
  * until then lists the current top matches so the tab is never empty.
  */
-import { colorFor } from '../heatmap.js';
 
 const esc = (s) =>
   String(s ?? '').replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
@@ -85,6 +84,9 @@ export function renderValidation(el, validation, body) {
     <p class="lead">Without being told where they are, the method ranks known ${bodyName} analogs
       at the <b>${ordinal(h.median_percentile)} percentile</b> of all land cells
       (random cells: ${ordinal(h.null_median_percentile)}).</p>
+    ${h.by_group ? `<ul class="groups">${Object.entries(h.by_group)
+      .map(([k, g]) => `<li><span>${esc(k)}</span> <b class="mono">${ordinal(g.median_percentile)}</b></li>`).join('')}</ul>` : ''}
+    ${h.note ? `<p class="hint">${esc(h.note)}</p>` : ''}
     <div class="stats">
       <div><b>${pct(h.recall_top5 * 100)}%</b><span>in the top 5%</span></div>
       <div><b>${pct(h.recall_top10 * 100)}%</b><span>in the top 10%</span></div>
@@ -97,7 +99,7 @@ export function renderValidation(el, validation, body) {
           (s) => `
         <li>
           <span class="rank-name">${esc(s.name)}${s.accessible_by_design ? ' <small title="Famous partly because it is easy to reach">accessible by design</small>' : ''}</span>
-          <span class="rank-bar"><i style="width:${Math.max(2, s.percentile)}%;background:${colorFor(s.percentile / 100)}"></i></span>
+          <span class="rank-bar"><i style="width:${Math.max(2, s.percentile)}%;background:var(--data-${body === 'moon' ? 'moon' : 'mars'})"></i></span>
           <span class="num">${pct(s.percentile)}</span>
         </li>`,
         )
@@ -120,7 +122,7 @@ export function renderDiscoveries(el, deepDives, hotspots, onOpen) {
         (d, k) => `
       <article class="discovery">
         <h3>${esc(d.name)}</h3>
-        <p class="hint">${d.lat.toFixed(2)}, ${d.lon.toFixed(2)}${d.body ? ` · proxy for ${esc(d.body)}` : ''}</p>
+        <p class="hint mono">${d.lat.toFixed(2)}°, ${d.lon.toFixed(2)}°${d.body ? ` · proxy for ${esc(d.body === 'moon' ? 'the Moon' : 'Mars')}` : ''}${d.proxy_strength != null ? ` · strength ${d.proxy_strength.toFixed(2)}` : ''}</p>
         <p>${esc(d.summary)}</p>
         <button type="button" class="btn" data-k="${k}">Open site</button>
       </article>`,
@@ -133,8 +135,7 @@ export function renderDiscoveries(el, deepDives, hotspots, onOpen) {
   }
   const top = (hotspots ?? []).slice(0, 3);
   el.innerHTML = `
-    <p class="hint">Our three deep-dive discoveries (new sites, not known analogs) land here on Sunday.
-      Meanwhile, the current top matches:</p>
+    <p class="hint">The current top matches for the selected target:</p>
     ${
       top.length
         ? top

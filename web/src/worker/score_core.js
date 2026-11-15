@@ -67,7 +67,7 @@ export function proxyCard(meta, perFeature, index, target, transfer, overall, pa
   const rules = (transfer && transfer.rules) || {};
   const labels = (transfer && transfer.feature_labels) || {};
   const specOf = new Map(meta.features.map((f) => [f.id, f]));
-  const supports = [], conditional = [], cannot = [], notMatched = [];
+  const supports = [], conditional = [], cannot = [], notMatched = [], notApplicable = [];
 
   for (const [id, arr] of Object.entries(perFeature)) {
     const sf = arr[index];
@@ -81,15 +81,20 @@ export function proxyCard(meta, perFeature, index, target, transfer, overall, pa
     };
     const rule = (rules[id] && rules[id][body]) || {};
     const status = rule.status || 'unassessed';
+    const why = rule.note || rule.rationale; // rules explain themselves either way
 
-    if (status === 'not_transferable') {
-      row.reason = rule.note || 'Physics does not carry over to this body.';
+    if (status === 'not_applicable') {
+      // the quantity does not exist on this body: not evidence either way
+      row.reason = why || 'Not a meaningful quantity on this body.';
+      notApplicable.push(row);
+    } else if (status === 'not_transferable') {
+      row.reason = why || 'Physics does not carry over to this body.';
       cannot.push(row);
     } else if (!Number.isFinite(sf) || sf < MATCH_FEATURE) {
       row.reason = 'measured, does not match this target';
       notMatched.push(row);
     } else if (status === 'transferable') {
-      if (rule.note) row.note = rule.note;
+      if (why) row.note = why;
       supports.push(row);
     } else {
       row.correction = rule.correction || 'Transfer not yet assessed - treat as conditional.';
@@ -110,6 +115,7 @@ export function proxyCard(meta, perFeature, index, target, transfer, overall, pa
     conditional: conditional.sort(byScore),
     cannot_test: cannot,
     not_matched: notMatched.sort(byScore),
+    not_applicable: notApplicable,
     proxy_strength: overall,
     partial: Boolean(partial),
   };

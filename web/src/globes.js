@@ -12,6 +12,7 @@
  *   instead, which renders whatever bounding box Cesium asks for.
  */
 import * as Cesium from 'cesium';
+import { token } from './token.js';
 
 const TREK = 'https://trek.nasa.gov/tiles';
 
@@ -106,7 +107,9 @@ export function createViewer(container, bodyId) {
   // Cesium's default sun/moon sprites are Earth-sky decorations; drop them.
   if (scene.sun) scene.sun.show = false;
   if (scene.moon) scene.moon.show = false;
-  scene.globe.baseColor = Cesium.Color.fromCssColorString('#1a1d24');
+  // HDS: the globe scene sits on the app background (web/src/tokens.css).
+  scene.backgroundColor = Cesium.Color.fromCssColorString(token('--bg'));
+  scene.globe.baseColor = Cesium.Color.fromCssColorString(token('--bg'));
   homeView(viewer, body);
   viewer.analogBody = bodyId;
   return viewer;

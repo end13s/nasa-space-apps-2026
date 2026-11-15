@@ -5,6 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Analog Atlas</title>
     <meta name="description" content="Find places on Earth that behave like a site on the Moon or Mars, and see where the analogy breaks." />
+    <!-- HDS type: Inter (headings, big numbers), Public Sans (UI and body), DM Mono (data). -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Inter:wght@300;600;700&family=Public+Sans:wght@400;500&display=swap" />
     <script>
       // Must be set before Cesium loads. Relative so it works under
       // GitHub Pages' /<repo>/ path as well as on localhost.
@@ -24,11 +28,11 @@
     <main class="layout">
       <section class="globes">
         <div class="globe-pane">
-          <span class="globe-label" id="target-label">Moon</span>
+          <span class="globe-label" id="target-label" data-body="moon">Moon</span>
           <div id="target-globe" class="globe"></div>
         </div>
         <div class="globe-pane">
-          <span class="globe-label">Earth</span>
+          <span class="globe-label" data-body="earth">Earth</span>
           <div id="earth-globe" class="globe"></div>
         </div>
       </section>
@@ -38,6 +42,7 @@
           <button type="button" role="tab" data-tab="site" aria-selected="false" disabled>Site</button>
           <button type="button" role="tab" data-tab="validation" aria-selected="false">Validation</button>
           <button type="button" role="tab" data-tab="discoveries" aria-selected="false">Discoveries</button>
+          <button type="button" role="tab" data-tab="about" aria-selected="false">About</button>
         </nav>
         <div class="tab-panels">
           <section role="tabpanel" data-panel="explore" id="explore">
@@ -46,6 +51,37 @@
           <section role="tabpanel" data-panel="site" id="site" hidden></section>
           <section role="tabpanel" data-panel="validation" id="validation" hidden></section>
           <section role="tabpanel" data-panel="discoveries" id="discoveries" hidden></section>
+          <section role="tabpanel" data-panel="about" id="about" class="about" hidden>
+            <h2>What this is</h2>
+            <p>Pick a site on the Moon or Mars. Analog Atlas scores every land cell on Earth against it, for a
+              stated experiment, and says what each Earth site <strong>supports</strong>, what is
+              <strong>conditional</strong> on a stated correction, and what it <strong>cannot test</strong> at all.</p>
+            <p>It does not claim any Earth site reproduces another world. Gravity, vacuum and radiation are
+              listed as untestable on every card.</p>
+
+            <h2>Data</h2>
+            <ul>
+              <li><strong>Moon:</strong> NASA LRO — LOLA topography and 1064 nm albedo, Diviner temperatures and
+                thermal products, PGDA permanently-shadowed-region maps; USGS Unified Geologic Map.</li>
+              <li><strong>Mars:</strong> NASA MGS MOLA and TES, Mars Odyssey THEMIS; MOLA–HRSC blended DEM (USGS);
+                rover ground truth from Curiosity and Perseverance; USGS global geologic map.</li>
+              <li><strong>Earth grid in use:</strong> NOAA ETOPO 2022 (60″ elevation; ice thickness from surface
+                minus bedrock) and WorldClim 2.1 (10′ climate normals). Slopes are measured at a ~1.85 km
+                baseline and temperatures are 2 m air temperature, not land-surface temperature.</li>
+              <li><strong>Imagery:</strong> NASA Moon Trek, Mars Trek and GIBS.</li>
+            </ul>
+
+            <h2>Use of AI</h2>
+            <p>The first project plan, and a later proposal to reframe the project around experimental proxies,
+              were drafted with Anthropic's Claude; the team discussed both and chose the experiments, features
+              and transfer rules. Claude (Claude Code) helped write and review parts of the engine, the data
+              pipelines and this interface; CesiumJS agent skills helped with the globes. All of it was read,
+              tested and corrected by the team. No AI-generated images are used.</p>
+
+            <h2>Team</h2>
+            <p>Eduard · Clara · Michal · Sofia · Finn · Julia — NASA Space Apps Challenge 2026.</p>
+            <p class="hint">Code: MIT. Each data source keeps its own licence. No NASA logos or branding are used.</p>
+          </section>
         </div>
       </aside>
     </main>

@@ -1,53 +1,59 @@
-# Lunar south-pole operations: an Earth proxy for Shackleton crater and rim
+# Queen Maud Mountains, Antarctica
 
-> **Draft generated from the engine.** Every number below comes from the scores; the place name and the access notes need a human check before this card is shown.
+**Experiment.** Lunar south-pole operations, against **Shackleton crater and rim** (Moon).
 
-**Question.** Where on Earth can a crew rehearse surface operations on rough, cold, low-relief-to-high-relief polar terrain like the Shackleton rim?
+**Question.** Where on Earth can a crew rehearse surface operations under polar light on terrain like the Shackleton rim?
 
-**Candidate.** -89.875°, 108.125° — [open in Worldview](https://worldview.earthdata.nasa.gov/?v=107.12,-90.88,109.12,-88.88). 1382 km from the nearest documented analog site, so this is not a place the field already uses.
+**Where.** -86.375°, -159.125° — Transantarctic Mountains, Antarctica, about 400 km from the geographic South Pole. [Open in Worldview](https://worldview.earthdata.nasa.gov/?v=-160.12,-87.38,-158.12,-85.38). 1111 km from the nearest documented analog site — not a place the field already uses.
 
-**Proxy strength for this experiment:** 0.214 (geometric mean over the experiment's weighted dimensions; a secondary figure — the columns below are the claim).
+**Proxy strength:** 0.22. A secondary figure; the three columns below are the claim.
+
+## Why this site
+
+The terrain match is close: a 13.0° median slope against 12.7° on the Shackleton rim, at the same 1.85 km baseline, with ice-free rock beside glacier ice. At 86°S the Sun stays below 10° for about 60% of the year — the most grazing light Earth has — but the Artemis regions have it all year round. Relief is smaller here (1.2 km against 3.7 km).
 
 ## Target vs candidate
 
 | feature | target | candidate | similarity | grade |
 |---|---:|---:|---:|---|
-| relief_km (km) | 0.00 | 0.04 | 0.998 | B |
-| slope_med_deg (deg) | 12.73 | 0.17 | 0.020 | B |
-| slope_p90_deg (deg) | 12.73 | 0.29 | 0.252 | B |
-| rough_10km (permille) | 62.10 | 0.62 | 0.089 | B |
-| tmin_k (K) | 55.66 | 210.00 | 0.000 | B |
-| tmax_k (K) | 206.66 | 249.74 | 0.517 | B |
-| diurnal_amp_k (K) | 151.00 | 6.56 | 0.000 | B |
-| ice_idx (0-1) | 0.27 | 1.00 | 0.509 | C |
-| precip_mm (mm/yr) | 0.00 | 0.00 | 1.000 | DEF |
-| flat_frac (0-1) | 0.15 | 1.00 | 0.001 | B |
-| steep_frac (0-1) | 0.22 | 0.00 | 0.334 | B |
-| lowsun_frac (0-1) | 1.00 | 0.64 | 0.055 | A |
+| relief_km (km) | 3.65 | 1.16 | 0.000 | B |
+| slope_med_deg (deg) | 12.73 | 12.96 | 0.999 | B |
+| slope_p90_deg (deg) | 30.12 | 28.80 | 0.985 | B |
+| rough_10km (permille) | 102.02 | 30.46 | 0.297 | B |
+| hypso_int (0-1) | 0.66 | 0.61 | 0.940 | B |
+| tmin_k (K) | 55.66 | 214.65 | 0.000 | B |
+| tmax_k (K) | 206.66 | 253.61 | 0.457 | B |
+| diurnal_amp_k (K) | 151.00 | 9.19 | 0.000 | B |
+| ice_idx (0-1) | 0.27 | 0.54 | 0.915 | C |
+| precip_mm (mm/yr) | 0.00 | 87.78 | 0.001 | DEF |
+| flat_frac (0-1) | 0.15 | 0.15 | 1.000 | B |
+| steep_frac (0-1) | 0.22 | 0.16 | 0.929 | B |
+| lowsun_frac (0-1) | 1.00 | 0.59 | 0.023 | A |
 
 ## Supports
 
-- **Elevation range** — similarity 1.00.
+- **Hypsometric integral** — similarity 0.94. Supports normalized elevation-distribution comparisons with matched boundaries and processing. Equal values do not establish equal geological histories.
 
 ## Conditional — usable with the stated correction
 
-- **Precipitation** — similarity 1.00. Transfer not yet assessed - treat as conditional.
+- **Flat-ground fraction** — similarity 1.00. Match slope thresholds and map resolution. Assess bearing capacity and grading separately under target conditions.
+- **Median slope** — similarity 1.00. Match map resolution and evaluate stability using lunar gravity, cohesion, friction, and loading.
+- **Steep slope (90th percentile)** — similarity 0.98. Match resolution and slope definitions, then assess lunar stability and mobility using material properties and loading.
+- **Steep-ground fraction** — similarity 0.93. Match thresholds and resolution. Assess stability using lunar gravity, cohesion, friction, geometry, and loading.
+- **Near-surface ice** — similarity 0.92. For polar targets this is the permanently-shadowed fraction of the window, not ice content. Earth ice sits near 273 K; lunar cold-trap ice at 25-40 K in vacuum.
 
-## Cannot test
+## Cannot test here
 
-- **Minimum surface temperature** — similarity 0.00. Physics does not carry over to this body.
-- **Maximum surface temperature** — similarity 0.52. Physics does not carry over to this body.
-- **Day-night temperature range** — similarity 0.00. Physics does not carry over to this body.
+- **Minimum surface temperature** — similarity 0.00. Outdoor Earth sites cannot reproduce the coldest lunar permanent shadows, including temperatures around 25-40 K.
+- **Maximum surface temperature** — similarity 0.46. Outdoor Earth sites cannot reproduce lunar daytime temperatures near 390 K together with vacuum and lunar heat-transfer conditions.
+- **Day-night temperature range** — similarity 0.00. Approximate equatorial temperatures of 100-390 K span 290 K over a lunar solar cycle. Earth field cycles do not reproduce these conditions.
 - **Target gravity**. Lunar gravity is approximately 1.62 m/s2. Earth field tests require separate scaling or reduced-gravity validation.
 - **Target radiation environment**. Earth's shielding prevents direct reproduction of lunar surface radiation. Radiation effects require dedicated measurements, modeling, or irradiation tests.
 - **Target atmospheric pressure**. Outdoor Earth sites cannot reproduce lunar vacuum. Gas heat transfer, outgassing, and sublimation require controlled testing.
 - **Day length**. 29.5 Earth days, with two weeks of continuous darkness
 
-## Before this card is shown
+## The field campaign this enables
 
-- [ ] Name the place and the nearest settlement (Worldview link above)
-- [ ] Check the cell on imagery: is it the terrain the numbers say, or a data artifact?
-- [ ] Note access: road, permits, protected-area status
-- [ ] One sentence on the field campaign this site would enable
+Rover navigation and crew traverse trials on steep, rocky ground in long low-Sun shadows, supported from the South Pole station. It cannot rehearse the 25–40 K cold of permanently shadowed craters, vacuum, or one-sixth gravity.
 
-*Generated by `engine/deep_dives.py` from `earth_fallback.parquet` and `targets.json`.*
+*Numbers generated by `engine/deep_dives.py` from the shipped Earth grid and `contract/targets.json`; place and campaign text reviewed by the team.*

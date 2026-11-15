@@ -1,0 +1,27 @@
+{
+  "_comment": "Reviewed place names and text for the Discoveries cards. engine/deep_dives.py attaches an entry only if the engine still picks a cell within 50 km of lat/lon below; if the data changes and the pick moves, the card reverts to DRAFT. Numbers in the cards always come from the engine, never from here.",
+  "lunar_polar_ops": {
+    "lat": -86.375, "lon": -159.125,
+    "name": "Queen Maud Mountains, Antarctica",
+    "place": "Transantarctic Mountains, Antarctica, about 400 km from the geographic South Pole",
+    "summary": "Rugged polar mountains at 86°S: the closest Earth comes to steep terrain under a low Sun. Still a weak proxy (0.23): permanent-shadow cold, vacuum and lunar gravity all break.",
+    "why": "The terrain match is close: a 13.0° median slope against 12.7° on the Shackleton rim, at the same 1.85 km baseline, with ice-free rock beside glacier ice. At 86°S the Sun stays below 10° for about 60% of the year — the most grazing light Earth has — but the Artemis regions have it all year round. Relief is smaller here (1.2 km against 3.7 km).",
+    "campaign": "Rover navigation and crew traverse trials on steep, rocky ground in long low-Sun shadows, supported from the South Pole station. It cannot rehearse the 25–40 K cold of permanently shadowed craters, vacuum, or one-sixth gravity."
+  },
+  "mars_lake_sediments": {
+    "lat": -21.125, "lon": -69.875,
+    "name": "Northern Atacama Desert, Chile",
+    "place": "Tarapacá Region, northern Chile, in the hyperarid core of the Atacama, about 330 km north of the Yungay analog site",
+    "summary": "A flat, rainless, unvegetated plain in the Atacama's hyperarid core — a strong proxy (0.89) for sampling work like the Jezero delta, found without the engine knowing the Atacama is a famous Mars analog.",
+    "why": "Zero annual precipitation, no vegetation, no ice, a 1.9° median slope and 0.47 km of relief — the profile of the Jezero delta floor at the same baseline. Novelty mode hid everything within 100 km of the documented Yungay site, so this is a separate part of the desert, reached independently.",
+    "campaign": "Sample-handling and caching rehearsals, contamination-control protocols and autonomous site survey on dry, low-relief ground with road access. It cannot test a 6 mbar CO₂ atmosphere, the Martian radiation environment or three-eighths gravity, and Earth biology here is still a contamination source for any biosignature test."
+  },
+  "base_site_prep": {
+    "lat": -77.375, "lon": 168.375,
+    "name": "Ross Island, Antarctica",
+    "place": "Northern flank of Mount Terror, Ross Island, about 65 km from McMurdo Station",
+    "summary": "Sloping volcanic ground at 77°S that matches the Haworth region's slope and roughness — and the island where polar infrastructure is actually built. A moderate proxy (0.52).",
+    "why": "A 9.4° median slope against Haworth's 7.8°, with comparable roughness at 10 km and a similar share of flat ground: the shape of the ground a lunar base would be graded and founded on. Our ice layer reads only 7% ice here, but much of Ross Island is in fact snow and ice covered, so this match rests on the shape of the terrain, not its surface material.",
+    "campaign": "Grading, anchoring and foundation trials on frozen volcanic slopes in extreme cold, within reach of McMurdo's logistics. It cannot test excavation forces or bearing capacity at one-sixth gravity, vacuum, or the sharp, unweathered grains of lunar regolith."
+  }
+}

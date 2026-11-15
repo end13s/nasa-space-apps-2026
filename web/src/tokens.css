@@ -1,0 +1,56 @@
+/* ============================================================================
+   Design tokens — NASA Horizon Design System (HDS), dark theme.
+   THE ONLY place colours, fonts and radii are defined. Every stylesheet, and
+   every JS colour (Cesium globes and pins, Chart.js), reads these variables;
+   JS reads them at render time through web/src/token.js.
+
+   Fonts are loaded in web/index.html from Google Fonts:
+   Inter 300/600/700, Public Sans 400/500, DM Mono 400/500.
+   ============================================================================ */
+
+:root {
+  /* ---- Neutrals (HDS "carbon" scale) ---- */
+  --bg: #17171b;              /* app background + globe scene background */
+  --surface: #2e2e32;         /* panels, cards, sidebars */
+  --surface-raised: #444447;  /* hover states, popovers */
+  --border: #444447;
+  --border-strong: #58585b;
+  --text: #ffffff;            /* headings */
+  --text-body: #e3e3e3;
+  --text-secondary: #b9b9bb;
+  --text-muted: #959599;      /* large text, or on --bg only: 4.5:1 is not met on --surface at small sizes */
+
+  /* ---- UI roles. NEVER used for data. ---- */
+  --nasa-blue: #1c67e3;       /* "do something here": controls, toggles, sliders, outline buttons */
+  --nasa-blue-tint: #288bff;  /* blue controls / active state on dark backgrounds */
+  --nasa-red: #f64137;        /* errors only (with an icon). No navigating primary button exists in this app */
+  --nasa-red-shade: #b60109;
+  --active-green: #47da84;    /* live / active status and confirmations only */
+
+  /* ---- Data colours. ONLY for data marks: globe markers, chart series, legend swatches ---- */
+  --data-earth: #256ee4;
+  --data-mars: #f29d49;
+  --data-moon: #79a3ad;       /* greyish by design: always paired with a text label */
+  --data-neutral: #b9b9bb;    /* documented analog sites: a data mark that belongs to no world */
+
+  /* ---- Globe atmosphere rim (on the globe itself only) ---- */
+  --rim-earth: rgb(110 198 255 / 0.25);   /* #6EC6FF at 25 % */
+  --rim-mars: rgb(232 168 107 / 0.25);    /* #E8A86B at 25 % */
+
+  /* ---- Type ---- */
+  --font-heading: 'Inter', system-ui, sans-serif;
+  --font-body: 'Public Sans', system-ui, sans-serif;
+  --font-mono: 'DM Mono', ui-monospace, monospace;
+
+  /* ---- Shape ---- */
+  --radius: 0px;              /* cards, panels, modals, buttons, headers */
+  --radius-sm: 2px;           /* checkboxes, inputs, selects, chips */
+
+  /* ---- Legacy aliases: names the existing stylesheets already use ---- */
+  --surface-2: var(--surface-raised);
+  --muted: var(--text-secondary);   /* most "muted" text is small, on --surface: needs 4.5:1 */
+  --accent: var(--nasa-blue-tint);  /* interactive controls in the side panel */
+  --sc-r: var(--radius);
+
+  color-scheme: dark;
+}

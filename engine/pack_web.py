@@ -207,7 +207,13 @@ def pack(
                               for ln in md.read_text(encoding="utf-8").splitlines()
                               if ln.startswith("#")), md.stem)
                 index.append({"id": md.stem, "title": first, "file": md.name})
-            (dd / "index.json").write_text(json.dumps(index), encoding="utf-8")
+            # Prefer the generator's index: it carries name, lat/lon, body,
+            # summary, target and profile, which the Discoveries tab needs.
+            gen = deep_src / "index.json"
+            if gen.exists():
+                shutil.copyfile(gen, dd / "index.json")
+            else:
+                (dd / "index.json").write_text(json.dumps(index), encoding="utf-8")
             print(f"  deep dives: {len(index)}")
 
     for name, src in (extra_json or {}).items():
