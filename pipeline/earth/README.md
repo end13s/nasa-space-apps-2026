@@ -11,15 +11,24 @@ into one `earth_grid.parquet` by Saturday 23:00.
 | `tif_to_parquet.py` | Clara | C8 | Multiband GeoTIFFs (hers **and** Sofia's) → one parquet with `cell_id`, `lat`, `lon`, feature columns, `__sd` columns, `qa_flags`. |
 | `qc_maps.ipynb` | Clara | C8–C9 | One PNG map per feature, posted in `#data`. |
 
+`gee_features.py` contains importable image builders; initialize Earth Engine
+in the calling notebook or script, then export the returned images with the
+shared grid settings. It currently builds soil, thermal, water/biology, ice,
+logistics, and protected-area layers. The contract features `ti_class`,
+`litho_class`, `mafic_idx`, and `soil_moist` still need their calibration or
+source ingestion before they can be exported; do not substitute proxy bands.
+
 Sofia needs access to Clara's Earth Engine project — add her as a member in
 the first ten minutes, it is a common half-hour sink.
 
 ## Non-negotiables (both of you)
 
 - **Export geometry**: `crs='EPSG:4326'`,
-  `crsTransform=[0.25, 0, -180, 0, -0.25, 90]`, `dimensions='1440x720'`,
-  `maxPixels=1e13`. Anything else and `cell_id` stops meaning the same thing
-  in your two files, and the merge silently misaligns.
+  `crsTransform=[0.25, 0, -180, 0, -0.25, 90]`, world-bounds `region`,
+  `maxPixels=1e13`. Earth Engine treats `dimensions` and `crsTransform` as
+  mutually exclusive, so don't pass both; this transform and region define the
+  expected 1440 × 720 grid. Check the exported TIFF dimensions and transform
+  before merging so `cell_id` remains aligned between both exports.
 - **Band names = feature ids**, spelled exactly as in
   `contract/feature_dictionary.yaml`. The packer looks columns up by name and
   prints a WARNING for missing MVP features — read its output.
