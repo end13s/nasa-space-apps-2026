@@ -3,10 +3,19 @@
 **NASA Space Apps Challenge 2026 — "Identify Earth Locations that Analog the
 Permanent Moon Base Locations and Mars"**
 
-Pick a site on the Moon or Mars. Analog Atlas computes a physical fingerprint of
-that site — terrain, thermal, surface material, water/ice, aridity/biology and
-buildability — and scores every land cell on Earth against it, then shows you not only where the
-analogy holds but **where it breaks**.
+Pick a site on the Moon or Mars. Analog Atlas builds a physical fingerprint of it
+from NASA orbital data — terrain, thermal inertia, surface material, water/ice,
+vegetation and buildability — and scores every land cell on Earth against it, in
+the browser, live.
+
+**What we claim:** for a stated experiment, an Earth site can be compared to a
+target on named, measured features, with its uncertainty quantified, and the
+features whose physics does not carry over can be identified and reported.
+
+**What we do not claim:** that any Earth site reproduces a planetary
+environment. The output is not a ranking of Earth sites by resemblance to Mars.
+It is a *proxy card* per site: what the site **supports**, what is
+**conditional** on a stated correction, and what it **cannot test** at all.
 
 Team: Eduard · Clara · Michal · Sofia · Finn · Julia
 
@@ -52,9 +61,32 @@ For a target fingerprint **t** and an Earth cell **x**:
    - missing: the feature drops out and its dimension is renormalised; the cell
      is flagged *partial*
 2. **Per-dimension score**: `s_d = Σ w_f·s_f / Σ w_f`
-3. **Overall score**: weighted **geometric** mean,
+3. **Proxy strength**: weighted **geometric** mean,
    `S = exp( Σ_d W_d · ln(s_d + ε) / Σ_d W_d )`, normalised so identical
-   fingerprints give exactly 1.0.
+   fingerprints give exactly 1.0. It is a secondary field, never the headline —
+   the card leads with scope, not with a number.
+
+### Two kinds of uncertainty, kept apart
+
+**How well we know the target.** Every value in `targets.json` carries an
+evidence grade — **A** multiple instruments or ground truth, **B** single
+validated instrument, **C** model-derived or extrapolated, **D** sparse or
+unvalidated, and **DEF** for quantities that are exact by definition (zero
+rainfall on the Moon). The grade widens that variable's σ, so a poorly-known
+target cannot produce a sharp score. Note the consequence, which the evidence
+strip exists to make visible: a vaguer target is *easier* to match, so a high
+score on grade-D data is weaker evidence, not stronger.
+
+**Whether the physics carries over.** `contract/transfer_rules.yaml` gives every
+variable a status per body: transferable, conditional with a stated correction,
+or not transferable. It is a physical judgement, not a probability, and it is
+fixed before results are computed.
+
+A variable reaches **Supports** only if it both matches *and* transfers. Thermal
+inertia can match a lunar target exactly and still be filed under **Cannot
+test**, because in vacuum there is no gas conduction between grains — matching
+numbers do not imply matching behaviour. That invariant is enforced by a unit
+test.
 
 The geometric mean is the whole point: a site that matches beautifully on four
 dimensions and is hopeless on the fifth is **not** a good analog, and an
@@ -154,10 +186,14 @@ lives in `contract/feature_dictionary.yaml` and in the pipeline README files.
 
 We use AI tools as accelerators and we say exactly where:
 
-- **Planning assistance.** The first draft of our project plan, including an
-  early version of the concept, was produced with Anthropic's Claude. The team
-  then reworked the angle, chose the features, targets and story at kickoff, and
-  owns the result.
+- **Planning and framing.** The first draft of our project plan, including an
+  early version of the concept, was produced with Anthropic's Claude. A later
+  AI-assisted discussion proposed reframing the project from "which Earth places
+  resemble Mars" to "which Earth sites are proxies for which experiments, and
+  where does the proxy stop". The team discussed that reframing at a sync,
+  argued about which experiments and transfer rules belonged in it, adopted it,
+  and recorded the decision below. The features, targets, transfer rules and
+  experiments are the team's own choices.
 - **Code assistance.** Claude (Claude Code) was used to scaffold and review
   parts of `engine/`, `web/src/worker/` and the contract files. Every file that
   was AI-assisted says so in its header. All of it was read, tested and
@@ -169,6 +205,18 @@ We use AI tools as accelerators and we say exactly where:
 - No NASA logos or branding appear in anything we generate.
 
 ---
+
+## Decision record
+
+| Date | Decision | Why |
+|---|---|---|
+| Sat 14 Nov | Contract frozen: `feature_dictionary.yaml` v1 | One source of truth for every pipeline, engine and port |
+| Sat 14 Nov | Added the Construction dimension (C) | The challenge asks about *permanent* bases; buildability is measurable and nobody else scores it |
+| Sat 14 Nov | Roughness quantization ceiling 80 → 160 ‰ (v1.1) | A real Apollo 17 fingerprint measured 92 ‰; the old ceiling would have clipped every Earth cell rough enough to match it |
+| Sat 14 Nov | **Adopted the proxy reframe** | A resemblance ranking cannot state what a site fails to test; scope statements can. Discussed and adopted by the team at the Saturday sync |
+| Sat 14 Nov | Kept the Gaussian kernel; deferred distribution-based divergence | Comparing distributions needs per-cell quantiles, which would require re-running the Earth export and would exceed the browser data budget. Listed as future work |
+| Sat 14 Nov | Validation percentiles area-weighted | Equal-angle cells over-count high latitudes |
+| Sat 14 Nov | Hotspots exclude cells missing an MVP feature | Missing features are renormalised away, so incomplete cells were outranking complete ones |
 
 ## Honest limitations
 
@@ -188,8 +236,16 @@ We use AI tools as accelerators and we say exactly where:
   gravity-driven landform size. It is a toggle, and validation is reported with
   it on and off.
 - Known analog sites were partly chosen because they are *accessible*, not only
-  because they are similar. Some will rank lower than expected; that is
-  discussed rather than tuned away.
+  because they are similar. Recall against them measures agreement with current
+  practice, not correctness, and is reported as a sanity check rather than as
+  proof the method is right.
+- Validation percentiles are **area-weighted**: a 0.25° cell at 70° latitude
+  covers about a third of an equatorial one, and counting cells equally
+  inflates high-latitude results.
+- Cells missing a required measurement are scored but excluded from the ranked
+  findings. A missing feature is renormalised away rather than penalised, so a
+  cell with a gap can outrank a complete one — on synthetic data, four of the
+  top five hotspots were incomplete cells before this was fixed.
 
 ## License
 

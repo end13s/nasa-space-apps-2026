@@ -1,0 +1,509 @@
+{
+ "type": "FeatureCollection",
+ "name": "analog_atlas_calibration_sites",
+ "description": "Earth reference sites with well-documented surface materials, used to turn Apparent Thermal Inertia into the 0-4 ti_class scale and to sanity-check the GLiM lithology mapping. Classes are calibrated WITHIN each body, so these fix the Earth end of the scale only - Mars uses TES/THEMIS thresholds and the Moon uses Diviner. Boxes are roughly 20-30 km, matched to the 0.25 degree grid.",
+ "ti_class_scale": {
+  "0": "dust / very fine",
+  "1": "sand",
+  "2": "indurated / duricrust",
+  "3": "rocky",
+  "4": "bedrock or ice"
+ },
+ "usage": "pipeline/earth/calibrate_ti.py samples ATI inside each polygon; breakpoints are the midpoints between adjacent class medians.",
+ "features": [
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       17.85,
+       16.75
+      ],
+      [
+       18.15,
+       16.75
+      ],
+      [
+       18.15,
+       17.049999999999997
+      ],
+      [
+       17.85,
+       17.049999999999997
+      ],
+      [
+       17.85,
+       16.75
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "bodele",
+    "name": "Bodele Depression diatomite",
+    "ti_class": 0,
+    "litho_class": 3,
+    "note": "Fine diatomite deflation surface, the dustiest place on Earth - the only credible class 0 anchor at this grid scale.",
+    "verified": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       49.85,
+       19.85
+      ],
+      [
+       50.15,
+       19.85
+      ],
+      [
+       50.15,
+       20.15
+      ],
+      [
+       49.85,
+       20.15
+      ],
+      [
+       49.85,
+       19.85
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "rub_al_khali",
+    "name": "Rub' al Khali active dune field",
+    "ti_class": 1,
+    "litho_class": 3,
+    "note": "Active aeolian sand sea, minimal induration - the low-inertia end of the Earth scale.",
+    "verified": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       81.85,
+       38.35
+      ],
+      [
+       82.15,
+       38.35
+      ],
+      [
+       82.15,
+       38.65
+      ],
+      [
+       81.85,
+       38.65
+      ],
+      [
+       81.85,
+       38.35
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "taklamakan",
+    "name": "Taklamakan dune field",
+    "ti_class": 1,
+    "litho_class": 3,
+    "note": "Second reference dune field, different dust mineralogy, same material class.",
+    "verified": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -116.86999999999999,
+       36.129999999999995
+      ],
+      [
+       -116.67,
+       36.129999999999995
+      ],
+      [
+       -116.67,
+       36.33
+      ],
+      [
+       -116.86999999999999,
+       36.33
+      ],
+      [
+       -116.86999999999999,
+       36.129999999999995
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "badwater",
+    "name": "Badwater Basin salt pan",
+    "ti_class": 2,
+    "litho_class": 4,
+    "note": "Evaporite crust over playa mud - indurated surface, chemical sediment.",
+    "verified": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -113.99000000000001,
+       40.64
+      ],
+      [
+       -113.75,
+       40.64
+      ],
+      [
+       -113.75,
+       40.879999999999995
+      ],
+      [
+       -113.99000000000001,
+       40.879999999999995
+      ],
+      [
+       -113.99000000000001,
+       40.64
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "bonneville",
+    "name": "Bonneville Salt Flats",
+    "ti_class": 2,
+    "litho_class": 4,
+    "note": "Thick halite crust, very flat, high albedo.",
+    "verified": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -67.69,
+       -20.33
+      ],
+      [
+       -67.28999999999999,
+       -20.33
+      ],
+      [
+       -67.28999999999999,
+       -19.93
+      ],
+      [
+       -67.69,
+       -19.93
+      ],
+      [
+       -67.69,
+       -20.33
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "uyuni",
+    "name": "Salar de Uyuni",
+    "ti_class": 2,
+    "litho_class": 4,
+    "note": "Largest salt flat on Earth; a strong evaporite reference.",
+    "verified": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       58.45,
+       30.650000000000002
+      ],
+      [
+       58.75,
+       30.650000000000002
+      ],
+      [
+       58.75,
+       30.95
+      ],
+      [
+       58.45,
+       30.95
+      ],
+      [
+       58.45,
+       30.650000000000002
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "lut_yardangs",
+    "name": "Lut Desert yardangs",
+    "ti_class": 2,
+    "litho_class": 3,
+    "note": "Wind-eroded indurated silt ridges - duricrust-like, the class 2 reference.",
+    "verified": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -70.02000000000001,
+       -24.220000000000002
+      ],
+      [
+       -69.78,
+       -24.220000000000002
+      ],
+      [
+       -69.78,
+       -23.98
+      ],
+      [
+       -70.02000000000001,
+       -23.98
+      ],
+      [
+       -70.02000000000001,
+       -24.220000000000002
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "atacama_yungay",
+    "name": "Atacama - Yungay indurated soils",
+    "ti_class": 2,
+    "litho_class": 3,
+    "note": "Hyperarid cemented regolith; also a known Mars analog, so it anchors both scales.",
+    "verified": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -155.38,
+       19.31
+      ],
+      [
+       -155.18,
+       19.31
+      ],
+      [
+       -155.18,
+       19.51
+      ],
+      [
+       -155.38,
+       19.51
+      ],
+      [
+       -155.38,
+       19.31
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "kilauea_flows",
+    "name": "Kilauea recent lava flows",
+    "ti_class": 3,
+    "litho_class": 1,
+    "note": "Fresh basaltic pahoehoe and aa - rocky, high inertia, mafic volcanic.",
+    "verified": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -18.38,
+       63.919999999999995
+      ],
+      [
+       -18.080000000000002,
+       63.919999999999995
+      ],
+      [
+       -18.080000000000002,
+       64.22
+      ],
+      [
+       -18.38,
+       64.22
+      ],
+      [
+       -18.38,
+       63.919999999999995
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "laki_fissure",
+    "name": "Laki fissure lava field",
+    "ti_class": 3,
+    "litho_class": 1,
+    "note": "1783 basaltic flow field, minimal soil development.",
+    "verified": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       128.8,
+       -31.7
+      ],
+      [
+       129.2,
+       -31.7
+      ],
+      [
+       129.2,
+       -31.3
+      ],
+      [
+       128.8,
+       -31.3
+      ],
+      [
+       128.8,
+       -31.7
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "nullarbor",
+    "name": "Nullarbor limestone plain",
+    "ti_class": 4,
+    "litho_class": 4,
+    "note": "Exposed flat-lying limestone bedrock - the bedrock reference.",
+    "verified": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       5.449999999999999,
+       23.05
+      ],
+      [
+       5.75,
+       23.05
+      ],
+      [
+       5.75,
+       23.349999999999998
+      ],
+      [
+       5.449999999999999,
+       23.349999999999998
+      ],
+      [
+       5.449999999999999,
+       23.05
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "hoggar_bedrock",
+    "name": "Hoggar crystalline basement",
+    "ti_class": 4,
+    "litho_class": 2,
+    "note": "Exposed Precambrian crystalline rock in a hyperarid setting.",
+    "verified": false
+   }
+  },
+  {
+   "type": "Feature",
+   "geometry": {
+    "type": "Polygon",
+    "coordinates": [
+     [
+      [
+       -40.25,
+       71.75
+      ],
+      [
+       -39.75,
+       71.75
+      ],
+      [
+       -39.75,
+       72.25
+      ],
+      [
+       -40.25,
+       72.25
+      ],
+      [
+       -40.25,
+       71.75
+      ]
+     ]
+    ]
+   },
+   "properties": {
+    "id": "greenland_ice",
+    "name": "Greenland ice sheet interior",
+    "ti_class": 4,
+    "litho_class": 5,
+    "note": "Perennial ice surface - the ice end member for both ti_class and litho_class.",
+    "verified": false
+   }
+  }
+ ]
+}

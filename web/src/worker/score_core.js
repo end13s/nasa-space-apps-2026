@@ -301,11 +301,17 @@ export function haversineKm(lat1, lon1, lat2, lon2) {
  * `mask` is an optional Uint8Array: 0 hides the cell (novelty / travel-time /
  * protected-area filters are applied by the caller).
  */
-export function topHotspots(scores, index, grid, { k = 20, minSepKm = 200, mask = null, pool = 20000 } = {}) {
+export function topHotspots(
+  scores, index, grid,
+  { k = 20, minSepKm = 200, mask = null, pool = 20000, partial = null } = {}
+) {
   const n = scores.length;
   const cand = [];
   for (let i = 0; i < n; i++) {
     if (mask && !mask[i]) continue;
+    // Cells missing an MVP feature are scored on what they have, so a hole can
+    // outrank a complete cell. They stay clickable but are not ranked.
+    if (partial && partial[i]) continue;
     const s = scores[i];
     if (Number.isFinite(s)) cand.push(i);
   }

@@ -194,6 +194,7 @@ self.onmessage = async (e) => {
         k: msg.k ?? 20,
         minSepKm: msg.minSepKm ?? 200,
         mask,
+        partial: msg.includePartial ? null : res.partial,
       }).map((h) => ({ ...h, detail: cellCard(h.i) }));
 
       // The arrays are cloned, not transferred: the worker keeps them so that

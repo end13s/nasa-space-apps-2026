@@ -365,15 +365,27 @@ def top_hotspots(
     min_sep_km: float = 200.0,
     mask: np.ndarray | None = None,
     candidate_pool: int = 20000,
+    partial: np.ndarray | None = None,
 ) -> list[int]:
     """Indices of the ``k`` best cells, no two within ``min_sep_km``.
 
     Greedy NMS over the best ``candidate_pool`` cells - sorting 300k cells and
     walking the top 20k is plenty and keeps the worker under a frame budget.
+
+    ``partial`` (the ScoreResult flag) excludes cells that are missing an MVP
+    feature. This matters more than it looks: a missing feature is renormalised
+    away, so a cell with a hole in it is scored on the features it *does* have
+    and can outrank a complete cell. Polar-night LST gaps hit exactly the
+    high-latitude cells that would otherwise be the best lunar analogs, so
+    without this the hotspot list fills with cells that are winning because
+    they were never measured. Such cells are still scored and still clickable;
+    they are just not promoted as findings.
     """
     s = np.asarray(scores, dtype=np.float64).copy()
     if mask is not None:
         s = np.where(mask, s, np.nan)
+    if partial is not None:
+        s = np.where(np.asarray(partial, dtype=bool), np.nan, s)
     valid = np.flatnonzero(np.isfinite(s))
     if valid.size == 0:
         return []
