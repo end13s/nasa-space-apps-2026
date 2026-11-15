@@ -226,9 +226,17 @@ def terrain_features(
     px_m: float,
     nodata: float | None = None,
     baselines: tuple[str, ...] = ("rough_2km", "rough_10km"),
+    grid_m: float = GRID_M,
 ) -> dict[str, float]:
-    """Compatibility interface returning scalar p50 values for existing callers."""
-    summaries = compute(dem_m, px_m, nodata=nodata)
+    """Compatibility interface returning scalar p50 values for existing callers.
+
+    ``grid_m`` is the resampling grid, i.e. the slope baseline. It must match
+    the Earth grid the targets are compared against: 500 m for the 30 m
+    Copernicus export, ~1855 m for the ETOPO 60 arc-second fallback grid.
+    Comparing a 500 m target slope with a 1855 m Earth slope biases every
+    terrain match, because slope over a longer baseline reads lower.
+    """
+    summaries = compute(dem_m, px_m, nodata=nodata, grid_m=grid_m)
     out = {key: float(summary["p50"]) for key, summary in summaries.items()}
     for key in baselines:
         if key in out:
