@@ -15,7 +15,16 @@ export const MISSING = 255;
 export const DIM_ORDER = ['T', 'H', 'M', 'W', 'B', 'C', 'A', 'I'];
 
 // Evidence grades - mirror of GRADE_SIGMA / TERRAIN_DERIVED in engine/score.py.
-export const GRADE_SIGMA = { A: 1.0, B: 1.5, C: 2.5, D: 4.0 };
+// DEF = exact by definition (zero rainfall on the Moon), not measured. Kept
+// separate so grade A keeps meaning "measured, with ground truth".
+export const GRADE_SIGMA = { A: 1.0, B: 1.5, C: 2.5, D: 4.0, DEF: 1.0 };
+export const GRADE_LABELS = {
+  A: 'multiple instruments or ground truth',
+  B: 'single instrument, validated',
+  C: 'model-derived or extrapolated',
+  D: 'sparse, indirect or unvalidated',
+  DEF: 'exact by definition, not measured',
+};
 export const DEFAULT_GRADE = 'C';
 export const MATCH_FEATURE = 0.6;
 export const TERRAIN_DERIVED = new Set([

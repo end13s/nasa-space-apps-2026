@@ -45,7 +45,18 @@ DIM_ORDER = ["T", "H", "M", "W", "B", "C", "A", "I"]
 # the grade inflates that variable's tolerance instead of hiding it.
 #   A multiple instruments or ground truth | B single orbital instrument
 #   C model-derived or extrapolated        | D poorly constrained
-GRADE_SIGMA = {"A": 1.0, "B": 1.5, "C": 2.5, "D": 4.0}
+#   DEF                                    exact by definition, not measured
+# "DEF" exists so that A keeps meaning "measured, with ground truth". Zero
+# precipitation on the Moon is certain, but it is not evidence of anything -
+# counting it as grade A would inflate the scale until it stops discriminating.
+GRADE_SIGMA = {"A": 1.0, "B": 1.5, "C": 2.5, "D": 4.0, "DEF": 1.0}
+GRADE_LABELS = {
+    "A": "multiple instruments or ground truth",
+    "B": "single instrument, validated",
+    "C": "model-derived or extrapolated",
+    "D": "sparse, indirect or unvalidated",
+    "DEF": "exact by definition, not measured",
+}
 DEFAULT_GRADE = "C"          # ungraded is not "perfectly known"
 
 # Features that come out of engine/terrain_features.compute(), so one
