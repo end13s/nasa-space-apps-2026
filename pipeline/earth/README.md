@@ -1,5 +1,14 @@
 # pipeline/earth/ — Clara (non-terrain layers) + Sofia (terrain)
 
+> **What ships today:** the app's Earth grid comes from `fallback_grid.py`
+> (ETOPO 2022 + WorldClim 2.1, open data, no Earth Engine account). The Earth
+> Engine pipeline described below is complete but has not been run; when it is,
+> rebuild the targets with `--grid-m 500` so the terrain baselines match again.
+> Known limits of the fallback: slope at a ~1.85 km baseline, 2 m air
+> temperature instead of land surface temperature, ice-sheet fraction only
+> (no mountain glaciers or small ice caps), and no albedo, thermal-inertia
+> class, lithology or NDVI.
+
 Two people export into the **same 0.25° grid**, and Clara merges the results
 into one `earth_grid.parquet` by Saturday 23:00.
 

@@ -25,26 +25,44 @@ Team: Eduard · Clara · Michal · Sofia · Finn · Julia
 
 ---
 
-## Quick start (60 seconds)
+## Run it
+
+The live app needs nothing installed: **https://end13s.github.io/nasa-space-apps-2026/**
+
+To run locally with the committed data bundle:
 
 ```bash
-python -m pip install -r requirements.txt
-
-# 1. synthetic Earth grid + synthetic targets  (no network, ~30 s)
-python engine/fake_data.py --out data_work
-
-# 2. pack them for the browser
-python engine/pack_web.py --grid data_work/earth_grid.parquet \
-    --targets data_work/targets.json --out web/public/data
-
-# 3. prove the maths
-python engine/tests/test_score.py      # engine unit tests
-python engine/tests/test_parity.py     # Python vs the browser port (needs node)
+cd web && npm install && npm run dev        # http://localhost:5173
 ```
 
-Nobody waits for real data: `fake_data.py` emits exactly the schema the real
-pipelines emit, and every file it writes is stamped `"synthetic": true` so a
-fake build can never be mistaken for a real one in the demo.
+## Rebuild the data from scratch
+
+```bash
+python -m pip install -r requirements.txt rasterio
+
+# 1. Earth grid from open data, no Earth Engine account (~1 GB download, ~15 min)
+#    ETOPO 2022 60" -> data_raw/etopo/etopo60s.tif and etopo60s_bed.tif
+#    WorldClim 2.1 10' tmin/tmax/prec -> data_raw/worldclim/{tmin,tmax,prec}/
+python pipeline/earth/fallback_grid.py --out data_work/earth_fallback.parquet
+
+# 2. Moon and Mars targets, terrain baseline matched to the Earth grid
+python pipeline/planetary/build_targets.py --grid-m 1855
+
+# 3. validate, write the Discoveries cards, pack for the browser
+python engine/validate.py --grid data_work/earth_fallback.parquet     --targets contract/targets.json --out validation
+python engine/deep_dives.py --grid data_work/earth_fallback.parquet
+python engine/pack_web.py --grid data_work/earth_fallback.parquet     --targets contract/targets.json --validation validation/validation.json     --out web/public/data
+
+# 4. prove the maths
+python engine/tests/test_score.py          # engine unit tests
+python engine/tests/test_parity.py         # Python vs the browser port (needs node)
+python -m pytest tests/                    # terrain module and contract checks
+```
+
+**Offline dev mode.** `python engine/fake_data.py --out data_work` emits a
+synthetic grid and targets with exactly the real schema, no network needed. Every
+file it writes is stamped `"synthetic": true`, and the app surfaces that flag, so a
+fake build cannot be mistaken for a real one.
 
 ---
 
@@ -115,7 +133,9 @@ grids. There is no backend to host, to pay for, or to fall over during judging.
 | `engine/targets_terrain.py` | **Sofia** | Applies local DEM clips to a separate copy of the planetary target fingerprints. |
 | `engine/fact_check.py` | **Sofia** | Checks project-page identifiers and transfer-rule wording against the contracts. |
 | `engine/illumination.py` | Eduard | Analytic sun geometry, shared across bodies. |
-| `engine/fake_data.py` | Eduard | Synthetic grid + targets so nobody is blocked. |
+| `pipeline/earth/fallback_grid.py` | Eduard | **The Earth grid that ships**: ETOPO 2022 + WorldClim 2.1, no Earth Engine needed. |
+| `engine/deep_dives.py` | Eduard | Discoveries-tab cards generated from real scores. |
+| `engine/fake_data.py` | Eduard | Synthetic grid + targets for offline development. |
 | `engine/pack_web.py` | Eduard | parquet → `.bin` + `meta.json` for the browser. |
 | `engine/validate.py` | Eduard / Sofia | Validation, ablation, grade-D ranking sensitivity and filtered per-experiment rankings. |
 | `engine/tests/` | Eduard | Unit tests + Python↔JS parity. |
