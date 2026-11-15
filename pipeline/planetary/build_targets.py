@@ -18,27 +18,41 @@ What it does, per target:
      distances (never on a lat/lon grid).
   3. Computes the terrain features with the SHARED definition in
      engine/terrain_features.py (Sofia's module, the same definition the Earth
-     export is checked against - never re-derive them here).
+     export is checked against - never re-derive them here). Since Sofia's
+     update (PR #12) every terrain value is the p50 over non-overlapping 1 km
+     windows after resampling to 500 m, so relief_km is local relief within
+     1 km, not the height range of the whole footprint.
   4. Estimates `sd` by recomputing the terrain with the centre shifted
      north/south/east/west (5 km, or radius/3 for small targets) and taking
      the standard deviation.
-  5. Adds the "0 by definition" features and any non-terrain values filled in
-     OTHER below, gives every value an evidence grade A-D (see GRADES), then
+  5. South-polar targets also get values from the polar products: ice_idx
+     (permanent-shadow share, PGDA PSR map), litho_class, and tmin_k /
+     tmax_k / diurnal_amp_k (Diviner). Numbers that are context only - shown,
+     not scored - go in a separate "context" block of the target.
+  6. Adds the "0 by definition" features and any non-terrain values filled in
+     OTHER below, gives every value an evidence grade (see GRADES), then
      writes contract/targets.json and checks it against the contract.
 
 Footprint: a square of side 2 x radius_km (30 km for the default 15 km), the
 same idea as one 0.25 deg Earth cell (~28 km). rough_10km needs a window of at
 least 30 km, so targets with radius_km < 15 (e.g. the 5 km Jezero delta) have
-no rough_10km - it is left out, never written as a guess.
+no rough_10km - it is left out, never written as a guess. (Sofia's new module
+returns a number even for a 10 km window, so build() drops it explicitly.)
 
-Targets whose lat/lon is still None are skipped with a message (the Artemis
-regions whose official outlines we do not have yet).
+Targets whose lat/lon is still None are skipped with a message (e.g. a region
+whose official outline we do not have yet).
+
+Downloads: the Diviner temperature table (156 MB) is the only file read whole.
+It is downloaded once into ~/.cache/analog_atlas - outside the repo, so it can
+never be committed - and every later run reuses it.
 """
 
 from __future__ import annotations
 
 import json
+import subprocess
 import sys
+import urllib.request
 from pathlib import Path
 
 import numpy as np
@@ -50,6 +64,7 @@ from terrain_features import terrain_features  # noqa: E402  (shared definition)
 OUT = ROOT / "contract" / "targets.json"
 DEFAULT_RADIUS_KM = 15
 MAX_SHIFT_M = 5000.0  # centre shift used to estimate sd (radius/3 if smaller)
+ROUGH_10KM_MIN_SIDE_KM = 30.0  # smallest footprint side that can carry a 10 km roughness baseline
 
 DEM = {
     "mars": {
@@ -164,21 +179,28 @@ TARGETS = [
 #    down-selected regions (outlines from LROC QuickMap). Centre = mean of the
 #    1 km grid-cell centres, converted from the file's projection (Moon 2015
 #    sphere, south polar stereographic, k0 0.994, false E/N 500 km).
-# Cross-check: the 2024 "Mons Mouton" centre lands within ~1 km of the 2022
+# Cross-checks: the 2024 "Mons Mouton" centre lands within ~1 km of the 2022
 # Moon Trek "Leibnitz Beta Plateau" centre - the same place under its new IAU
-# name, from two independent files and two different conversions.
-# Still missing: Mons Mouton Plateau (its USGS files are too big to upload;
-# the 1 km .dbf alone is enough).
+# name, from two independent files and two different conversions. Mons Mouton
+# Plateau (added Sat evening, from its 1 km .dbf) went through the same
+# conversion, which reproduces the three other USGS centres to 4 decimals.
+#
+# Mons Mouton Plateau is much bigger than the other regions: its USGS grid is
+# 78 x 58 km, the others 17-21 km. It keeps the standard 30 km footprint so
+# its numbers stay comparable with the Earth cells and the other targets; the
+# footprint covers the middle of the region.
 MOON_TREK_2022 = ("centre: centroid of the region outline in the NASA Moon Trek layer "
                   "'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)")
 USGS_2024 = ("centre: centre of the region's 1 km grid in USGS 'Down Selected Artemis III Candidate "
              "Landing Site Navigational Grids' (McClernan 2024, doi:10.5066/P1MEQ6UK; outlines from LROC QuickMap)")
+PLATEAU_NOTE = ("; the region is 78 x 58 km, much larger than the others (17-21 km), so the 30 km "
+                "footprint covers its middle only")
 ARTEMIS = [
     # (id,                                 name,                  (lat, lon),             source)
     ("moon_artemis_peak_near_cabeus_b",   "Peak near Cabeus B",  (-83.6514, -68.7263),   USGS_2024),
     ("moon_artemis_haworth",              "Haworth",             (-86.7639, -22.7770),   MOON_TREK_2022),
     ("moon_artemis_malapert_massif",      "Malapert Massif",     (-85.9948, -0.2358),    MOON_TREK_2022),
-    ("moon_artemis_mons_mouton_plateau",  "Mons Mouton Plateau", None,                   None),
+    ("moon_artemis_mons_mouton_plateau",  "Mons Mouton Plateau", (-84.3375, 30.6186),    USGS_2024 + PLATEAU_NOTE),
     ("moon_artemis_mons_mouton",          "Mons Mouton",         (-85.4218, 31.6755),    USGS_2024),
     ("moon_artemis_nobile_rim_1",         "Nobile Rim 1",        (-85.4381, 37.3667),    MOON_TREK_2022),
     ("moon_artemis_nobile_rim_2",         "Nobile Rim 2",        (-83.9540, 58.8221),    MOON_TREK_2022),
@@ -328,17 +350,22 @@ OTHER: dict[str, dict] = {
         ],
     },
     # Shackleton and the Artemis regions get their non-terrain values from the
-    # polar products below (polar_values), automatically for every target.
+    # polar products below (polar_values, diviner_values), automatically for
+    # every target south of 80S.
 }
 
 # ---------------------------------------------------------------------------
-# South-polar targets (Shackleton + Artemis regions)
+# South-polar targets (Shackleton + Artemis regions): permanent shadow
 # ---------------------------------------------------------------------------
-# ice_idx = share of the target window in permanent shadow, from the PGDA PSR
-# maps (Mazarico et al. 2011). Permanent shadow is where water ice can be
-# cold-trapped, which is why these regions are candidates. Still to fold in:
-# LEND hydrogen. Still to add for these targets: tmin_k / tmax_k (Diviner
-# polar products), albedo, ti_class.
+# ice_idx = share of the target footprint in permanent shadow, from the PGDA
+# PSR maps (Mazarico et al. 2011). Permanent shadow is where water ice can be
+# cold-trapped, but it is an AREA of cold traps, not a measured amount of ice -
+# and the landing regions sit on sunlit ridges by design, so the share is
+# small (Eduard, Sat 16:39). Both of his options are in: the sources say what
+# the number is, and context.psr_share_50km gives the shadow share within
+# 50 km of the centre - the cold traps a base there could reach. That one is
+# context only, not scored. Still to fold in: LEND hydrogen. Still to add for
+# these targets: albedo, ti_class.
 #
 # The same PSR map is published in several copies. On Sat 16:08-16:14 the
 # PGDA COG link would not open and the PGDA TIF opened but failed reading
@@ -354,6 +381,7 @@ PSR_CANDIDATES = [
     ("https://pgda.gsfc.nasa.gov/data/MoonIllumination/LPSR_65S_240M_201608.TIF", 240.0),
     ("https://pgda.gsfc.nasa.gov/data/MoonIllumination/LPSR_65S_240M_201608_COG.TIF", 240.0),
 ]
+PSR_REACH_KM = 50.0  # radius for context.psr_share_50km
 _psr_bad: set[str] = set()
 _psr_current: dict | None = None
 
@@ -397,10 +425,19 @@ def read_psr(lat: float, lon: float, half_m: float) -> tuple[dict | None, np.nda
             _psr_current = None
 
 
-def psr_source(name: str) -> str:
-    return (f"ice_idx: share of the window in permanent shadow, PGDA PSR map {name} "
-            "(Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030); permanent "
-            "shadow is the cold-trap proxy - a model from LOLA topography, LEND hydrogen not folded in yet")
+def psr_source(name: str, side_km: float) -> str:
+    return (f"ice_idx: share of the {side_km:g} km footprint in permanent shadow, PGDA PSR map {name} "
+            "(Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030). It is the AREA of "
+            "cold traps, not a measured amount of ice: landing regions are picked on sunlit ridges, so the "
+            "share is small by design. Shadow is modelled from LOLA topography; LEND hydrogen not folded in yet")
+
+
+def psr_reach_source(name: str) -> str:
+    return (f"context.psr_share_50km (shown, not scored): share of the {PSR_REACH_KM:g} km circle around the "
+            f"centre in permanent shadow, same model, PGDA PSR map {name} - the cold traps within reach of a "
+            "base here")
+
+
 POLAR_LITHO_SOURCE = ("litho_class: south-polar terrain is feldspathic highland (crater, basin and massif "
                       "material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) "
                       "-> class 2; regional call, per-target unit check still to do")
@@ -454,11 +491,12 @@ def read_local_dem(key: str, lat: float, lon: float, half_m: float) -> np.ndarra
 def polar_values(lat: float, lon: float, radius_km: float) -> tuple[dict, list | None]:
     """Non-terrain values for a south-polar target, in the same shape as OTHER.
 
-    litho_class is always set. ice_idx is the PSR share of the window, with sd
-    from the same four shifted footprints as the terrain; it is left out (and
-    `seen` is None) when no PSR map could be opened. The share is taken over
-    ALL pixels of the window, so a map that stores "not shadowed" as nodata
-    still gives the right number.
+    litho_class is always set. ice_idx is the PSR share of the footprint, with
+    sd from the same four shifted footprints as the terrain; it is left out
+    (and `seen` is None) when no PSR map could be opened. The share is taken
+    over ALL pixels of the window, so a map that stores "not shadowed" as
+    nodata still gives the right number. context.psr_share_50km is the same
+    share over a 50 km circle.
     """
     values = {
         "features": {"litho_class": 2},
@@ -487,12 +525,247 @@ def polar_values(lat: float, lon: float, radius_km: float) -> tuple[dict, list |
     values["features"]["ice_idx"] = shares[0]
     values["sd"]["ice_idx"] = float(np.std(shares))
     values["grades"]["ice_idx"] = "C"  # PSR is modelled from LOLA topography; ice itself is not measured
-    values["sources"].insert(0, psr_source(m["name"]))
+    values["sources"].insert(0, psr_source(m["name"], 2 * radius_km))
+
+    # Option 2 of Eduard's ice note: shadow within reach, not only underfoot.
+    reach = PSR_REACH_KM * 1000.0
+    m50, a50 = read_psr(lat, lon, reach)
+    if m50 is not None:
+        c = (np.arange(a50.shape[0]) + 0.5) * m50["res_m"] - reach
+        xx, yy = np.meshgrid(c, c)
+        disk = xx ** 2 + yy ** 2 <= reach ** 2
+        shadow = disk & np.isfinite(a50) & (a50 > 0)
+        values["context"] = {"psr_share_50km": np.count_nonzero(shadow) / np.count_nonzero(disk)}
+        values["sources"].append(psr_reach_source(m50["name"]))
     return values, seen
 
 
-def terrain_with_sd(key: str, lat: float, lon: float, radius_km: float) -> tuple[dict, dict]:
-    """Terrain features at the target, plus sd from 4 shifted footprints."""
+# ---------------------------------------------------------------------------
+# South-polar targets: Diviner surface temperatures
+# ---------------------------------------------------------------------------
+# tmin_k / tmax_k / diurnal_amp_k come from the Diviner Global Cumulative
+# Product (GCP), file 90S-80S: every nadir measurement from Jul 2009 to
+# Apr 2015, averaged in 0.5 x 0.5 deg bins and 96 local-time bins of 15 min
+# (Williams et al. 2017). Fixed-width ASCII, one 113-byte row per bin and
+# local time (20 lat x 720 lon x 96), -9999 / -9998 = no data.
+# Per bin: tmin = the coldest local time of the mean day, tmax = the warmest,
+# amplitude = the difference. The target value is the mean over the same
+# footprint as the terrain, sampled on a 250 m grid in local metres - so the
+# narrow bins near the pole count by area, not by number.
+# Known limit: the GCP averages all seasons together, so against the
+# "warmest / coldest month" definition tmax_k reads low and tmin_k high. The
+# seasonal 240 m polar products (PCP; Williams et al. 2019) would fix that,
+# but they are 144-192 files of ~200 MB each.
+# If the download or the read fails, the temperatures are left out and the
+# rest of the build still runs.
+GCP = {
+    "url": "https://pds-geosciences.wustl.edu/lro/urn-nasa-pds-lro_diviner_derived1/"
+           "data_derived_gcp/global_cumul_avg_cyl_90s80s_002.tab",
+    "bytes": 156_211_313,  # header line + 1,382,400 rows, 113 bytes each (PDS label)
+    "row": 113,            # bytes per row incl. CR LF
+    "lat0": -90.0,         # southern edge of the file
+    "nlat": 20,
+    "nlon": 720,
+    "step": 0.5,           # degrees per bin
+    "nlt": 96,             # local-time bins per day
+}
+GCP_MIN_LT = 48        # a bin counts only with data in >= 48 of its 96 local times
+GCP_PX_M = 250.0       # sampling grid of the footprint mean
+DIVINER_GRADE = "B"    # one orbital instrument, measured (not a model); see the season limit above
+MOON_R_M = 1737400.0
+CACHE_DIR = Path.home() / ".cache" / "analog_atlas"
+_gcp: dict | None = None
+_gcp_error: str | None = None  # set after one failed load, so the other targets don't retry it
+
+
+def _download(url: str, path: Path, nbytes: int) -> None:
+    req = urllib.request.Request(url, headers={"User-Agent": "analog-atlas (NASA Space Apps 2026)"})
+    with urllib.request.urlopen(req, timeout=60) as r, open(path, "wb") as f:
+        done, step = 0, max(nbytes // 10, 1)
+        nxt = step
+        while chunk := r.read(1 << 20):
+            f.write(chunk)
+            done += len(chunk)
+            if done >= nxt:
+                print(f"    {100 * done / nbytes:.0f} %", flush=True)
+                nxt += step
+
+
+def fetch_cached(url: str, nbytes: int) -> Path:
+    """Download `url` once into CACHE_DIR (checked by size) and return the local path."""
+    dest = CACHE_DIR / url.rsplit("/", 1)[-1]
+    if dest.exists() and dest.stat().st_size == nbytes:
+        return dest
+    CACHE_DIR.mkdir(parents=True, exist_ok=True)
+    part = dest.with_name(dest.name + ".part")
+    print(f"  downloading {dest.name} ({nbytes / 1e6:.0f} MB) - first run only, kept in {CACHE_DIR}",
+          flush=True)
+    try:
+        _download(url, part, nbytes)
+    except Exception as e:  # noqa: BLE001 - e.g. Python's own certificate store on macOS
+        print(f"  Python download failed ({type(e).__name__}: {e}) - trying curl", flush=True)
+        try:
+            subprocess.run(["curl", "-L", "--fail", "--retry", "3", "-o", str(part), url], check=True)
+        except (OSError, subprocess.CalledProcessError) as e2:
+            raise OSError(f"could not download {dest.name} ({type(e2).__name__}) - check the "
+                          "internet connection and run again") from None
+    got = part.stat().st_size
+    if got != nbytes:
+        raise OSError(f"{dest.name}: downloaded {got} bytes, expected {nbytes} - run again to retry")
+    part.replace(dest)
+    return dest
+
+
+def _to_float(b: np.ndarray) -> np.ndarray:
+    """Fixed-width ASCII numbers -> float; a cell that is not a number becomes NaN."""
+    try:
+        return b.astype(np.float64)
+    except ValueError:
+        out = np.full(b.shape, np.nan)
+        for i, v in enumerate(b):
+            try:
+                out[i] = float(v)
+            except ValueError:
+                pass
+        return out
+
+
+def load_gcp() -> dict:
+    """Coldest / warmest local time of the mean Diviner day for every 0.5 deg bin, 90S-80S."""
+    global _gcp, _gcp_error
+    if _gcp is not None:
+        return _gcp
+    if _gcp_error is not None:
+        raise RuntimeError(_gcp_error)
+    try:
+        _gcp = _read_gcp()
+    except Exception as e:
+        _gcp_error = str(e) or type(e).__name__
+        raise
+    return _gcp
+
+
+def _read_gcp() -> dict:
+    g = GCP
+    path = fetch_cached(g["url"], g["bytes"])
+    raw = np.fromfile(path, dtype=np.uint8)
+    rows = raw[g["row"]:].reshape(-1, g["row"])  # first row is the column header
+    if rows.shape[0] != g["nlat"] * g["nlon"] * g["nlt"] or not (rows[:, -2:] == (13, 10)).all():
+        raise ValueError(f"{path.name}: not the expected 113-byte rows - has the PDS file changed?")
+
+    def col(start: int, width: int) -> np.ndarray:  # 1-based byte position, as in the PDS label
+        cells = np.ascontiguousarray(rows[:, start - 1 : start - 1 + width])
+        return _to_float(cells.view(f"S{width}").ravel())
+
+    lon, lat, tbol = col(1, 7), col(10, 6), col(103, 9)  # Center_Longitude, Center_Latitude, tbol
+    ilat = np.floor((lat - g["lat0"]) / g["step"]).astype(np.int64)
+    ilon = np.floor((lon + 180.0) / g["step"]).astype(np.int64) % g["nlon"]
+    ok = np.isfinite(tbol) & (tbol > 0) & (tbol < 500) & (ilat >= 0) & (ilat < g["nlat"])
+    k = ilat[ok] * g["nlon"] + ilon[ok]
+    size = g["nlat"] * g["nlon"]
+    tmin = np.full(size, np.inf)
+    tmax = np.full(size, -np.inf)
+    np.minimum.at(tmin, k, tbol[ok])
+    np.maximum.at(tmax, k, tbol[ok])
+    n_lt = np.bincount(k, minlength=size)
+    thin = n_lt < GCP_MIN_LT
+    tmin[thin] = np.nan
+    tmax[thin] = np.nan
+    shape = (g["nlat"], g["nlon"])
+    print(f"  Diviner GCP 90S-80S: {np.mean(~thin):.0%} of the bins have >= {GCP_MIN_LT} of "
+          f"{g['nlt']} local times with data (median {np.median(n_lt):.0f})")
+    return {"tmin": tmin.reshape(shape), "tmax": tmax.reshape(shape)}
+
+
+def aeqd_inverse(x: np.ndarray, y: np.ndarray, lat0: float, lon0: float,
+                 r: float = MOON_R_M) -> tuple[np.ndarray, np.ndarray]:
+    """Local azimuthal-equidistant metres -> lat/lon on a sphere (Snyder 1987).
+
+    The inverse of the '+proj=aeqd' grid the DEM and PSR windows use.
+    """
+    p0, l0 = np.radians(lat0), np.radians(lon0)
+    rho = np.hypot(x, y)
+    c = rho / r
+    with np.errstate(invalid="ignore", divide="ignore"):
+        north = np.where(rho > 0, y * np.sin(c) * np.cos(p0) / rho, 0.0)
+    lat = np.degrees(np.arcsin(np.clip(np.cos(c) * np.sin(p0) + north, -1.0, 1.0)))
+    lam = l0 + np.arctan2(x * np.sin(c), rho * np.cos(p0) * np.cos(c) - y * np.sin(p0) * np.sin(c))
+    lon = (np.degrees(lam) + 180.0) % 360.0 - 180.0
+    return lat, lon
+
+
+def gcp_window(lat: float, lon: float, half_m: float,
+               dx: float = 0.0, dy: float = 0.0) -> tuple[np.ndarray, np.ndarray]:
+    """Per-bin tmin / tmax sampled over the footprint (row 0 = north), centre shifted by dx, dy."""
+    g, gcp = GCP, load_gcp()
+    n = int(round(2 * half_m / GCP_PX_M))
+    c = (np.arange(n) + 0.5) * GCP_PX_M - half_m
+    x, y = np.meshgrid(c + dx, c[::-1] + dy)
+    la, lo = aeqd_inverse(x, y, lat, lon)
+    ilat = np.floor((la - g["lat0"]) / g["step"]).astype(np.int64)
+    ilon = np.floor((lo + 180.0) / g["step"]).astype(np.int64) % g["nlon"]
+    inside = (ilat >= 0) & (ilat < g["nlat"])
+    tmin = np.full(x.shape, np.nan)
+    tmax = np.full(x.shape, np.nan)
+    tmin[inside] = gcp["tmin"][ilat[inside], ilon[inside]]
+    tmax[inside] = gcp["tmax"][ilat[inside], ilon[inside]]
+    return tmin, tmax
+
+
+def _window_temps(tmin: np.ndarray, tmax: np.ndarray) -> dict | None:
+    ok = np.isfinite(tmin) & np.isfinite(tmax)
+    if ok.mean() < 0.5:  # less than half the footprint has data: no value
+        return None
+    lo, hi = float(tmin[ok].mean()), float(tmax[ok].mean())
+    return {"tmin_k": lo, "tmax_k": hi, "diurnal_amp_k": hi - lo}
+
+
+def diviner_source(side_km: float) -> str:
+    return ("tmin_k / tmax_k / diurnal_amp_k: Diviner bolometric surface temperature, Global Cumulative "
+            "Product 90S-80S (all nadir data Jul 2009 - Apr 2015 in 0.5 x 0.5 deg bins x 15 min local time; "
+            "Williams et al. 2017, Icarus 283:300, doi:10.1016/j.icarus.2016.08.012; PDS bundle "
+            "doi:10.17189/wj0s-w188). Per bin the coldest and warmest local time of the mean day, then the "
+            f"mean over the {side_km:g} km footprint. Seasons are averaged together, so against the "
+            "warmest-/coldest-month definition tmax_k reads low and tmin_k high (the seasonal 240 m polar "
+            "maps, Williams et al. 2019, JGR Planets 124:2505, would fix it but are ~30 GB)")
+
+
+COLDEST_SOURCE = ("context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same "
+                  "Diviner product; at full resolution the permanently shadowed floors are colder still "
+                  "(Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)")
+
+
+def diviner_values(lat: float, lon: float, radius_km: float) -> dict:
+    """Diviner temperatures for a south-polar target, in the same shape as OTHER ({} if no data)."""
+    half = radius_km * 1000.0
+    shift = min(MAX_SHIFT_M, half / 3.0)
+    tmin, tmax = gcp_window(lat, lon, half)
+    feats = _window_temps(tmin, tmax)
+    cover = float(np.mean(np.isfinite(tmin) & np.isfinite(tmax)))
+    if feats is None:
+        print(f"  WARNING: Diviner data covers only {cover:.0%} of the footprint - temperatures left out")
+        return {}
+    runs = [feats]
+    for dx, dy in [(shift, 0), (-shift, 0), (0, shift), (0, -shift)]:
+        r = _window_temps(*gcp_window(lat, lon, half, dx, dy))
+        if r is not None:
+            runs.append(r)
+    sd = {k: float(np.std([r[k] for r in runs])) for k in feats} if len(runs) >= 2 else {}
+    coldest = float(np.nanmin(tmin))
+    print(f"  Diviner: tmin {feats['tmin_k']:.0f} K, tmax {feats['tmax_k']:.0f} K, day-night "
+          f"{feats['diurnal_amp_k']:.0f} K (data in {cover:.0%} of the footprint); coldest bin {coldest:.0f} K")
+    return {
+        "features": feats,
+        "sd": sd,
+        "grades": {k: DIVINER_GRADE for k in feats},
+        "sources": [diviner_source(2 * radius_km), COLDEST_SOURCE],
+        "context": {"tmin_coldest_k": coldest},
+    }
+
+
+def terrain_with_sd(key: str, lat: float, lon: float, radius_km: float) -> tuple[dict, dict, float]:
+    """Terrain features at the target, sd from 4 shifted footprints, and the
+    footprint's height range in km (a sanity check on the DEM read)."""
     res = DEM[key]["res_m"]
     half = radius_km * 1000.0
     shift = min(MAX_SHIFT_M, half / 3.0)
@@ -513,7 +786,11 @@ def terrain_with_sd(key: str, lat: float, lon: float, radius_km: float) -> tuple
         vals = vals[np.isfinite(vals)]
         if vals.size >= 2:
             sd[k] = float(np.std(vals))
-    return centre, sd
+    # Height range of the whole footprint (p95 - p5), only to check the DEM
+    # read: relief_km is now local 1 km relief and cannot be used for that.
+    foot = big[p : p + n, p : p + n]
+    span_km = float(np.subtract(*np.nanpercentile(foot, [95, 5])) / 1000.0) if np.isfinite(foot).any() else np.nan
+    return centre, sd, span_km
 
 
 def clean(d: dict) -> dict:
@@ -551,60 +828,78 @@ def build() -> list[dict]:
         key = dem_key(body, lat)
 
         print(f"{t['id']}: reading {key} DEM around {lat}, {lon} (radius {radius_km} km) ...", flush=True)
-        feats, sd = terrain_with_sd(key, lat, lon, radius_km)
-        if not np.isfinite(feats["relief_km"]):
+        feats, sd, span_km = terrain_with_sd(key, lat, lon, radius_km)
+        if 2 * radius_km < ROUGH_10KM_MIN_SIDE_KM:  # a 10 km baseline is not measurable in a smaller window
+            feats.pop("rough_10km", None)
+            sd.pop("rough_10km", None)
+        if not np.isfinite(span_km):
             print(f"  WARNING: no DEM data at {t['id']} - check the coordinates / longitude convention")
-        elif key == "moon_south" and feats["relief_km"] < 0.5:
-            print(f"  WARNING: relief {feats['relief_km']:.2f} km at a south-polar target - expected 2-6 km. "
-                  "Check the coordinates; this usually means the reprojection is wrong.")
+        else:
+            print(f"  DEM height range across the footprint (p95-p5): {span_km:.2f} km")
+            if key == "moon_south" and span_km < 0.5:
+                print("  WARNING: under 0.5 km at a south-polar target, where 1-5 km is normal. "
+                      "Check the coordinates; this usually means the reprojection is wrong.")
 
-        polar = {}
+        polar, temps = {}, {}
         if key == "moon_south":
             polar, seen = polar_values(lat, lon, radius_km)
             if seen is None:
                 print("  WARNING: no PSR map could be opened - ice_idx left out for this target")
             else:
                 share = polar["features"]["ice_idx"]
-                print(f"  PSR map values seen: {seen} -> ice_idx (PSR share of the window) = {share:.3f}")
+                reach = polar.get("context", {}).get("psr_share_50km", float("nan"))
+                print(f"  PSR map values seen: {seen} -> ice_idx (PSR share of the footprint) = {share:.3f};"
+                      f" within {PSR_REACH_KM:g} km: {reach:.3f}")
                 if share > 0.9:
                     print("  WARNING: >90 % of the window counted as permanent shadow - check the PSR map encoding")
+            try:
+                temps = diviner_values(lat, lon, radius_km)
+            except Exception as e:  # noqa: BLE001 - never lose the whole build over one product
+                print(f"  WARNING: Diviner temperatures left out - {e}")
 
         extra = OTHER.get(t["id"], {})
+        parts = (polar, temps, extra)
         feats.update(ZERO_BY_DEFINITION)
-        feats.update(polar.get("features", {}))
-        feats.update(extra.get("features", {}))
-        sd.update(polar.get("sd", {}))
-        sd.update(extra.get("sd", {}))
+        for part in parts:
+            feats.update(part.get("features", {}))
+            sd.update(part.get("sd", {}))
 
         feats = clean(feats)
         sd = {k: v for k, v in clean(sd).items() if k in feats}
         raw_grades = {"__terrain__": DEM[key]["grade"]}
         raw_grades.update({k: ZERO_GRADE for k in ZERO_BY_DEFINITION})
-        raw_grades.update(polar.get("grades", {}))
-        raw_grades.update(extra.get("grades", {}))
+        for part in parts:
+            raw_grades.update(part.get("grades", {}))
         grades = expand_grades(raw_grades, feats)
+        context = clean({k: v for part in parts for k, v in part.get("context", {}).items()})
         print("  " + ", ".join(f"{k}={v} [{grades.get(k, '?')}]" for k, v in feats.items()))
+        if context:
+            print("  context (not scored): " + ", ".join(f"{k}={v}" for k, v in context.items()))
 
-        out.append(
+        rec = {
+            "id": t["id"],
+            "body": body,
+            "name": t["name"],
+            "lat": lat,
+            "lon": lon,
+            "radius_km": radius_km,
+            "synthetic": False,
+            "features": feats,
+            "sd": sd,
+            "grades": grades,
+        }
+        if context:
+            rec["context"] = context  # shown on the card, never scored
+        rec.update(
             {
-                "id": t["id"],
-                "body": body,
-                "name": t["name"],
-                "lat": lat,
-                "lon": lon,
-                "radius_km": radius_km,
-                "synthetic": False,
-                "features": feats,
-                "sd": sd,
-                "grades": grades,
                 "tags": t["tags"],
                 "sources": [DEM[key]["source"]]
                 + ([t["coord_source"]] if t.get("coord_source") else [])
-                + list(polar.get("sources", []))
-                + list(extra.get("sources", [])),
+                + [s for part in parts for s in part.get("sources", [])],
                 "blurb": t["blurb"],
             }
         )
+        out.append(rec)
     if skipped:
         print(f"\nSkipped {len(skipped)} target(s) with no centre yet (need the 2024 region outlines):")
         for tid in skipped:
@@ -617,15 +912,20 @@ def check(targets: list[dict]) -> None:
     from score import load_contract
 
     c = load_contract()
-    ids = {f.id for f in c.features}
+    specs = {f.id: f for f in c.features}
     mvp = {f.id for f in c.scored_features(("mvp",))}
     print("\nContract check:")
     for t in targets:
-        unknown = sorted(set(t["features"]) - ids)
+        unknown = sorted(set(t["features"]) - set(specs))
         missing = sorted(mvp - set(t["features"]))
         ungraded = sorted(set(t["features"]) - set(t.get("grades", {})))
         print(f"  {t['id']:34s} unknown: {unknown or '-'}   missing MVP: {missing or '-'}"
               f"   ungraded: {ungraded or '-'}")
+        outside = [f"{k}={v:g} (dictionary {specs[k].lo:g}-{specs[k].hi:g})"
+                   for k, v in t["features"].items()
+                   if k in specs and not specs[k].lo <= v <= specs[k].hi]
+        if outside:
+            print(f"  {'':34s} note: outside the dictionary range: {', '.join(outside)}")
         if unknown:
             sys.exit("Unknown feature ids - they must match feature_dictionary.yaml exactly.")
 

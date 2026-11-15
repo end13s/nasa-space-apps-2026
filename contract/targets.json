@@ -8,14 +8,14 @@
     "radius_km": 15,
     "synthetic": false,
     "features": {
-      "relief_km": 0.8556,
-      "slope_med_deg": 1.6607,
-      "slope_p90_deg": 8.4544,
-      "hypso_int": 0.2377,
-      "flat_frac": 0.8021,
+      "relief_km": 0.0141,
+      "slope_med_deg": 1.6434,
+      "slope_p90_deg": 2.093,
+      "rough_2km": 8.4442,
+      "rough_10km": 9.7328,
+      "hypso_int": 0.4965,
+      "flat_frac": 1.0,
       "steep_frac": 0.0,
-      "rough_2km": 28.069,
-      "rough_10km": 17.8501,
       "precip_mm": 0.0,
       "ndvi_max": 0.0,
       "soil_moist": 0.0,
@@ -25,14 +25,14 @@
       "ice_idx": 0.0
     },
     "sd": {
-      "relief_km": 0.1541,
-      "slope_med_deg": 0.2285,
-      "slope_p90_deg": 1.7648,
-      "hypso_int": 0.0509,
-      "flat_frac": 0.0519,
-      "steep_frac": 0.0006,
-      "rough_2km": 4.5605,
-      "rough_10km": 2.3912,
+      "relief_km": 0.0022,
+      "slope_med_deg": 0.2482,
+      "slope_p90_deg": 0.3065,
+      "rough_2km": 2.0372,
+      "rough_10km": 2.4279,
+      "hypso_int": 0.0015,
+      "flat_frac": 0.0,
+      "steep_frac": 0.0,
       "ti_class": 0.5,
       "albedo": 0.03,
       "ice_idx": 0.05
@@ -76,14 +76,14 @@
     "radius_km": 15,
     "synthetic": false,
     "features": {
-      "relief_km": 3.3064,
-      "slope_med_deg": 7.577,
-      "slope_p90_deg": 21.9041,
-      "hypso_int": 0.3442,
-      "flat_frac": 0.3579,
-      "steep_frac": 0.0681,
-      "rough_2km": 71.2036,
-      "rough_10km": 69.6056,
+      "relief_km": 0.0631,
+      "slope_med_deg": 7.8385,
+      "slope_p90_deg": 9.1443,
+      "rough_2km": 29.2045,
+      "rough_10km": 50.3598,
+      "hypso_int": 0.498,
+      "flat_frac": 0.0,
+      "steep_frac": 0.0,
       "precip_mm": 0.0,
       "ndvi_max": 0.0,
       "soil_moist": 0.0,
@@ -95,14 +95,14 @@
       "ice_idx": 0.0
     },
     "sd": {
-      "relief_km": 0.0598,
-      "slope_med_deg": 1.1844,
-      "slope_p90_deg": 0.1198,
-      "hypso_int": 0.0607,
-      "flat_frac": 0.0799,
-      "steep_frac": 0.0008,
-      "rough_2km": 2.0977,
-      "rough_10km": 2.6558,
+      "relief_km": 0.0095,
+      "slope_med_deg": 1.2065,
+      "slope_p90_deg": 1.2989,
+      "rough_2km": 5.9327,
+      "rough_10km": 7.7503,
+      "hypso_int": 0.0014,
+      "flat_frac": 0.1,
+      "steep_frac": 0.0,
       "ti_class": 0.5,
       "tmin_k": 8.0,
       "tmax_k": 8.0,
@@ -151,14 +151,14 @@
     "radius_km": 15,
     "synthetic": false,
     "features": {
-      "relief_km": 2.0484,
-      "slope_med_deg": 11.1192,
-      "slope_p90_deg": 24.2473,
-      "hypso_int": 0.3868,
-      "flat_frac": 0.2846,
-      "steep_frac": 0.0812,
-      "rough_2km": 92.4472,
-      "rough_10km": 59.2059,
+      "relief_km": 0.117,
+      "slope_med_deg": 10.8513,
+      "slope_p90_deg": 13.4537,
+      "rough_2km": 61.8261,
+      "rough_10km": 50.0965,
+      "hypso_int": 0.4954,
+      "flat_frac": 0.0,
+      "steep_frac": 0.0,
       "precip_mm": 0.0,
       "ndvi_max": 0.0,
       "soil_moist": 0.0,
@@ -169,14 +169,14 @@
       "ice_idx": 0.0
     },
     "sd": {
-      "relief_km": 0.0641,
-      "slope_med_deg": 0.6272,
-      "slope_p90_deg": 0.5777,
-      "hypso_int": 0.0122,
-      "flat_frac": 0.0242,
-      "steep_frac": 0.0088,
-      "rough_2km": 3.4947,
-      "rough_10km": 3.1728,
+      "relief_km": 0.0069,
+      "slope_med_deg": 0.5641,
+      "slope_p90_deg": 0.5028,
+      "rough_2km": 1.9577,
+      "rough_10km": 3.282,
+      "hypso_int": 0.001,
+      "flat_frac": 0.0,
+      "steep_frac": 0.0,
       "ti_class": 0.5,
       "tmin_k": 5.0,
       "tmax_k": 10.0,
@@ -222,13 +222,13 @@
     "radius_km": 5,
     "synthetic": false,
     "features": {
-      "relief_km": 0.4565,
-      "slope_med_deg": 2.218,
-      "slope_p90_deg": 10.4637,
-      "hypso_int": 0.2283,
-      "flat_frac": 0.808,
+      "relief_km": 0.0197,
+      "slope_med_deg": 2.3513,
+      "slope_p90_deg": 2.864,
+      "rough_2km": 13.5927,
+      "hypso_int": 0.4958,
+      "flat_frac": 1.0,
       "steep_frac": 0.0,
-      "rough_2km": 33.9649,
       "precip_mm": 0.0,
       "ndvi_max": 0.0,
       "soil_moist": 0.0,
@@ -236,13 +236,13 @@
       "ice_idx": 0.0
     },
     "sd": {
-      "relief_km": 0.1417,
-      "slope_med_deg": 0.401,
-      "slope_p90_deg": 2.7442,
-      "hypso_int": 0.0389,
-      "flat_frac": 0.0935,
+      "relief_km": 0.0033,
+      "slope_med_deg": 0.4066,
+      "slope_p90_deg": 0.4544,
+      "rough_2km": 4.7779,
+      "hypso_int": 0.0066,
+      "flat_frac": 0.0,
       "steep_frac": 0.0,
-      "rough_2km": 9.8321,
       "ice_idx": 0.05
     },
     "grades": {
@@ -281,30 +281,36 @@
     "radius_km": 15,
     "synthetic": false,
     "features": {
-      "relief_km": 3.7769,
-      "slope_med_deg": 13.5781,
-      "slope_p90_deg": 31.3966,
-      "hypso_int": 0.6351,
-      "flat_frac": 0.0919,
-      "steep_frac": 0.2789,
-      "rough_2km": 124.3112,
-      "rough_10km": 99.1742,
+      "relief_km": 0.1387,
+      "slope_med_deg": 13.3212,
+      "slope_p90_deg": 15.1307,
+      "rough_2km": 78.5483,
+      "rough_10km": 57.4798,
+      "hypso_int": 0.5029,
+      "flat_frac": 0.0,
+      "steep_frac": 0.0,
       "precip_mm": 0.0,
       "ndvi_max": 0.0,
       "soil_moist": 0.0,
       "litho_class": 2.0,
-      "ice_idx": 0.2736
+      "ice_idx": 0.2736,
+      "tmin_k": 55.6602,
+      "tmax_k": 206.6551,
+      "diurnal_amp_k": 150.995
     },
     "sd": {
-      "relief_km": 0.0981,
-      "slope_med_deg": 0.7845,
-      "slope_p90_deg": 0.0079,
-      "hypso_int": 0.0162,
-      "flat_frac": 0.0199,
-      "steep_frac": 0.0007,
-      "rough_2km": 2.9226,
-      "rough_10km": 0.2218,
-      "ice_idx": 0.0036
+      "relief_km": 0.008,
+      "slope_med_deg": 0.7693,
+      "slope_p90_deg": 0.8949,
+      "rough_2km": 7.4646,
+      "rough_10km": 2.8688,
+      "hypso_int": 0.0003,
+      "flat_frac": 0.0,
+      "steep_frac": 0.0,
+      "ice_idx": 0.0036,
+      "tmin_k": 0.8803,
+      "tmax_k": 2.3811,
+      "diurnal_amp_k": 1.7164
     },
     "grades": {
       "relief_km": "B",
@@ -319,7 +325,14 @@
       "ndvi_max": "DEF",
       "soil_moist": "DEF",
       "litho_class": "C",
-      "ice_idx": "C"
+      "ice_idx": "C",
+      "tmin_k": "B",
+      "tmax_k": "B",
+      "diurnal_amp_k": "B"
+    },
+    "context": {
+      "psr_share_50km": 0.1709,
+      "tmin_coldest_k": 35.801
     },
     "tags": [
       "polar",
@@ -329,8 +342,11 @@
     "sources": [
       "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
       "centre: IAU Gazetteer of Planetary Nomenclature, Shackleton (feature 5450), diameter 20.9 km - the 15 km circle covers the whole crater and rim",
-      "ice_idx: share of the window in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030); permanent shadow is the cold-trap proxy - a model from LOLA topography, LEND hydrogen not folded in yet",
-      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do"
+      "ice_idx: share of the 30 km footprint in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030). It is the AREA of cold traps, not a measured amount of ice: landing regions are picked on sunlit ridges, so the share is small by design. Shadow is modelled from LOLA topography; LEND hydrogen not folded in yet",
+      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do",
+      "context.psr_share_50km (shown, not scored): share of the 50 km circle around the centre in permanent shadow, same model, PGDA PSR map LPSR_75S_120M_201608.JP2 - the cold traps within reach of a base here",
+      "tmin_k / tmax_k / diurnal_amp_k: Diviner bolometric surface temperature, Global Cumulative Product 90S-80S (all nadir data Jul 2009 - Apr 2015 in 0.5 x 0.5 deg bins x 15 min local time; Williams et al. 2017, Icarus 283:300, doi:10.1016/j.icarus.2016.08.012; PDS bundle doi:10.17189/wj0s-w188). Per bin the coldest and warmest local time of the mean day, then the mean over the 30 km footprint. Seasons are averaged together, so against the warmest-/coldest-month definition tmax_k reads low and tmin_k high (the seasonal 240 m polar maps, Williams et al. 2019, JGR Planets 124:2505, would fix it but are ~30 GB)",
+      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)"
     ],
     "blurb": "Crater at the lunar south pole: near-permanently lit rim around a permanently shadowed floor."
   },
@@ -343,30 +359,36 @@
     "radius_km": 15,
     "synthetic": false,
     "features": {
-      "relief_km": 4.4446,
-      "slope_med_deg": 16.6976,
-      "slope_p90_deg": 24.3614,
-      "hypso_int": 0.4798,
-      "flat_frac": 0.0244,
-      "steep_frac": 0.0754,
-      "rough_2km": 84.1566,
-      "rough_10km": 115.8162,
+      "relief_km": 0.1748,
+      "slope_med_deg": 16.5493,
+      "slope_p90_deg": 17.749,
+      "rough_2km": 58.1166,
+      "rough_10km": 88.6477,
+      "hypso_int": 0.4976,
+      "flat_frac": 0.0,
+      "steep_frac": 0.0,
       "precip_mm": 0.0,
       "ndvi_max": 0.0,
       "soil_moist": 0.0,
       "litho_class": 2.0,
-      "ice_idx": 0.0066
+      "ice_idx": 0.0066,
+      "tmin_k": 59.0984,
+      "tmax_k": 264.0114,
+      "diurnal_amp_k": 204.913
     },
     "sd": {
-      "relief_km": 0.2637,
-      "slope_med_deg": 0.6101,
-      "slope_p90_deg": 0.4271,
-      "hypso_int": 0.0194,
-      "flat_frac": 0.0105,
-      "steep_frac": 0.0127,
-      "rough_2km": 4.1577,
-      "rough_10km": 5.0296,
-      "ice_idx": 0.0056
+      "relief_km": 0.0067,
+      "slope_med_deg": 0.5916,
+      "slope_p90_deg": 0.5609,
+      "rough_2km": 3.3888,
+      "rough_10km": 6.3818,
+      "hypso_int": 0.0002,
+      "flat_frac": 0.0,
+      "steep_frac": 0.0,
+      "ice_idx": 0.0056,
+      "tmin_k": 3.1344,
+      "tmax_k": 8.76,
+      "diurnal_amp_k": 5.6351
     },
     "grades": {
       "relief_km": "B",
@@ -381,7 +403,14 @@
       "ndvi_max": "DEF",
       "soil_moist": "DEF",
       "litho_class": "C",
-      "ice_idx": "C"
+      "ice_idx": "C",
+      "tmin_k": "B",
+      "tmax_k": "B",
+      "diurnal_amp_k": "B"
+    },
+    "context": {
+      "psr_share_50km": 0.0471,
+      "tmin_coldest_k": 35.7691
     },
     "tags": [
       "polar",
@@ -391,8 +420,11 @@
     "sources": [
       "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
       "centre: centre of the region's 1 km grid in USGS 'Down Selected Artemis III Candidate Landing Site Navigational Grids' (McClernan 2024, doi:10.5066/P1MEQ6UK; outlines from LROC QuickMap)",
-      "ice_idx: share of the window in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030); permanent shadow is the cold-trap proxy - a model from LOLA topography, LEND hydrogen not folded in yet",
-      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do"
+      "ice_idx: share of the 30 km footprint in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030). It is the AREA of cold traps, not a measured amount of ice: landing regions are picked on sunlit ridges, so the share is small by design. Shadow is modelled from LOLA topography; LEND hydrogen not folded in yet",
+      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do",
+      "context.psr_share_50km (shown, not scored): share of the 50 km circle around the centre in permanent shadow, same model, PGDA PSR map LPSR_75S_120M_201608.JP2 - the cold traps within reach of a base here",
+      "tmin_k / tmax_k / diurnal_amp_k: Diviner bolometric surface temperature, Global Cumulative Product 90S-80S (all nadir data Jul 2009 - Apr 2015 in 0.5 x 0.5 deg bins x 15 min local time; Williams et al. 2017, Icarus 283:300, doi:10.1016/j.icarus.2016.08.012; PDS bundle doi:10.17189/wj0s-w188). Per bin the coldest and warmest local time of the mean day, then the mean over the 30 km footprint. Seasons are averaged together, so against the warmest-/coldest-month definition tmax_k reads low and tmin_k high (the seasonal 240 m polar maps, Williams et al. 2019, JGR Planets 124:2505, would fix it but are ~30 GB)",
+      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)"
     ],
     "blurb": "Peak near Cabeus B, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   },
@@ -405,30 +437,36 @@
     "radius_km": 15,
     "synthetic": false,
     "features": {
-      "relief_km": 2.4729,
-      "slope_med_deg": 9.2548,
-      "slope_p90_deg": 17.1904,
-      "hypso_int": 0.6284,
-      "flat_frac": 0.1602,
+      "relief_km": 0.0961,
+      "slope_med_deg": 9.2155,
+      "slope_p90_deg": 10.4655,
+      "rough_2km": 34.2187,
+      "rough_10km": 43.315,
+      "hypso_int": 0.5013,
+      "flat_frac": 0.0,
       "steep_frac": 0.0,
-      "rough_2km": 58.8544,
-      "rough_10km": 63.3544,
       "precip_mm": 0.0,
       "ndvi_max": 0.0,
       "soil_moist": 0.0,
       "litho_class": 2.0,
-      "ice_idx": 0.0169
+      "ice_idx": 0.0169,
+      "tmin_k": 52.3642,
+      "tmax_k": 217.012,
+      "diurnal_amp_k": 164.6478
     },
     "sd": {
-      "relief_km": 0.3179,
-      "slope_med_deg": 0.3079,
-      "slope_p90_deg": 0.2038,
-      "hypso_int": 0.0534,
-      "flat_frac": 0.0111,
+      "relief_km": 0.0032,
+      "slope_med_deg": 0.2955,
+      "slope_p90_deg": 0.3323,
+      "rough_2km": 0.7843,
+      "rough_10km": 1.9572,
+      "hypso_int": 0.0004,
+      "flat_frac": 0.0,
       "steep_frac": 0.0,
-      "rough_2km": 0.8152,
-      "rough_10km": 2.9611,
-      "ice_idx": 0.0133
+      "ice_idx": 0.0133,
+      "tmin_k": 2.7506,
+      "tmax_k": 6.93,
+      "diurnal_amp_k": 4.2002
     },
     "grades": {
       "relief_km": "B",
@@ -443,7 +481,14 @@
       "ndvi_max": "DEF",
       "soil_moist": "DEF",
       "litho_class": "C",
-      "ice_idx": "C"
+      "ice_idx": "C",
+      "tmin_k": "B",
+      "tmax_k": "B",
+      "diurnal_amp_k": "B"
+    },
+    "context": {
+      "psr_share_50km": 0.1572,
+      "tmin_coldest_k": 31.1189
     },
     "tags": [
       "polar",
@@ -453,8 +498,11 @@
     "sources": [
       "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
       "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)",
-      "ice_idx: share of the window in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030); permanent shadow is the cold-trap proxy - a model from LOLA topography, LEND hydrogen not folded in yet",
-      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do"
+      "ice_idx: share of the 30 km footprint in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030). It is the AREA of cold traps, not a measured amount of ice: landing regions are picked on sunlit ridges, so the share is small by design. Shadow is modelled from LOLA topography; LEND hydrogen not folded in yet",
+      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do",
+      "context.psr_share_50km (shown, not scored): share of the 50 km circle around the centre in permanent shadow, same model, PGDA PSR map LPSR_75S_120M_201608.JP2 - the cold traps within reach of a base here",
+      "tmin_k / tmax_k / diurnal_amp_k: Diviner bolometric surface temperature, Global Cumulative Product 90S-80S (all nadir data Jul 2009 - Apr 2015 in 0.5 x 0.5 deg bins x 15 min local time; Williams et al. 2017, Icarus 283:300, doi:10.1016/j.icarus.2016.08.012; PDS bundle doi:10.17189/wj0s-w188). Per bin the coldest and warmest local time of the mean day, then the mean over the 30 km footprint. Seasons are averaged together, so against the warmest-/coldest-month definition tmax_k reads low and tmin_k high (the seasonal 240 m polar maps, Williams et al. 2019, JGR Planets 124:2505, would fix it but are ~30 GB)",
+      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)"
     ],
     "blurb": "Haworth, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   },
@@ -467,30 +515,36 @@
     "radius_km": 15,
     "synthetic": false,
     "features": {
-      "relief_km": 4.0638,
-      "slope_med_deg": 16.553,
-      "slope_p90_deg": 24.9978,
-      "hypso_int": 0.5592,
-      "flat_frac": 0.0708,
-      "steep_frac": 0.0997,
-      "rough_2km": 90.607,
-      "rough_10km": 109.2568,
+      "relief_km": 0.1734,
+      "slope_med_deg": 16.4588,
+      "slope_p90_deg": 17.5711,
+      "rough_2km": 56.8461,
+      "rough_10km": 83.2854,
+      "hypso_int": 0.4997,
+      "flat_frac": 0.0,
+      "steep_frac": 0.0,
       "precip_mm": 0.0,
       "ndvi_max": 0.0,
       "soil_moist": 0.0,
       "litho_class": 2.0,
-      "ice_idx": 0.0065
+      "ice_idx": 0.0065,
+      "tmin_k": 64.3074,
+      "tmax_k": 267.323,
+      "diurnal_amp_k": 203.0156
     },
     "sd": {
-      "relief_km": 0.4998,
-      "slope_med_deg": 0.9404,
-      "slope_p90_deg": 0.4275,
-      "hypso_int": 0.0285,
-      "flat_frac": 0.008,
-      "steep_frac": 0.0137,
-      "rough_2km": 5.5957,
-      "rough_10km": 11.1217,
-      "ice_idx": 0.0028
+      "relief_km": 0.0109,
+      "slope_med_deg": 1.0652,
+      "slope_p90_deg": 1.0582,
+      "rough_2km": 4.9608,
+      "rough_10km": 12.0228,
+      "hypso_int": 0.0004,
+      "flat_frac": 0.0,
+      "steep_frac": 0.0,
+      "ice_idx": 0.0028,
+      "tmin_k": 2.3947,
+      "tmax_k": 5.265,
+      "diurnal_amp_k": 3.0159
     },
     "grades": {
       "relief_km": "B",
@@ -505,7 +559,14 @@
       "ndvi_max": "DEF",
       "soil_moist": "DEF",
       "litho_class": "C",
-      "ice_idx": "C"
+      "ice_idx": "C",
+      "tmin_k": "B",
+      "tmax_k": "B",
+      "diurnal_amp_k": "B"
+    },
+    "context": {
+      "psr_share_50km": 0.1341,
+      "tmin_coldest_k": 45.8314
     },
     "tags": [
       "polar",
@@ -515,10 +576,91 @@
     "sources": [
       "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
       "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)",
-      "ice_idx: share of the window in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030); permanent shadow is the cold-trap proxy - a model from LOLA topography, LEND hydrogen not folded in yet",
-      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do"
+      "ice_idx: share of the 30 km footprint in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030). It is the AREA of cold traps, not a measured amount of ice: landing regions are picked on sunlit ridges, so the share is small by design. Shadow is modelled from LOLA topography; LEND hydrogen not folded in yet",
+      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do",
+      "context.psr_share_50km (shown, not scored): share of the 50 km circle around the centre in permanent shadow, same model, PGDA PSR map LPSR_75S_120M_201608.JP2 - the cold traps within reach of a base here",
+      "tmin_k / tmax_k / diurnal_amp_k: Diviner bolometric surface temperature, Global Cumulative Product 90S-80S (all nadir data Jul 2009 - Apr 2015 in 0.5 x 0.5 deg bins x 15 min local time; Williams et al. 2017, Icarus 283:300, doi:10.1016/j.icarus.2016.08.012; PDS bundle doi:10.17189/wj0s-w188). Per bin the coldest and warmest local time of the mean day, then the mean over the 30 km footprint. Seasons are averaged together, so against the warmest-/coldest-month definition tmax_k reads low and tmin_k high (the seasonal 240 m polar maps, Williams et al. 2019, JGR Planets 124:2505, would fix it but are ~30 GB)",
+      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)"
     ],
     "blurb": "Malapert Massif, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
+  },
+  {
+    "id": "moon_artemis_mons_mouton_plateau",
+    "body": "moon",
+    "name": "Artemis candidate landing region: Mons Mouton Plateau",
+    "lat": -84.3375,
+    "lon": 30.6186,
+    "radius_km": 15,
+    "synthetic": false,
+    "features": {
+      "relief_km": 0.0683,
+      "slope_med_deg": 6.3288,
+      "slope_p90_deg": 7.6751,
+      "rough_2km": 35.3875,
+      "rough_10km": 21.2601,
+      "hypso_int": 0.5038,
+      "flat_frac": 0.25,
+      "steep_frac": 0.0,
+      "precip_mm": 0.0,
+      "ndvi_max": 0.0,
+      "soil_moist": 0.0,
+      "litho_class": 2.0,
+      "ice_idx": 0.0303,
+      "tmin_k": 60.7729,
+      "tmax_k": 245.1434,
+      "diurnal_amp_k": 184.3705
+    },
+    "sd": {
+      "relief_km": 0.0053,
+      "slope_med_deg": 0.4661,
+      "slope_p90_deg": 0.5737,
+      "rough_2km": 3.7535,
+      "rough_10km": 6.2803,
+      "hypso_int": 0.0009,
+      "flat_frac": 0.05,
+      "steep_frac": 0.0,
+      "ice_idx": 0.0037,
+      "tmin_k": 1.407,
+      "tmax_k": 5.9108,
+      "diurnal_amp_k": 4.5528
+    },
+    "grades": {
+      "relief_km": "B",
+      "slope_med_deg": "B",
+      "slope_p90_deg": "B",
+      "hypso_int": "B",
+      "flat_frac": "B",
+      "steep_frac": "B",
+      "rough_2km": "B",
+      "rough_10km": "B",
+      "precip_mm": "DEF",
+      "ndvi_max": "DEF",
+      "soil_moist": "DEF",
+      "litho_class": "C",
+      "ice_idx": "C",
+      "tmin_k": "B",
+      "tmax_k": "B",
+      "diurnal_amp_k": "B"
+    },
+    "context": {
+      "psr_share_50km": 0.0202,
+      "tmin_coldest_k": 48.4068
+    },
+    "tags": [
+      "polar",
+      "artemis",
+      "permanent-base"
+    ],
+    "sources": [
+      "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
+      "centre: centre of the region's 1 km grid in USGS 'Down Selected Artemis III Candidate Landing Site Navigational Grids' (McClernan 2024, doi:10.5066/P1MEQ6UK; outlines from LROC QuickMap); the region is 78 x 58 km, much larger than the others (17-21 km), so the 30 km footprint covers its middle only",
+      "ice_idx: share of the 30 km footprint in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030). It is the AREA of cold traps, not a measured amount of ice: landing regions are picked on sunlit ridges, so the share is small by design. Shadow is modelled from LOLA topography; LEND hydrogen not folded in yet",
+      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do",
+      "context.psr_share_50km (shown, not scored): share of the 50 km circle around the centre in permanent shadow, same model, PGDA PSR map LPSR_75S_120M_201608.JP2 - the cold traps within reach of a base here",
+      "tmin_k / tmax_k / diurnal_amp_k: Diviner bolometric surface temperature, Global Cumulative Product 90S-80S (all nadir data Jul 2009 - Apr 2015 in 0.5 x 0.5 deg bins x 15 min local time; Williams et al. 2017, Icarus 283:300, doi:10.1016/j.icarus.2016.08.012; PDS bundle doi:10.17189/wj0s-w188). Per bin the coldest and warmest local time of the mean day, then the mean over the 30 km footprint. Seasons are averaged together, so against the warmest-/coldest-month definition tmax_k reads low and tmin_k high (the seasonal 240 m polar maps, Williams et al. 2019, JGR Planets 124:2505, would fix it but are ~30 GB)",
+      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)"
+    ],
+    "blurb": "Mons Mouton Plateau, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   },
   {
     "id": "moon_artemis_mons_mouton",
@@ -529,30 +671,36 @@
     "radius_km": 15,
     "synthetic": false,
     "features": {
-      "relief_km": 3.9961,
-      "slope_med_deg": 11.0759,
-      "slope_p90_deg": 21.0079,
-      "hypso_int": 0.6528,
-      "flat_frac": 0.1833,
-      "steep_frac": 0.0011,
-      "rough_2km": 65.739,
-      "rough_10km": 78.92,
+      "relief_km": 0.1141,
+      "slope_med_deg": 10.6982,
+      "slope_p90_deg": 12.337,
+      "rough_2km": 37.8956,
+      "rough_10km": 48.0183,
+      "hypso_int": 0.4987,
+      "flat_frac": 0.0,
+      "steep_frac": 0.0,
       "precip_mm": 0.0,
       "ndvi_max": 0.0,
       "soil_moist": 0.0,
       "litho_class": 2.0,
-      "ice_idx": 0.0158
+      "ice_idx": 0.0158,
+      "tmin_k": 56.1019,
+      "tmax_k": 232.266,
+      "diurnal_amp_k": 176.1641
     },
     "sd": {
-      "relief_km": 0.8069,
-      "slope_med_deg": 1.6357,
-      "slope_p90_deg": 1.3325,
-      "hypso_int": 0.0207,
-      "flat_frac": 0.0526,
-      "steep_frac": 0.0294,
-      "rough_2km": 9.5395,
-      "rough_10km": 11.4476,
-      "ice_idx": 0.0017
+      "relief_km": 0.0163,
+      "slope_med_deg": 1.592,
+      "slope_p90_deg": 1.5917,
+      "rough_2km": 4.4733,
+      "rough_10km": 10.164,
+      "hypso_int": 0.0006,
+      "flat_frac": 0.0,
+      "steep_frac": 0.0,
+      "ice_idx": 0.0017,
+      "tmin_k": 2.0074,
+      "tmax_k": 3.6577,
+      "diurnal_amp_k": 3.527
     },
     "grades": {
       "relief_km": "B",
@@ -567,7 +715,14 @@
       "ndvi_max": "DEF",
       "soil_moist": "DEF",
       "litho_class": "C",
-      "ice_idx": "C"
+      "ice_idx": "C",
+      "tmin_k": "B",
+      "tmax_k": "B",
+      "diurnal_amp_k": "B"
+    },
+    "context": {
+      "psr_share_50km": 0.0938,
+      "tmin_coldest_k": 44.9862
     },
     "tags": [
       "polar",
@@ -577,8 +732,11 @@
     "sources": [
       "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
       "centre: centre of the region's 1 km grid in USGS 'Down Selected Artemis III Candidate Landing Site Navigational Grids' (McClernan 2024, doi:10.5066/P1MEQ6UK; outlines from LROC QuickMap)",
-      "ice_idx: share of the window in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030); permanent shadow is the cold-trap proxy - a model from LOLA topography, LEND hydrogen not folded in yet",
-      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do"
+      "ice_idx: share of the 30 km footprint in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030). It is the AREA of cold traps, not a measured amount of ice: landing regions are picked on sunlit ridges, so the share is small by design. Shadow is modelled from LOLA topography; LEND hydrogen not folded in yet",
+      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do",
+      "context.psr_share_50km (shown, not scored): share of the 50 km circle around the centre in permanent shadow, same model, PGDA PSR map LPSR_75S_120M_201608.JP2 - the cold traps within reach of a base here",
+      "tmin_k / tmax_k / diurnal_amp_k: Diviner bolometric surface temperature, Global Cumulative Product 90S-80S (all nadir data Jul 2009 - Apr 2015 in 0.5 x 0.5 deg bins x 15 min local time; Williams et al. 2017, Icarus 283:300, doi:10.1016/j.icarus.2016.08.012; PDS bundle doi:10.17189/wj0s-w188). Per bin the coldest and warmest local time of the mean day, then the mean over the 30 km footprint. Seasons are averaged together, so against the warmest-/coldest-month definition tmax_k reads low and tmin_k high (the seasonal 240 m polar maps, Williams et al. 2019, JGR Planets 124:2505, would fix it but are ~30 GB)",
+      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)"
     ],
     "blurb": "Mons Mouton, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   },
@@ -591,30 +749,36 @@
     "radius_km": 15,
     "synthetic": false,
     "features": {
-      "relief_km": 5.2488,
-      "slope_med_deg": 16.1173,
-      "slope_p90_deg": 25.1761,
-      "hypso_int": 0.6223,
-      "flat_frac": 0.0868,
-      "steep_frac": 0.1076,
-      "rough_2km": 81.7978,
-      "rough_10km": 112.6697,
+      "relief_km": 0.17,
+      "slope_med_deg": 16.0272,
+      "slope_p90_deg": 17.1955,
+      "rough_2km": 52.1544,
+      "rough_10km": 88.7425,
+      "hypso_int": 0.5005,
+      "flat_frac": 0.0,
+      "steep_frac": 0.0,
       "precip_mm": 0.0,
       "ndvi_max": 0.0,
       "soil_moist": 0.0,
       "litho_class": 2.0,
-      "ice_idx": 0.0123
+      "ice_idx": 0.0123,
+      "tmin_k": 62.9474,
+      "tmax_k": 252.1886,
+      "diurnal_amp_k": 189.2412
     },
     "sd": {
-      "relief_km": 0.6726,
-      "slope_med_deg": 0.6131,
-      "slope_p90_deg": 0.249,
-      "hypso_int": 0.0461,
-      "flat_frac": 0.0211,
-      "steep_frac": 0.0111,
-      "rough_2km": 3.66,
-      "rough_10km": 6.6617,
-      "ice_idx": 0.0071
+      "relief_km": 0.0068,
+      "slope_med_deg": 0.7533,
+      "slope_p90_deg": 0.5049,
+      "rough_2km": 1.6213,
+      "rough_10km": 9.7564,
+      "hypso_int": 0.0004,
+      "flat_frac": 0.0,
+      "steep_frac": 0.0,
+      "ice_idx": 0.0071,
+      "tmin_k": 1.2206,
+      "tmax_k": 2.5716,
+      "diurnal_amp_k": 2.5917
     },
     "grades": {
       "relief_km": "B",
@@ -629,7 +793,14 @@
       "ndvi_max": "DEF",
       "soil_moist": "DEF",
       "litho_class": "C",
-      "ice_idx": "C"
+      "ice_idx": "C",
+      "tmin_k": "B",
+      "tmax_k": "B",
+      "diurnal_amp_k": "B"
+    },
+    "context": {
+      "psr_share_50km": 0.0926,
+      "tmin_coldest_k": 44.9862
     },
     "tags": [
       "polar",
@@ -639,8 +810,11 @@
     "sources": [
       "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
       "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)",
-      "ice_idx: share of the window in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030); permanent shadow is the cold-trap proxy - a model from LOLA topography, LEND hydrogen not folded in yet",
-      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do"
+      "ice_idx: share of the 30 km footprint in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030). It is the AREA of cold traps, not a measured amount of ice: landing regions are picked on sunlit ridges, so the share is small by design. Shadow is modelled from LOLA topography; LEND hydrogen not folded in yet",
+      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do",
+      "context.psr_share_50km (shown, not scored): share of the 50 km circle around the centre in permanent shadow, same model, PGDA PSR map LPSR_75S_120M_201608.JP2 - the cold traps within reach of a base here",
+      "tmin_k / tmax_k / diurnal_amp_k: Diviner bolometric surface temperature, Global Cumulative Product 90S-80S (all nadir data Jul 2009 - Apr 2015 in 0.5 x 0.5 deg bins x 15 min local time; Williams et al. 2017, Icarus 283:300, doi:10.1016/j.icarus.2016.08.012; PDS bundle doi:10.17189/wj0s-w188). Per bin the coldest and warmest local time of the mean day, then the mean over the 30 km footprint. Seasons are averaged together, so against the warmest-/coldest-month definition tmax_k reads low and tmin_k high (the seasonal 240 m polar maps, Williams et al. 2019, JGR Planets 124:2505, would fix it but are ~30 GB)",
+      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)"
     ],
     "blurb": "Nobile Rim 1, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   },
@@ -653,30 +827,36 @@
     "radius_km": 15,
     "synthetic": false,
     "features": {
-      "relief_km": 2.6969,
-      "slope_med_deg": 11.2022,
-      "slope_p90_deg": 22.8114,
-      "hypso_int": 0.5782,
-      "flat_frac": 0.1991,
-      "steep_frac": 0.061,
-      "rough_2km": 85.5792,
-      "rough_10km": 69.141,
+      "relief_km": 0.1159,
+      "slope_med_deg": 10.9378,
+      "slope_p90_deg": 12.6616,
+      "rough_2km": 53.6969,
+      "rough_10km": 47.1741,
+      "hypso_int": 0.5025,
+      "flat_frac": 0.0,
+      "steep_frac": 0.0,
       "precip_mm": 0.0,
       "ndvi_max": 0.0,
       "soil_moist": 0.0,
       "litho_class": 2.0,
-      "ice_idx": 0.1609
+      "ice_idx": 0.1609,
+      "tmin_k": 53.8473,
+      "tmax_k": 242.1194,
+      "diurnal_amp_k": 188.2721
     },
     "sd": {
-      "relief_km": 0.1688,
-      "slope_med_deg": 0.9273,
-      "slope_p90_deg": 0.9863,
-      "hypso_int": 0.0273,
-      "flat_frac": 0.0357,
-      "steep_frac": 0.0187,
-      "rough_2km": 6.9744,
-      "rough_10km": 2.5988,
-      "ice_idx": 0.058
+      "relief_km": 0.0101,
+      "slope_med_deg": 0.9925,
+      "slope_p90_deg": 0.9223,
+      "rough_2km": 4.2032,
+      "rough_10km": 7.3775,
+      "hypso_int": 0.0008,
+      "flat_frac": 0.0,
+      "steep_frac": 0.0,
+      "ice_idx": 0.058,
+      "tmin_k": 1.7697,
+      "tmax_k": 2.5879,
+      "diurnal_amp_k": 1.2792
     },
     "grades": {
       "relief_km": "B",
@@ -691,7 +871,14 @@
       "ndvi_max": "DEF",
       "soil_moist": "DEF",
       "litho_class": "C",
-      "ice_idx": "C"
+      "ice_idx": "C",
+      "tmin_k": "B",
+      "tmax_k": "B",
+      "diurnal_amp_k": "B"
+    },
+    "context": {
+      "psr_share_50km": 0.0874,
+      "tmin_coldest_k": 41.7958
     },
     "tags": [
       "polar",
@@ -701,8 +888,11 @@
     "sources": [
       "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
       "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)",
-      "ice_idx: share of the window in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030); permanent shadow is the cold-trap proxy - a model from LOLA topography, LEND hydrogen not folded in yet",
-      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do"
+      "ice_idx: share of the 30 km footprint in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030). It is the AREA of cold traps, not a measured amount of ice: landing regions are picked on sunlit ridges, so the share is small by design. Shadow is modelled from LOLA topography; LEND hydrogen not folded in yet",
+      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do",
+      "context.psr_share_50km (shown, not scored): share of the 50 km circle around the centre in permanent shadow, same model, PGDA PSR map LPSR_75S_120M_201608.JP2 - the cold traps within reach of a base here",
+      "tmin_k / tmax_k / diurnal_amp_k: Diviner bolometric surface temperature, Global Cumulative Product 90S-80S (all nadir data Jul 2009 - Apr 2015 in 0.5 x 0.5 deg bins x 15 min local time; Williams et al. 2017, Icarus 283:300, doi:10.1016/j.icarus.2016.08.012; PDS bundle doi:10.17189/wj0s-w188). Per bin the coldest and warmest local time of the mean day, then the mean over the 30 km footprint. Seasons are averaged together, so against the warmest-/coldest-month definition tmax_k reads low and tmin_k high (the seasonal 240 m polar maps, Williams et al. 2019, JGR Planets 124:2505, would fix it but are ~30 GB)",
+      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)"
     ],
     "blurb": "Nobile Rim 2, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   },
@@ -715,30 +905,36 @@
     "radius_km": 15,
     "synthetic": false,
     "features": {
-      "relief_km": 3.0248,
-      "slope_med_deg": 10.2744,
-      "slope_p90_deg": 17.7502,
-      "hypso_int": 0.4064,
-      "flat_frac": 0.2016,
-      "steep_frac": 0.0016,
-      "rough_2km": 67.4407,
-      "rough_10km": 60.2778,
+      "relief_km": 0.1048,
+      "slope_med_deg": 10.1075,
+      "slope_p90_deg": 11.5429,
+      "rough_2km": 39.2895,
+      "rough_10km": 43.8243,
+      "hypso_int": 0.4995,
+      "flat_frac": 0.0,
+      "steep_frac": 0.0,
       "precip_mm": 0.0,
       "ndvi_max": 0.0,
       "soil_moist": 0.0,
       "litho_class": 2.0,
-      "ice_idx": 0.0369
+      "ice_idx": 0.0369,
+      "tmin_k": 57.4186,
+      "tmax_k": 231.042,
+      "diurnal_amp_k": 173.6235
     },
     "sd": {
-      "relief_km": 0.1043,
-      "slope_med_deg": 0.8996,
-      "slope_p90_deg": 0.4091,
-      "hypso_int": 0.0806,
-      "flat_frac": 0.0501,
-      "steep_frac": 0.0062,
-      "rough_2km": 5.0079,
-      "rough_10km": 4.318,
-      "ice_idx": 0.023
+      "relief_km": 0.0095,
+      "slope_med_deg": 0.9843,
+      "slope_p90_deg": 0.7622,
+      "rough_2km": 3.4577,
+      "rough_10km": 5.6433,
+      "hypso_int": 0.0003,
+      "flat_frac": 0.0,
+      "steep_frac": 0.0,
+      "ice_idx": 0.023,
+      "tmin_k": 0.4311,
+      "tmax_k": 2.1846,
+      "diurnal_amp_k": 1.7624
     },
     "grades": {
       "relief_km": "B",
@@ -753,7 +949,14 @@
       "ndvi_max": "DEF",
       "soil_moist": "DEF",
       "litho_class": "C",
-      "ice_idx": "C"
+      "ice_idx": "C",
+      "tmin_k": "B",
+      "tmax_k": "B",
+      "diurnal_amp_k": "B"
+    },
+    "context": {
+      "psr_share_50km": 0.111,
+      "tmin_coldest_k": 37.3058
     },
     "tags": [
       "polar",
@@ -763,8 +966,11 @@
     "sources": [
       "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
       "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)",
-      "ice_idx: share of the window in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030); permanent shadow is the cold-trap proxy - a model from LOLA topography, LEND hydrogen not folded in yet",
-      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do"
+      "ice_idx: share of the 30 km footprint in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030). It is the AREA of cold traps, not a measured amount of ice: landing regions are picked on sunlit ridges, so the share is small by design. Shadow is modelled from LOLA topography; LEND hydrogen not folded in yet",
+      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do",
+      "context.psr_share_50km (shown, not scored): share of the 50 km circle around the centre in permanent shadow, same model, PGDA PSR map LPSR_75S_120M_201608.JP2 - the cold traps within reach of a base here",
+      "tmin_k / tmax_k / diurnal_amp_k: Diviner bolometric surface temperature, Global Cumulative Product 90S-80S (all nadir data Jul 2009 - Apr 2015 in 0.5 x 0.5 deg bins x 15 min local time; Williams et al. 2017, Icarus 283:300, doi:10.1016/j.icarus.2016.08.012; PDS bundle doi:10.17189/wj0s-w188). Per bin the coldest and warmest local time of the mean day, then the mean over the 30 km footprint. Seasons are averaged together, so against the warmest-/coldest-month definition tmax_k reads low and tmin_k high (the seasonal 240 m polar maps, Williams et al. 2019, JGR Planets 124:2505, would fix it but are ~30 GB)",
+      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)"
     ],
     "blurb": "de Gerlache Rim 2, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   },
@@ -777,30 +983,36 @@
     "radius_km": 15,
     "synthetic": false,
     "features": {
-      "relief_km": 1.6432,
-      "slope_med_deg": 7.6722,
-      "slope_p90_deg": 16.8561,
-      "hypso_int": 0.6288,
-      "flat_frac": 0.3047,
+      "relief_km": 0.0769,
+      "slope_med_deg": 7.4028,
+      "slope_p90_deg": 8.9664,
+      "rough_2km": 43.7387,
+      "rough_10km": 31.0025,
+      "hypso_int": 0.4991,
+      "flat_frac": 0.0,
       "steep_frac": 0.0,
-      "rough_2km": 63.0725,
-      "rough_10km": 41.3193,
       "precip_mm": 0.0,
       "ndvi_max": 0.0,
       "soil_moist": 0.0,
       "litho_class": 2.0,
-      "ice_idx": 0.0873
+      "ice_idx": 0.0873,
+      "tmin_k": 51.1367,
+      "tmax_k": 215.6574,
+      "diurnal_amp_k": 164.5207
     },
     "sd": {
-      "relief_km": 0.1957,
-      "slope_med_deg": 0.5156,
-      "slope_p90_deg": 0.573,
-      "hypso_int": 0.0215,
-      "flat_frac": 0.0326,
+      "relief_km": 0.005,
+      "slope_med_deg": 0.5228,
+      "slope_p90_deg": 0.5028,
+      "rough_2km": 3.9441,
+      "rough_10km": 4.8278,
+      "hypso_int": 0.0004,
+      "flat_frac": 0.1,
       "steep_frac": 0.0,
-      "rough_2km": 3.7127,
-      "rough_10km": 2.9619,
-      "ice_idx": 0.0128
+      "ice_idx": 0.0128,
+      "tmin_k": 2.0534,
+      "tmax_k": 6.4444,
+      "diurnal_amp_k": 4.5108
     },
     "grades": {
       "relief_km": "B",
@@ -815,7 +1027,14 @@
       "ndvi_max": "DEF",
       "soil_moist": "DEF",
       "litho_class": "C",
-      "ice_idx": "C"
+      "ice_idx": "C",
+      "tmin_k": "B",
+      "tmax_k": "B",
+      "diurnal_amp_k": "B"
+    },
+    "context": {
+      "psr_share_50km": 0.0705,
+      "tmin_coldest_k": 36.3307
     },
     "tags": [
       "polar",
@@ -825,8 +1044,11 @@
     "sources": [
       "LOLA south polar DEM LDEM_80S_40MPP_ADJ (Barker et al. 2023, PSJ 4:183, doi:10.3847/PSJ/acf3e1; data doi:10.60903/gsfcpgda-lola-spole)",
       "centre: centre of the region's 1 km grid in USGS 'Down Selected Artemis III Candidate Landing Site Navigational Grids' (McClernan 2024, doi:10.5066/P1MEQ6UK; outlines from LROC QuickMap)",
-      "ice_idx: share of the window in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030); permanent shadow is the cold-trap proxy - a model from LOLA topography, LEND hydrogen not folded in yet",
-      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do"
+      "ice_idx: share of the 30 km footprint in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030). It is the AREA of cold traps, not a measured amount of ice: landing regions are picked on sunlit ridges, so the share is small by design. Shadow is modelled from LOLA topography; LEND hydrogen not folded in yet",
+      "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do",
+      "context.psr_share_50km (shown, not scored): share of the 50 km circle around the centre in permanent shadow, same model, PGDA PSR map LPSR_75S_120M_201608.JP2 - the cold traps within reach of a base here",
+      "tmin_k / tmax_k / diurnal_amp_k: Diviner bolometric surface temperature, Global Cumulative Product 90S-80S (all nadir data Jul 2009 - Apr 2015 in 0.5 x 0.5 deg bins x 15 min local time; Williams et al. 2017, Icarus 283:300, doi:10.1016/j.icarus.2016.08.012; PDS bundle doi:10.17189/wj0s-w188). Per bin the coldest and warmest local time of the mean day, then the mean over the 30 km footprint. Seasons are averaged together, so against the warmest-/coldest-month definition tmax_k reads low and tmin_k high (the seasonal 240 m polar maps, Williams et al. 2019, JGR Planets 124:2505, would fix it but are ~30 GB)",
+      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)"
     ],
     "blurb": "Slater Plain, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   }
