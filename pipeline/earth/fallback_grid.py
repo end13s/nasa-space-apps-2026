@@ -127,7 +127,8 @@ def build_climate(wc_dir: Path) -> dict[str, np.ndarray]:
 # ---------------------------------------------------------------------------
 
 
-def build_terrain(etopo_path: Path, stripe_rows: int = 60) -> dict[str, np.ndarray]:
+def build_terrain(etopo_path: Path, stripe_rows: int = 60,
+                  bed_path: Path | None = None) -> dict[str, np.ndarray]:
     """Terrain statistics per 0.25 degree cell from ETOPO 60 arc-second.
 
     Processed in horizontal stripes so the 933 MB global array is never held
@@ -138,9 +139,10 @@ def build_terrain(etopo_path: Path, stripe_rows: int = 60) -> dict[str, np.ndarr
     out = {k: np.full((NROWS, NCOLS), np.nan, np.float32) for k in (
         "relief_km", "slope_med_deg", "slope_p90_deg", "hypso_int",
         "flat_frac", "steep_frac", "rough_10km",
-        "relief_km__sd", "slope_med_deg__sd", "elev_m", "land_frac",
+        "relief_km__sd", "slope_med_deg__sd", "elev_m", "land_frac", "ice_idx",
     )}
 
+    bed_src = rasterio.open(bed_path) if bed_path and Path(bed_path).exists() else None
     with rasterio.open(etopo_path) as src:
         H, W = src.height, src.width
         fy, fx = H // NROWS, W // NCOLS          # 15, 15
@@ -159,6 +161,19 @@ def build_terrain(etopo_path: Path, stripe_rows: int = 60) -> dict[str, np.ndarr
             # from the statistics and the land fraction is recorded, so a cell
             # that is mostly ocean can be flagged rather than trusted.
             is_land = dem > 0
+
+            # Ice thickness = surface - bedrock. ETOPO 2022 compiles both, so
+            # every glacier and ice sheet appears. Without this the Antarctic
+            # plateau reads as "flat, cold, dry" - i.e. perfectly Martian -
+            # and became the top proxy for the Jezero lake delta.
+            if bed_src is not None:
+                bed = bed_src.read(1, window=win).astype(np.float32)
+                iced = is_land & ((dem - bed) > 10.0)
+                nb_ = r1 - r0
+                landn = is_land.reshape(nb_, fy, NCOLS, fx).sum(axis=(1, 3))
+                icen = iced.reshape(nb_, fy, NCOLS, fx).sum(axis=(1, 3))
+                with np.errstate(invalid="ignore", divide="ignore"):
+                    out["ice_idx"][r0:r1] = np.where(landn > 0, icen / landn, np.nan)
             dem = np.where(is_land, dem, np.nan)
 
             lat_mid = 90.0 - (np.arange(r0, r1) + 0.5) * RES
@@ -207,6 +222,8 @@ def build_terrain(etopo_path: Path, stripe_rows: int = 60) -> dict[str, np.ndarr
 def main() -> None:
     ap = argparse.ArgumentParser(description="Build a real Earth grid without Earth Engine")
     ap.add_argument("--etopo", default="data_raw/etopo/etopo60s.tif")
+    ap.add_argument("--etopo-bed", default="data_raw/etopo/etopo60s_bed.tif",
+                    help="ETOPO bedrock elevation; surface minus bedrock gives ice thickness")
     ap.add_argument("--worldclim", default="data_raw/worldclim")
     ap.add_argument("--out", default="data_work/earth_grid.parquet")
     args = ap.parse_args()
@@ -224,7 +241,9 @@ def main() -> None:
 
     etopo = Path(args.etopo)
     if etopo.exists():
-        cols.update(build_terrain(etopo))
+        cols.update(build_terrain(etopo, bed_path=Path(args.etopo_bed)))
+        if not np.isfinite(cols["ice_idx"]).any():
+            del cols["ice_idx"]
         sources["terrain"] = ("ETOPO 2022 60 arc-second surface elevation (NOAA NCEI). "
                               "Slope measured at the ~1.85 km pixel baseline, NOT the "
                               "contracted 400 m; rough_2km not produced.")
@@ -281,7 +300,10 @@ def main() -> None:
             "slope and roughness measured at the ETOPO pixel baseline (~1.85 km), not 400 m",
             "temperatures are 2 m air temperature (WorldClim), not MODIS land surface temperature",
         ],
-        "earth_grades": {"tmin_k": "C", "tmax_k": "C", "diurnal_amp_k": "C",
+        "ice_idx_note": "ICE-SHEET fraction (ETOPO surface minus bedrock > 10 m). Resolves the "
+                        "Antarctic and Greenland ice sheets only - mountain glaciers, small ice "
+                        "caps (Svalbard, Patagonia, Alps), permafrost and perennial snow read 0.",
+        "earth_grades": {"ice_idx": "B", "tmin_k": "C", "tmax_k": "C", "diurnal_amp_k": "C",
                          "precip_mm": "C", "__terrain__": "B"},
     }, indent=2), encoding="utf-8")
 

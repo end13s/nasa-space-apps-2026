@@ -8,6 +8,8 @@ from scipy.ndimage import gaussian_filter
 
 GRID_M = 500.0
 WINDOW_M = 1000.0
+# Features whose contract value is an area share, reported as a mean, not a p50.
+AREA_SHARE_FEATURES = ("flat_frac", "steep_frac")
 FLAT_DEG = 5.0
 STEEP_DEG = 25.0
 MIN_WINDOWS = 9
@@ -238,6 +240,18 @@ def terrain_features(
     """
     summaries = compute(dem_m, px_m, nodata=nodata, grid_m=grid_m)
     out = {key: float(summary["p50"]) for key, summary in summaries.items()}
+    # flat_frac / steep_frac are defined in the contract as the SHARE of the
+    # area below 5 deg / above 25 deg. The median of per-window shares is a
+    # different statistic - and with one-pixel windows it collapses to 0 or 1.
+    # Equal-size windows make the mean of window shares exactly the area share.
+    if any(k in summaries for k in AREA_SHARE_FEATURES):
+        with warnings.catch_warnings():
+            warnings.simplefilter("ignore", RuntimeWarning)
+            grid, px_g = _resample(_fill(dem_m, nodata), px_m, grid_m)
+            slope = _slope(grid, px_g)
+            if np.isfinite(slope).any():
+                out["flat_frac"] = float(np.nanmean(np.where(np.isfinite(slope), slope < FLAT_DEG, np.nan)))
+                out["steep_frac"] = float(np.nanmean(np.where(np.isfinite(slope), slope > STEEP_DEG, np.nan)))
     for key in baselines:
         if key in out:
             continue

@@ -96,22 +96,46 @@ cameras fly to matching zoom, and the proxy card opens with the three columns,
 an evidence chip per variable, the logistics of reaching the site, and the
 always-present physical limits.
 
-**Validation.** `[N]`% of documented analog sites fall in the top 10% of land
-cells, against an area-weighted null baseline at 50%. Ablation shows which
-dimensions carry the result. Percentiles are area-weighted, because a 0.25° cell
-at 70° latitude covers a third of an equatorial one and counting cells equally
-inflates high-latitude results. Cells missing a required measurement are scored
-but excluded from the ranked findings — a cell with a gap can otherwise
-outrank a complete one, since the missing feature is renormalised away rather
-than penalised.
+**Validation.** Without being told where they are, the method places documented
+analog sites well above chance: known lunar analogs land at a median **70th
+percentile** of Earth's land area and known Mars analogs at the **62nd**, against
+an area-weighted null of 50. The sites chosen for *physical* similarity rank far
+higher than those chosen partly for *access*: for Mars, the Atacama (99.6th),
+Haughton Crater (82.6th) and Holuhraun (82.3rd) against a median of 45 for the
+accessible-by-design sites; for the Moon, the Apollo geology training sites
+Mauna Kea (94.6th) and Askja (92.8th) against a median of 26. With 7–9 sites per
+body this is a pattern, not a statistic, and we report it as one.
+
+Validation also found two of our own errors, which is what it is for. The first
+ablation showed that removing terrain *improved* Mars validation by 32 points
+and removing construction by 39. The causes: the Earth grid measured slope over
+a 1.85 km baseline while the targets used 500 m — slope over a longer baseline
+reads lower — and the buildable-ground fraction was being summarised as a
+median of window values rather than an area share. After matching the baseline
+and correcting the statistic, both penalties disappeared (+0.2 and −2.5), and
+thermal became the strongest contributor, as the physics predicts.
+
+Percentiles are area-weighted, because a 0.25° cell at 70° latitude covers a
+third of an equatorial one. Cells missing a required measurement are scored but
+excluded from ranked findings, because a missing feature is renormalised away
+and would otherwise let an unmeasured cell outrank a complete one.
 
 **Limitations.** Known analog sites were chosen partly because they are
 *reachable*, so recall against them measures agreement with existing practice,
 not correctness. Earth cannot reproduce 1/6 g, vacuum, the radiation
 environment, the 29.5-day lunar day, or permanently-shadowed-region
 temperatures of 25–40 K. Gravity-scaled roughness is a heuristic and is
-reported as a sensitivity result, not a default. `[Add the measured-vs-modelled
-status of the Earth grid here before submitting.]`
+reported as a sensitivity result, not a default.
+
+**What the Earth side actually is.** The Earth grid the app ships is built from **ETOPO 2022** (NOAA, 60 arc-second
+elevation) and **WorldClim 2.1** (10 arc-minute climate normals), via
+`pipeline/earth/fallback_grid.py`. The richer Earth Engine pipeline — MODIS
+land surface temperature, a 30 m DEM, thermal-inertia class, albedo, lithology,
+ice and NDVI — is written (`pipeline/earth/gee_*.py`) but has not been run, so
+none of its products are in the scores. Two deviations follow, and both are
+stated on the card rather than hidden: slopes are measured at ETOPO's ~1.85 km
+pixel baseline (targets are rebuilt at the same baseline to match), and
+temperatures are 2 m **air** temperature, not land surface temperature, graded C.
 
 **Tech stack.** Python (NumPy, SciPy, pandas, PyArrow) for the offline
 pipeline; Google Earth Engine for Earth features; GDAL/rasterio for planetary
@@ -145,9 +169,9 @@ We used AI tools as accelerators and we are specific about where.
 
 ## NASA data
 
-- **Earth:** MODIS land surface temperature (MOD11A2 / MYD11A2), MCD43A3
-  albedo, MOD13A2 NDVI, MOD10A1 snow cover, MAIAC MCD19A2 aerosol optical
-  depth, ASTER GED, SMAP L4 soil moisture, NASA GIBS imagery.
+- **Earth:** NASA GIBS imagery for the globe. (Our Earth Engine pipeline for
+  MODIS LST, albedo, NDVI and snow is built but was not run in time, so we do
+  not list those products as used.)
 - **Moon:** LRO LOLA topography and 1064 nm albedo, Diviner thermal products,
   LROC WAC imagery, LEND neutron data, PGDA permanently-shadowed-region and
   illumination maps, USGS Unified Geologic Map of the Moon.
@@ -162,6 +186,8 @@ We used AI tools as accelerators and we are specific about where.
   ESA CCI Permafrost, Mars Climate Database (ESA/CNES).
 - **JAXA:** ALOS / G-Portal.
 - **CSA:** RADARSAT open data.
+- **Earth grid in use:** NOAA ETOPO 2022 (60 arc-second elevation);
+  WorldClim 2.1 (10 arc-minute climate normals, Fick & Hijmans 2017).
 - **Other open data:** GLiM global lithological map (Hartmann & Moosdorf 2012),
   OpenLandMap and SoilGrids soil properties, WDPA protected areas, Oxford MAP
   accessibility surface, VIIRS night lights, USGS Astrogeology products.
@@ -170,7 +196,7 @@ We used AI tools as accelerators and we are specific about where.
 
 ## Before you press Submit
 
-- [ ] Replace every `[N]` with a real number from `validation_report.md`
+- [x] Validation numbers filled from `validation/validation.json` (re-check if targets change)
 - [ ] Demo link opens in an incognito window with no login
 - [ ] Project link opens in an incognito window and **the globes load with data**
 - [ ] Video is ≤ 30.0 s with burned-in English subtitles

@@ -19,9 +19,9 @@ It is a *proxy card* per site: what the site **supports**, what is
 
 Team: Eduard · Clara · Michal · Sofia · Finn · Julia
 
-> Status: scaffold. The engine, the contract and the packing pipeline run today
-> on synthetic data. Real Earth / Moon / Mars data lands as Clara's and Michal's
-> exports finish.
+> Status: running on real data. Moon and Mars targets are built from NASA
+> planetary products; the Earth grid is ETOPO 2022 + WorldClim 2.1 (see
+> *What the Earth grid actually is*, below).
 
 ---
 
@@ -161,13 +161,29 @@ Packed bundle in `web/public/data/`:
 
 ---
 
+## What the Earth grid actually is
+
+The Earth grid the app ships is built from **ETOPO 2022** (NOAA, 60 arc-second
+elevation) and **WorldClim 2.1** (10 arc-minute climate normals), via
+`pipeline/earth/fallback_grid.py`. The richer Earth Engine pipeline — MODIS
+land surface temperature, a 30 m DEM, thermal-inertia class, albedo, lithology,
+ice and NDVI — is written (`pipeline/earth/gee_*.py`) but has not been run, so
+none of its products are in the scores. Two deviations follow, and both are
+stated on the card rather than hidden: slopes are measured at ETOPO's ~1.85 km
+pixel baseline (targets are rebuilt at the same baseline to match), and
+temperatures are 2 m **air** temperature, not land surface temperature, graded C.
+
 ## Data sources
 
-**NASA.** Earth: MODIS LST (MOD11A2 / MYD11A2), MCD43A3 albedo, MOD13A2 NDVI,
-MOD10A1 snow, MAIAC MCD19A2, ASTER GED, SMAP L4, NASA GIBS imagery.
-Moon: LRO LOLA, Diviner, LROC, LEND, PGDA illumination and PSR maps.
+**NASA.** Moon: LRO LOLA, Diviner, LROC, LEND, PGDA illumination and PSR maps.
 Mars: MGS MOLA and TES, Mars Odyssey THEMIS and GRS, MRO-derived SWIM ice
-consensus. Archives and tools: PDS, Moon Trek, Mars Trek, Earthdata, Worldview.
+consensus. Earth: NASA GIBS imagery for the globe. Archives and tools: PDS,
+Moon Trek, Mars Trek, Earthdata, Worldview. *(The Earth Engine pipeline targets
+MODIS LST, MCD43A3 albedo, MOD13A2 NDVI, MOD10A1 snow and SMAP — written, not
+yet run, so not used in the shipped scores.)*
+
+**Earth grid in use.** NOAA ETOPO 2022 60 arc-second elevation; WorldClim 2.1
+10 arc-minute climate normals (Fick & Hijmans 2017).
 
 **Partner agencies.** ESA: Copernicus GLO-30 DEM, Sentinel-1/2, ERA5-Land
 (Copernicus/ECMWF), ESA CCI Permafrost, Mars Climate Database (ESA/CNES).
