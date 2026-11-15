@@ -18,7 +18,10 @@ What it does, per target:
      distances (never on a lat/lon grid).
   3. Computes the terrain features with the SHARED definition in
      engine/terrain_features.py (Sofia's module, the same definition the Earth
-     export is checked against - never re-derive them here).
+     export is checked against - never re-derive them here). Since Sofia's
+     update (PR #12) every terrain value is the p50 over non-overlapping 1 km
+     windows after resampling to 500 m, so relief_km is local relief within
+     1 km, not the height range of the whole footprint.
   4. Estimates `sd` by recomputing the terrain with the centre shifted
      north/south/east/west (5 km, or radius/3 for small targets) and taking
      the standard deviation.
@@ -33,7 +36,8 @@ What it does, per target:
 Footprint: a square of side 2 x radius_km (30 km for the default 15 km), the
 same idea as one 0.25 deg Earth cell (~28 km). rough_10km needs a window of at
 least 30 km, so targets with radius_km < 15 (e.g. the 5 km Jezero delta) have
-no rough_10km - it is left out, never written as a guess.
+no rough_10km - it is left out, never written as a guess. (Sofia's new module
+returns a number even for a 10 km window, so build() drops it explicitly.)
 
 Targets whose lat/lon is still None are skipped with a message (e.g. a region
 whose official outline we do not have yet).
@@ -60,6 +64,7 @@ from terrain_features import terrain_features  # noqa: E402  (shared definition)
 OUT = ROOT / "contract" / "targets.json"
 DEFAULT_RADIUS_KM = 15
 MAX_SHIFT_M = 5000.0  # centre shift used to estimate sd (radius/3 if smaller)
+ROUGH_10KM_MIN_SIDE_KM = 30.0  # smallest footprint side that can carry a 10 km roughness baseline
 
 DEM = {
     "mars": {
@@ -758,8 +763,9 @@ def diviner_values(lat: float, lon: float, radius_km: float) -> dict:
     }
 
 
-def terrain_with_sd(key: str, lat: float, lon: float, radius_km: float) -> tuple[dict, dict]:
-    """Terrain features at the target, plus sd from 4 shifted footprints."""
+def terrain_with_sd(key: str, lat: float, lon: float, radius_km: float) -> tuple[dict, dict, float]:
+    """Terrain features at the target, sd from 4 shifted footprints, and the
+    footprint's height range in km (a sanity check on the DEM read)."""
     res = DEM[key]["res_m"]
     half = radius_km * 1000.0
     shift = min(MAX_SHIFT_M, half / 3.0)
@@ -780,7 +786,11 @@ def terrain_with_sd(key: str, lat: float, lon: float, radius_km: float) -> tuple
         vals = vals[np.isfinite(vals)]
         if vals.size >= 2:
             sd[k] = float(np.std(vals))
-    return centre, sd
+    # Height range of the whole footprint (p95 - p5), only to check the DEM
+    # read: relief_km is now local 1 km relief and cannot be used for that.
+    foot = big[p : p + n, p : p + n]
+    span_km = float(np.subtract(*np.nanpercentile(foot, [95, 5])) / 1000.0) if np.isfinite(foot).any() else np.nan
+    return centre, sd, span_km
 
 
 def clean(d: dict) -> dict:
@@ -818,12 +828,17 @@ def build() -> list[dict]:
         key = dem_key(body, lat)
 
         print(f"{t['id']}: reading {key} DEM around {lat}, {lon} (radius {radius_km} km) ...", flush=True)
-        feats, sd = terrain_with_sd(key, lat, lon, radius_km)
-        if not np.isfinite(feats["relief_km"]):
+        feats, sd, span_km = terrain_with_sd(key, lat, lon, radius_km)
+        if 2 * radius_km < ROUGH_10KM_MIN_SIDE_KM:  # a 10 km baseline is not measurable in a smaller window
+            feats.pop("rough_10km", None)
+            sd.pop("rough_10km", None)
+        if not np.isfinite(span_km):
             print(f"  WARNING: no DEM data at {t['id']} - check the coordinates / longitude convention")
-        elif key == "moon_south" and feats["relief_km"] < 0.5:
-            print(f"  WARNING: relief {feats['relief_km']:.2f} km at a south-polar target - expected 2-6 km. "
-                  "Check the coordinates; this usually means the reprojection is wrong.")
+        else:
+            print(f"  DEM height range across the footprint (p95-p5): {span_km:.2f} km")
+            if key == "moon_south" and span_km < 0.5:
+                print("  WARNING: under 0.5 km at a south-polar target, where 1-5 km is normal. "
+                      "Check the coordinates; this usually means the reprojection is wrong.")
 
         polar, temps = {}, {}
         if key == "moon_south":
