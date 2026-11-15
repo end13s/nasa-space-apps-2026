@@ -162,6 +162,7 @@
       "precip_mm": 0.0,
       "ndvi_max": 0.0,
       "soil_moist": 0.0,
+      "albedo": 0.2265,
       "ti_class": 1.0,
       "tmin_k": 95.0,
       "tmax_k": 385.0,
@@ -177,6 +178,7 @@
       "hypso_int": 0.001,
       "flat_frac": 0.0,
       "steep_frac": 0.0,
+      "albedo": 0.0054,
       "ti_class": 0.5,
       "tmin_k": 5.0,
       "tmax_k": 10.0,
@@ -194,6 +196,7 @@
       "precip_mm": "DEF",
       "ndvi_max": "DEF",
       "soil_moist": "DEF",
+      "albedo": "B",
       "ti_class": "B",
       "tmin_k": "C",
       "tmax_k": "C",
@@ -206,6 +209,7 @@
     ],
     "sources": [
       "LOLA + Kaguya TC merged DEM, SLDEM2015 512 ppd (Barker et al. 2016, USGS Astrogeology)",
+      "albedo: LOLA normal albedo at 1064 nm, GDR map LDAM_10_FLOAT.LBL, mean over the 30 km footprint (Lucey et al. 2014, JGR Planets 119:1665, doi:10.1002/2013JE004592). LOLA lights the ground with its own laser at zero phase, so one definition works in polar shadow and at Apollo 17. Not the Earth column's quantity (MODIS broadband shortwave albedo): one wavelength at zero phase reads higher than a broadband albedo of the same ground",
       "ti_class: regolith-covered valley floor (old mare regolith ~14 m thick; Lucchitta 1992, LPI Workshop on Geology of the Apollo 17 Landing Site) -> class 1",
       "tmin_k / tmax_k: Diviner, ~387-397 K at noon and ~95 K before sunrise near the equator (Williams et al. 2017, Icarus, doi:10.1016/j.icarus.2016.08.012); 20N noon is a few K lower",
       "litho_class: basalt-flooded valley floor under a dark pyroclastic mantle (Muehlberger et al. 1973, Science, doi:10.1126/science.182.4113.672) -> class 1; the massifs in the window are feldspathic breccia (class 2) - check the majority class with the USGS map",
@@ -293,10 +297,12 @@
       "ndvi_max": 0.0,
       "soil_moist": 0.0,
       "litho_class": 2.0,
+      "ti_class": 1.0,
       "ice_idx": 0.2736,
       "tmin_k": 55.6602,
       "tmax_k": 206.6551,
-      "diurnal_amp_k": 150.995
+      "diurnal_amp_k": 150.995,
+      "albedo": 0.3878
     },
     "sd": {
       "relief_km": 0.008,
@@ -307,10 +313,12 @@
       "hypso_int": 0.0003,
       "flat_frac": 0.0,
       "steep_frac": 0.0,
+      "ti_class": 1.0,
       "ice_idx": 0.0036,
       "tmin_k": 0.8803,
       "tmax_k": 2.3811,
-      "diurnal_amp_k": 1.7164
+      "diurnal_amp_k": 1.7164,
+      "albedo": 0.001
     },
     "grades": {
       "relief_km": "B",
@@ -325,10 +333,12 @@
       "ndvi_max": "DEF",
       "soil_moist": "DEF",
       "litho_class": "C",
+      "ti_class": "C",
       "ice_idx": "C",
       "tmin_k": "B",
       "tmax_k": "B",
-      "diurnal_amp_k": "B"
+      "diurnal_amp_k": "B",
+      "albedo": "B"
     },
     "context": {
       "psr_share_50km": 0.1709,
@@ -344,9 +354,11 @@
       "centre: IAU Gazetteer of Planetary Nomenclature, Shackleton (feature 5450), diameter 20.9 km - the 15 km circle covers the whole crater and rim",
       "ice_idx: share of the 30 km footprint in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030). It is the AREA of cold traps, not a measured amount of ice: landing regions are picked on sunlit ridges, so the share is small by design. Shadow is modelled from LOLA topography; LEND hydrogen not folded in yet",
       "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do",
+      "ti_class: class 1 (fine regolith, as at Apollo 17), extrapolated, not measured here - no Diviner thermophysical map reaches the poles: the H-parameter map covers 70S-70N (Hayne et al. 2017, JGR Planets 122:2371, doi:10.1002/2017JE005387) and so do the rock-abundance mosaics (Powell et al. 2023, JGR Planets 128, doi:10.1029/2022JE007532). Hayne et al. find the regolith fines globally uniform, which is what the extrapolation rests on",
       "context.psr_share_50km (shown, not scored): share of the 50 km circle around the centre in permanent shadow, same model, PGDA PSR map LPSR_75S_120M_201608.JP2 - the cold traps within reach of a base here",
       "tmin_k / tmax_k / diurnal_amp_k: Diviner bolometric surface temperature, Global Cumulative Product 90S-80S (all nadir data Jul 2009 - Apr 2015 in 0.5 x 0.5 deg bins x 15 min local time; Williams et al. 2017, Icarus 283:300, doi:10.1016/j.icarus.2016.08.012; PDS bundle doi:10.17189/wj0s-w188). Per bin the coldest and warmest local time of the mean day, then the mean over the 30 km footprint. Seasons are averaged together, so against the warmest-/coldest-month definition tmax_k reads low and tmin_k high (the seasonal 240 m polar maps, Williams et al. 2019, JGR Planets 124:2505, would fix it but are ~30 GB)",
-      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)"
+      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)",
+      "albedo: LOLA normal albedo at 1064 nm, GDR map LDAM_50S_1000M_FLOAT.LBL, mean over the 30 km footprint (Lucey et al. 2014, JGR Planets 119:1665, doi:10.1002/2013JE004592). LOLA lights the ground with its own laser at zero phase, so one definition works in polar shadow and at Apollo 17. Not the Earth column's quantity (MODIS broadband shortwave albedo): one wavelength at zero phase reads higher than a broadband albedo of the same ground"
     ],
     "blurb": "Crater at the lunar south pole: near-permanently lit rim around a permanently shadowed floor."
   },
@@ -371,10 +383,12 @@
       "ndvi_max": 0.0,
       "soil_moist": 0.0,
       "litho_class": 2.0,
+      "ti_class": 1.0,
       "ice_idx": 0.0066,
       "tmin_k": 59.0984,
       "tmax_k": 264.0114,
-      "diurnal_amp_k": 204.913
+      "diurnal_amp_k": 204.913,
+      "albedo": 0.3228
     },
     "sd": {
       "relief_km": 0.0067,
@@ -385,10 +399,12 @@
       "hypso_int": 0.0002,
       "flat_frac": 0.0,
       "steep_frac": 0.0,
+      "ti_class": 1.0,
       "ice_idx": 0.0056,
       "tmin_k": 3.1344,
       "tmax_k": 8.76,
-      "diurnal_amp_k": 5.6351
+      "diurnal_amp_k": 5.6351,
+      "albedo": 0.0022
     },
     "grades": {
       "relief_km": "B",
@@ -403,10 +419,12 @@
       "ndvi_max": "DEF",
       "soil_moist": "DEF",
       "litho_class": "C",
+      "ti_class": "C",
       "ice_idx": "C",
       "tmin_k": "B",
       "tmax_k": "B",
-      "diurnal_amp_k": "B"
+      "diurnal_amp_k": "B",
+      "albedo": "B"
     },
     "context": {
       "psr_share_50km": 0.0471,
@@ -422,9 +440,11 @@
       "centre: centre of the region's 1 km grid in USGS 'Down Selected Artemis III Candidate Landing Site Navigational Grids' (McClernan 2024, doi:10.5066/P1MEQ6UK; outlines from LROC QuickMap)",
       "ice_idx: share of the 30 km footprint in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030). It is the AREA of cold traps, not a measured amount of ice: landing regions are picked on sunlit ridges, so the share is small by design. Shadow is modelled from LOLA topography; LEND hydrogen not folded in yet",
       "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do",
+      "ti_class: class 1 (fine regolith, as at Apollo 17), extrapolated, not measured here - no Diviner thermophysical map reaches the poles: the H-parameter map covers 70S-70N (Hayne et al. 2017, JGR Planets 122:2371, doi:10.1002/2017JE005387) and so do the rock-abundance mosaics (Powell et al. 2023, JGR Planets 128, doi:10.1029/2022JE007532). Hayne et al. find the regolith fines globally uniform, which is what the extrapolation rests on",
       "context.psr_share_50km (shown, not scored): share of the 50 km circle around the centre in permanent shadow, same model, PGDA PSR map LPSR_75S_120M_201608.JP2 - the cold traps within reach of a base here",
       "tmin_k / tmax_k / diurnal_amp_k: Diviner bolometric surface temperature, Global Cumulative Product 90S-80S (all nadir data Jul 2009 - Apr 2015 in 0.5 x 0.5 deg bins x 15 min local time; Williams et al. 2017, Icarus 283:300, doi:10.1016/j.icarus.2016.08.012; PDS bundle doi:10.17189/wj0s-w188). Per bin the coldest and warmest local time of the mean day, then the mean over the 30 km footprint. Seasons are averaged together, so against the warmest-/coldest-month definition tmax_k reads low and tmin_k high (the seasonal 240 m polar maps, Williams et al. 2019, JGR Planets 124:2505, would fix it but are ~30 GB)",
-      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)"
+      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)",
+      "albedo: LOLA normal albedo at 1064 nm, GDR map LDAM_50S_1000M_FLOAT.LBL, mean over the 30 km footprint (Lucey et al. 2014, JGR Planets 119:1665, doi:10.1002/2013JE004592). LOLA lights the ground with its own laser at zero phase, so one definition works in polar shadow and at Apollo 17. Not the Earth column's quantity (MODIS broadband shortwave albedo): one wavelength at zero phase reads higher than a broadband albedo of the same ground"
     ],
     "blurb": "Peak near Cabeus B, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   },
@@ -449,10 +469,12 @@
       "ndvi_max": 0.0,
       "soil_moist": 0.0,
       "litho_class": 2.0,
+      "ti_class": 1.0,
       "ice_idx": 0.0169,
       "tmin_k": 52.3642,
       "tmax_k": 217.012,
-      "diurnal_amp_k": 164.6478
+      "diurnal_amp_k": 164.6478,
+      "albedo": 0.3328
     },
     "sd": {
       "relief_km": 0.0032,
@@ -463,10 +485,12 @@
       "hypso_int": 0.0004,
       "flat_frac": 0.0,
       "steep_frac": 0.0,
+      "ti_class": 1.0,
       "ice_idx": 0.0133,
       "tmin_k": 2.7506,
       "tmax_k": 6.93,
-      "diurnal_amp_k": 4.2002
+      "diurnal_amp_k": 4.2002,
+      "albedo": 0.0006
     },
     "grades": {
       "relief_km": "B",
@@ -481,10 +505,12 @@
       "ndvi_max": "DEF",
       "soil_moist": "DEF",
       "litho_class": "C",
+      "ti_class": "C",
       "ice_idx": "C",
       "tmin_k": "B",
       "tmax_k": "B",
-      "diurnal_amp_k": "B"
+      "diurnal_amp_k": "B",
+      "albedo": "B"
     },
     "context": {
       "psr_share_50km": 0.1572,
@@ -500,9 +526,11 @@
       "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)",
       "ice_idx: share of the 30 km footprint in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030). It is the AREA of cold traps, not a measured amount of ice: landing regions are picked on sunlit ridges, so the share is small by design. Shadow is modelled from LOLA topography; LEND hydrogen not folded in yet",
       "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do",
+      "ti_class: class 1 (fine regolith, as at Apollo 17), extrapolated, not measured here - no Diviner thermophysical map reaches the poles: the H-parameter map covers 70S-70N (Hayne et al. 2017, JGR Planets 122:2371, doi:10.1002/2017JE005387) and so do the rock-abundance mosaics (Powell et al. 2023, JGR Planets 128, doi:10.1029/2022JE007532). Hayne et al. find the regolith fines globally uniform, which is what the extrapolation rests on",
       "context.psr_share_50km (shown, not scored): share of the 50 km circle around the centre in permanent shadow, same model, PGDA PSR map LPSR_75S_120M_201608.JP2 - the cold traps within reach of a base here",
       "tmin_k / tmax_k / diurnal_amp_k: Diviner bolometric surface temperature, Global Cumulative Product 90S-80S (all nadir data Jul 2009 - Apr 2015 in 0.5 x 0.5 deg bins x 15 min local time; Williams et al. 2017, Icarus 283:300, doi:10.1016/j.icarus.2016.08.012; PDS bundle doi:10.17189/wj0s-w188). Per bin the coldest and warmest local time of the mean day, then the mean over the 30 km footprint. Seasons are averaged together, so against the warmest-/coldest-month definition tmax_k reads low and tmin_k high (the seasonal 240 m polar maps, Williams et al. 2019, JGR Planets 124:2505, would fix it but are ~30 GB)",
-      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)"
+      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)",
+      "albedo: LOLA normal albedo at 1064 nm, GDR map LDAM_50S_1000M_FLOAT.LBL, mean over the 30 km footprint (Lucey et al. 2014, JGR Planets 119:1665, doi:10.1002/2013JE004592). LOLA lights the ground with its own laser at zero phase, so one definition works in polar shadow and at Apollo 17. Not the Earth column's quantity (MODIS broadband shortwave albedo): one wavelength at zero phase reads higher than a broadband albedo of the same ground"
     ],
     "blurb": "Haworth, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   },
@@ -527,10 +555,12 @@
       "ndvi_max": 0.0,
       "soil_moist": 0.0,
       "litho_class": 2.0,
+      "ti_class": 1.0,
       "ice_idx": 0.0065,
       "tmin_k": 64.3074,
       "tmax_k": 267.323,
-      "diurnal_amp_k": 203.0156
+      "diurnal_amp_k": 203.0156,
+      "albedo": 0.3246
     },
     "sd": {
       "relief_km": 0.0109,
@@ -541,10 +571,12 @@
       "hypso_int": 0.0004,
       "flat_frac": 0.0,
       "steep_frac": 0.0,
+      "ti_class": 1.0,
       "ice_idx": 0.0028,
       "tmin_k": 2.3947,
       "tmax_k": 5.265,
-      "diurnal_amp_k": 3.0159
+      "diurnal_amp_k": 3.0159,
+      "albedo": 0.0011
     },
     "grades": {
       "relief_km": "B",
@@ -559,10 +591,12 @@
       "ndvi_max": "DEF",
       "soil_moist": "DEF",
       "litho_class": "C",
+      "ti_class": "C",
       "ice_idx": "C",
       "tmin_k": "B",
       "tmax_k": "B",
-      "diurnal_amp_k": "B"
+      "diurnal_amp_k": "B",
+      "albedo": "B"
     },
     "context": {
       "psr_share_50km": 0.1341,
@@ -578,9 +612,11 @@
       "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)",
       "ice_idx: share of the 30 km footprint in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030). It is the AREA of cold traps, not a measured amount of ice: landing regions are picked on sunlit ridges, so the share is small by design. Shadow is modelled from LOLA topography; LEND hydrogen not folded in yet",
       "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do",
+      "ti_class: class 1 (fine regolith, as at Apollo 17), extrapolated, not measured here - no Diviner thermophysical map reaches the poles: the H-parameter map covers 70S-70N (Hayne et al. 2017, JGR Planets 122:2371, doi:10.1002/2017JE005387) and so do the rock-abundance mosaics (Powell et al. 2023, JGR Planets 128, doi:10.1029/2022JE007532). Hayne et al. find the regolith fines globally uniform, which is what the extrapolation rests on",
       "context.psr_share_50km (shown, not scored): share of the 50 km circle around the centre in permanent shadow, same model, PGDA PSR map LPSR_75S_120M_201608.JP2 - the cold traps within reach of a base here",
       "tmin_k / tmax_k / diurnal_amp_k: Diviner bolometric surface temperature, Global Cumulative Product 90S-80S (all nadir data Jul 2009 - Apr 2015 in 0.5 x 0.5 deg bins x 15 min local time; Williams et al. 2017, Icarus 283:300, doi:10.1016/j.icarus.2016.08.012; PDS bundle doi:10.17189/wj0s-w188). Per bin the coldest and warmest local time of the mean day, then the mean over the 30 km footprint. Seasons are averaged together, so against the warmest-/coldest-month definition tmax_k reads low and tmin_k high (the seasonal 240 m polar maps, Williams et al. 2019, JGR Planets 124:2505, would fix it but are ~30 GB)",
-      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)"
+      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)",
+      "albedo: LOLA normal albedo at 1064 nm, GDR map LDAM_50S_1000M_FLOAT.LBL, mean over the 30 km footprint (Lucey et al. 2014, JGR Planets 119:1665, doi:10.1002/2013JE004592). LOLA lights the ground with its own laser at zero phase, so one definition works in polar shadow and at Apollo 17. Not the Earth column's quantity (MODIS broadband shortwave albedo): one wavelength at zero phase reads higher than a broadband albedo of the same ground"
     ],
     "blurb": "Malapert Massif, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   },
@@ -605,10 +641,12 @@
       "ndvi_max": 0.0,
       "soil_moist": 0.0,
       "litho_class": 2.0,
+      "ti_class": 1.0,
       "ice_idx": 0.0303,
       "tmin_k": 60.7729,
       "tmax_k": 245.1434,
-      "diurnal_amp_k": 184.3705
+      "diurnal_amp_k": 184.3705,
+      "albedo": 0.3158
     },
     "sd": {
       "relief_km": 0.0053,
@@ -619,10 +657,12 @@
       "hypso_int": 0.0009,
       "flat_frac": 0.05,
       "steep_frac": 0.0,
+      "ti_class": 1.0,
       "ice_idx": 0.0037,
       "tmin_k": 1.407,
       "tmax_k": 5.9108,
-      "diurnal_amp_k": 4.5528
+      "diurnal_amp_k": 4.5528,
+      "albedo": 0.0015
     },
     "grades": {
       "relief_km": "B",
@@ -637,10 +677,12 @@
       "ndvi_max": "DEF",
       "soil_moist": "DEF",
       "litho_class": "C",
+      "ti_class": "C",
       "ice_idx": "C",
       "tmin_k": "B",
       "tmax_k": "B",
-      "diurnal_amp_k": "B"
+      "diurnal_amp_k": "B",
+      "albedo": "B"
     },
     "context": {
       "psr_share_50km": 0.0202,
@@ -656,9 +698,11 @@
       "centre: centre of the region's 1 km grid in USGS 'Down Selected Artemis III Candidate Landing Site Navigational Grids' (McClernan 2024, doi:10.5066/P1MEQ6UK; outlines from LROC QuickMap); the region is 78 x 58 km, much larger than the others (17-21 km), so the 30 km footprint covers its middle only",
       "ice_idx: share of the 30 km footprint in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030). It is the AREA of cold traps, not a measured amount of ice: landing regions are picked on sunlit ridges, so the share is small by design. Shadow is modelled from LOLA topography; LEND hydrogen not folded in yet",
       "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do",
+      "ti_class: class 1 (fine regolith, as at Apollo 17), extrapolated, not measured here - no Diviner thermophysical map reaches the poles: the H-parameter map covers 70S-70N (Hayne et al. 2017, JGR Planets 122:2371, doi:10.1002/2017JE005387) and so do the rock-abundance mosaics (Powell et al. 2023, JGR Planets 128, doi:10.1029/2022JE007532). Hayne et al. find the regolith fines globally uniform, which is what the extrapolation rests on",
       "context.psr_share_50km (shown, not scored): share of the 50 km circle around the centre in permanent shadow, same model, PGDA PSR map LPSR_75S_120M_201608.JP2 - the cold traps within reach of a base here",
       "tmin_k / tmax_k / diurnal_amp_k: Diviner bolometric surface temperature, Global Cumulative Product 90S-80S (all nadir data Jul 2009 - Apr 2015 in 0.5 x 0.5 deg bins x 15 min local time; Williams et al. 2017, Icarus 283:300, doi:10.1016/j.icarus.2016.08.012; PDS bundle doi:10.17189/wj0s-w188). Per bin the coldest and warmest local time of the mean day, then the mean over the 30 km footprint. Seasons are averaged together, so against the warmest-/coldest-month definition tmax_k reads low and tmin_k high (the seasonal 240 m polar maps, Williams et al. 2019, JGR Planets 124:2505, would fix it but are ~30 GB)",
-      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)"
+      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)",
+      "albedo: LOLA normal albedo at 1064 nm, GDR map LDAM_50S_1000M_FLOAT.LBL, mean over the 30 km footprint (Lucey et al. 2014, JGR Planets 119:1665, doi:10.1002/2013JE004592). LOLA lights the ground with its own laser at zero phase, so one definition works in polar shadow and at Apollo 17. Not the Earth column's quantity (MODIS broadband shortwave albedo): one wavelength at zero phase reads higher than a broadband albedo of the same ground"
     ],
     "blurb": "Mons Mouton Plateau, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   },
@@ -683,10 +727,12 @@
       "ndvi_max": 0.0,
       "soil_moist": 0.0,
       "litho_class": 2.0,
+      "ti_class": 1.0,
       "ice_idx": 0.0158,
       "tmin_k": 56.1019,
       "tmax_k": 232.266,
-      "diurnal_amp_k": 176.1641
+      "diurnal_amp_k": 176.1641,
+      "albedo": 0.3261
     },
     "sd": {
       "relief_km": 0.0163,
@@ -697,10 +743,12 @@
       "hypso_int": 0.0006,
       "flat_frac": 0.0,
       "steep_frac": 0.0,
+      "ti_class": 1.0,
       "ice_idx": 0.0017,
       "tmin_k": 2.0074,
       "tmax_k": 3.6577,
-      "diurnal_amp_k": 3.527
+      "diurnal_amp_k": 3.527,
+      "albedo": 0.0007
     },
     "grades": {
       "relief_km": "B",
@@ -715,10 +763,12 @@
       "ndvi_max": "DEF",
       "soil_moist": "DEF",
       "litho_class": "C",
+      "ti_class": "C",
       "ice_idx": "C",
       "tmin_k": "B",
       "tmax_k": "B",
-      "diurnal_amp_k": "B"
+      "diurnal_amp_k": "B",
+      "albedo": "B"
     },
     "context": {
       "psr_share_50km": 0.0938,
@@ -734,9 +784,11 @@
       "centre: centre of the region's 1 km grid in USGS 'Down Selected Artemis III Candidate Landing Site Navigational Grids' (McClernan 2024, doi:10.5066/P1MEQ6UK; outlines from LROC QuickMap)",
       "ice_idx: share of the 30 km footprint in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030). It is the AREA of cold traps, not a measured amount of ice: landing regions are picked on sunlit ridges, so the share is small by design. Shadow is modelled from LOLA topography; LEND hydrogen not folded in yet",
       "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do",
+      "ti_class: class 1 (fine regolith, as at Apollo 17), extrapolated, not measured here - no Diviner thermophysical map reaches the poles: the H-parameter map covers 70S-70N (Hayne et al. 2017, JGR Planets 122:2371, doi:10.1002/2017JE005387) and so do the rock-abundance mosaics (Powell et al. 2023, JGR Planets 128, doi:10.1029/2022JE007532). Hayne et al. find the regolith fines globally uniform, which is what the extrapolation rests on",
       "context.psr_share_50km (shown, not scored): share of the 50 km circle around the centre in permanent shadow, same model, PGDA PSR map LPSR_75S_120M_201608.JP2 - the cold traps within reach of a base here",
       "tmin_k / tmax_k / diurnal_amp_k: Diviner bolometric surface temperature, Global Cumulative Product 90S-80S (all nadir data Jul 2009 - Apr 2015 in 0.5 x 0.5 deg bins x 15 min local time; Williams et al. 2017, Icarus 283:300, doi:10.1016/j.icarus.2016.08.012; PDS bundle doi:10.17189/wj0s-w188). Per bin the coldest and warmest local time of the mean day, then the mean over the 30 km footprint. Seasons are averaged together, so against the warmest-/coldest-month definition tmax_k reads low and tmin_k high (the seasonal 240 m polar maps, Williams et al. 2019, JGR Planets 124:2505, would fix it but are ~30 GB)",
-      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)"
+      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)",
+      "albedo: LOLA normal albedo at 1064 nm, GDR map LDAM_50S_1000M_FLOAT.LBL, mean over the 30 km footprint (Lucey et al. 2014, JGR Planets 119:1665, doi:10.1002/2013JE004592). LOLA lights the ground with its own laser at zero phase, so one definition works in polar shadow and at Apollo 17. Not the Earth column's quantity (MODIS broadband shortwave albedo): one wavelength at zero phase reads higher than a broadband albedo of the same ground"
     ],
     "blurb": "Mons Mouton, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   },
@@ -761,10 +813,12 @@
       "ndvi_max": 0.0,
       "soil_moist": 0.0,
       "litho_class": 2.0,
+      "ti_class": 1.0,
       "ice_idx": 0.0123,
       "tmin_k": 62.9474,
       "tmax_k": 252.1886,
-      "diurnal_amp_k": 189.2412
+      "diurnal_amp_k": 189.2412,
+      "albedo": 0.3205
     },
     "sd": {
       "relief_km": 0.0068,
@@ -775,10 +829,12 @@
       "hypso_int": 0.0004,
       "flat_frac": 0.0,
       "steep_frac": 0.0,
+      "ti_class": 1.0,
       "ice_idx": 0.0071,
       "tmin_k": 1.2206,
       "tmax_k": 2.5716,
-      "diurnal_amp_k": 2.5917
+      "diurnal_amp_k": 2.5917,
+      "albedo": 0.0021
     },
     "grades": {
       "relief_km": "B",
@@ -793,10 +849,12 @@
       "ndvi_max": "DEF",
       "soil_moist": "DEF",
       "litho_class": "C",
+      "ti_class": "C",
       "ice_idx": "C",
       "tmin_k": "B",
       "tmax_k": "B",
-      "diurnal_amp_k": "B"
+      "diurnal_amp_k": "B",
+      "albedo": "B"
     },
     "context": {
       "psr_share_50km": 0.0926,
@@ -812,9 +870,11 @@
       "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)",
       "ice_idx: share of the 30 km footprint in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030). It is the AREA of cold traps, not a measured amount of ice: landing regions are picked on sunlit ridges, so the share is small by design. Shadow is modelled from LOLA topography; LEND hydrogen not folded in yet",
       "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do",
+      "ti_class: class 1 (fine regolith, as at Apollo 17), extrapolated, not measured here - no Diviner thermophysical map reaches the poles: the H-parameter map covers 70S-70N (Hayne et al. 2017, JGR Planets 122:2371, doi:10.1002/2017JE005387) and so do the rock-abundance mosaics (Powell et al. 2023, JGR Planets 128, doi:10.1029/2022JE007532). Hayne et al. find the regolith fines globally uniform, which is what the extrapolation rests on",
       "context.psr_share_50km (shown, not scored): share of the 50 km circle around the centre in permanent shadow, same model, PGDA PSR map LPSR_75S_120M_201608.JP2 - the cold traps within reach of a base here",
       "tmin_k / tmax_k / diurnal_amp_k: Diviner bolometric surface temperature, Global Cumulative Product 90S-80S (all nadir data Jul 2009 - Apr 2015 in 0.5 x 0.5 deg bins x 15 min local time; Williams et al. 2017, Icarus 283:300, doi:10.1016/j.icarus.2016.08.012; PDS bundle doi:10.17189/wj0s-w188). Per bin the coldest and warmest local time of the mean day, then the mean over the 30 km footprint. Seasons are averaged together, so against the warmest-/coldest-month definition tmax_k reads low and tmin_k high (the seasonal 240 m polar maps, Williams et al. 2019, JGR Planets 124:2505, would fix it but are ~30 GB)",
-      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)"
+      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)",
+      "albedo: LOLA normal albedo at 1064 nm, GDR map LDAM_50S_1000M_FLOAT.LBL, mean over the 30 km footprint (Lucey et al. 2014, JGR Planets 119:1665, doi:10.1002/2013JE004592). LOLA lights the ground with its own laser at zero phase, so one definition works in polar shadow and at Apollo 17. Not the Earth column's quantity (MODIS broadband shortwave albedo): one wavelength at zero phase reads higher than a broadband albedo of the same ground"
     ],
     "blurb": "Nobile Rim 1, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   },
@@ -839,10 +899,12 @@
       "ndvi_max": 0.0,
       "soil_moist": 0.0,
       "litho_class": 2.0,
+      "ti_class": 1.0,
       "ice_idx": 0.1609,
       "tmin_k": 53.8473,
       "tmax_k": 242.1194,
-      "diurnal_amp_k": 188.2721
+      "diurnal_amp_k": 188.2721,
+      "albedo": 0.3159
     },
     "sd": {
       "relief_km": 0.0101,
@@ -853,10 +915,12 @@
       "hypso_int": 0.0008,
       "flat_frac": 0.0,
       "steep_frac": 0.0,
+      "ti_class": 1.0,
       "ice_idx": 0.058,
       "tmin_k": 1.7697,
       "tmax_k": 2.5879,
-      "diurnal_amp_k": 1.2792
+      "diurnal_amp_k": 1.2792,
+      "albedo": 0.0007
     },
     "grades": {
       "relief_km": "B",
@@ -871,10 +935,12 @@
       "ndvi_max": "DEF",
       "soil_moist": "DEF",
       "litho_class": "C",
+      "ti_class": "C",
       "ice_idx": "C",
       "tmin_k": "B",
       "tmax_k": "B",
-      "diurnal_amp_k": "B"
+      "diurnal_amp_k": "B",
+      "albedo": "B"
     },
     "context": {
       "psr_share_50km": 0.0874,
@@ -890,9 +956,11 @@
       "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)",
       "ice_idx: share of the 30 km footprint in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030). It is the AREA of cold traps, not a measured amount of ice: landing regions are picked on sunlit ridges, so the share is small by design. Shadow is modelled from LOLA topography; LEND hydrogen not folded in yet",
       "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do",
+      "ti_class: class 1 (fine regolith, as at Apollo 17), extrapolated, not measured here - no Diviner thermophysical map reaches the poles: the H-parameter map covers 70S-70N (Hayne et al. 2017, JGR Planets 122:2371, doi:10.1002/2017JE005387) and so do the rock-abundance mosaics (Powell et al. 2023, JGR Planets 128, doi:10.1029/2022JE007532). Hayne et al. find the regolith fines globally uniform, which is what the extrapolation rests on",
       "context.psr_share_50km (shown, not scored): share of the 50 km circle around the centre in permanent shadow, same model, PGDA PSR map LPSR_75S_120M_201608.JP2 - the cold traps within reach of a base here",
       "tmin_k / tmax_k / diurnal_amp_k: Diviner bolometric surface temperature, Global Cumulative Product 90S-80S (all nadir data Jul 2009 - Apr 2015 in 0.5 x 0.5 deg bins x 15 min local time; Williams et al. 2017, Icarus 283:300, doi:10.1016/j.icarus.2016.08.012; PDS bundle doi:10.17189/wj0s-w188). Per bin the coldest and warmest local time of the mean day, then the mean over the 30 km footprint. Seasons are averaged together, so against the warmest-/coldest-month definition tmax_k reads low and tmin_k high (the seasonal 240 m polar maps, Williams et al. 2019, JGR Planets 124:2505, would fix it but are ~30 GB)",
-      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)"
+      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)",
+      "albedo: LOLA normal albedo at 1064 nm, GDR map LDAM_50S_1000M_FLOAT.LBL, mean over the 30 km footprint (Lucey et al. 2014, JGR Planets 119:1665, doi:10.1002/2013JE004592). LOLA lights the ground with its own laser at zero phase, so one definition works in polar shadow and at Apollo 17. Not the Earth column's quantity (MODIS broadband shortwave albedo): one wavelength at zero phase reads higher than a broadband albedo of the same ground"
     ],
     "blurb": "Nobile Rim 2, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   },
@@ -917,10 +985,12 @@
       "ndvi_max": 0.0,
       "soil_moist": 0.0,
       "litho_class": 2.0,
+      "ti_class": 1.0,
       "ice_idx": 0.0369,
       "tmin_k": 57.4186,
       "tmax_k": 231.042,
-      "diurnal_amp_k": 173.6235
+      "diurnal_amp_k": 173.6235,
+      "albedo": 0.339
     },
     "sd": {
       "relief_km": 0.0095,
@@ -931,10 +1001,12 @@
       "hypso_int": 0.0003,
       "flat_frac": 0.0,
       "steep_frac": 0.0,
+      "ti_class": 1.0,
       "ice_idx": 0.023,
       "tmin_k": 0.4311,
       "tmax_k": 2.1846,
-      "diurnal_amp_k": 1.7624
+      "diurnal_amp_k": 1.7624,
+      "albedo": 0.0021
     },
     "grades": {
       "relief_km": "B",
@@ -949,10 +1021,12 @@
       "ndvi_max": "DEF",
       "soil_moist": "DEF",
       "litho_class": "C",
+      "ti_class": "C",
       "ice_idx": "C",
       "tmin_k": "B",
       "tmax_k": "B",
-      "diurnal_amp_k": "B"
+      "diurnal_amp_k": "B",
+      "albedo": "B"
     },
     "context": {
       "psr_share_50km": 0.111,
@@ -968,9 +1042,11 @@
       "centre: centroid of the region outline in the NASA Moon Trek layer 'Artemis III Candidate Landing Regions, S Pole' (2022 outlines; region kept in the Oct 2024 list)",
       "ice_idx: share of the 30 km footprint in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030). It is the AREA of cold traps, not a measured amount of ice: landing regions are picked on sunlit ridges, so the share is small by design. Shadow is modelled from LOLA topography; LEND hydrogen not folded in yet",
       "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do",
+      "ti_class: class 1 (fine regolith, as at Apollo 17), extrapolated, not measured here - no Diviner thermophysical map reaches the poles: the H-parameter map covers 70S-70N (Hayne et al. 2017, JGR Planets 122:2371, doi:10.1002/2017JE005387) and so do the rock-abundance mosaics (Powell et al. 2023, JGR Planets 128, doi:10.1029/2022JE007532). Hayne et al. find the regolith fines globally uniform, which is what the extrapolation rests on",
       "context.psr_share_50km (shown, not scored): share of the 50 km circle around the centre in permanent shadow, same model, PGDA PSR map LPSR_75S_120M_201608.JP2 - the cold traps within reach of a base here",
       "tmin_k / tmax_k / diurnal_amp_k: Diviner bolometric surface temperature, Global Cumulative Product 90S-80S (all nadir data Jul 2009 - Apr 2015 in 0.5 x 0.5 deg bins x 15 min local time; Williams et al. 2017, Icarus 283:300, doi:10.1016/j.icarus.2016.08.012; PDS bundle doi:10.17189/wj0s-w188). Per bin the coldest and warmest local time of the mean day, then the mean over the 30 km footprint. Seasons are averaged together, so against the warmest-/coldest-month definition tmax_k reads low and tmin_k high (the seasonal 240 m polar maps, Williams et al. 2019, JGR Planets 124:2505, would fix it but are ~30 GB)",
-      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)"
+      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)",
+      "albedo: LOLA normal albedo at 1064 nm, GDR map LDAM_50S_1000M_FLOAT.LBL, mean over the 30 km footprint (Lucey et al. 2014, JGR Planets 119:1665, doi:10.1002/2013JE004592). LOLA lights the ground with its own laser at zero phase, so one definition works in polar shadow and at Apollo 17. Not the Earth column's quantity (MODIS broadband shortwave albedo): one wavelength at zero phase reads higher than a broadband albedo of the same ground"
     ],
     "blurb": "de Gerlache Rim 2, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   },
@@ -995,10 +1071,12 @@
       "ndvi_max": 0.0,
       "soil_moist": 0.0,
       "litho_class": 2.0,
+      "ti_class": 1.0,
       "ice_idx": 0.0873,
       "tmin_k": 51.1367,
       "tmax_k": 215.6574,
-      "diurnal_amp_k": 164.5207
+      "diurnal_amp_k": 164.5207,
+      "albedo": 0.3318
     },
     "sd": {
       "relief_km": 0.005,
@@ -1009,10 +1087,12 @@
       "hypso_int": 0.0004,
       "flat_frac": 0.1,
       "steep_frac": 0.0,
+      "ti_class": 1.0,
       "ice_idx": 0.0128,
       "tmin_k": 2.0534,
       "tmax_k": 6.4444,
-      "diurnal_amp_k": 4.5108
+      "diurnal_amp_k": 4.5108,
+      "albedo": 0.0024
     },
     "grades": {
       "relief_km": "B",
@@ -1027,10 +1107,12 @@
       "ndvi_max": "DEF",
       "soil_moist": "DEF",
       "litho_class": "C",
+      "ti_class": "C",
       "ice_idx": "C",
       "tmin_k": "B",
       "tmax_k": "B",
-      "diurnal_amp_k": "B"
+      "diurnal_amp_k": "B",
+      "albedo": "B"
     },
     "context": {
       "psr_share_50km": 0.0705,
@@ -1046,9 +1128,11 @@
       "centre: centre of the region's 1 km grid in USGS 'Down Selected Artemis III Candidate Landing Site Navigational Grids' (McClernan 2024, doi:10.5066/P1MEQ6UK; outlines from LROC QuickMap)",
       "ice_idx: share of the 30 km footprint in permanent shadow, PGDA PSR map LPSR_75S_120M_201608.JP2 (Mazarico et al. 2011, Icarus 211:1066, doi:10.1016/j.icarus.2010.10.030). It is the AREA of cold traps, not a measured amount of ice: landing regions are picked on sunlit ridges, so the share is small by design. Shadow is modelled from LOLA topography; LEND hydrogen not folded in yet",
       "litho_class: south-polar terrain is feldspathic highland (crater, basin and massif material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) -> class 2; regional call, per-target unit check still to do",
+      "ti_class: class 1 (fine regolith, as at Apollo 17), extrapolated, not measured here - no Diviner thermophysical map reaches the poles: the H-parameter map covers 70S-70N (Hayne et al. 2017, JGR Planets 122:2371, doi:10.1002/2017JE005387) and so do the rock-abundance mosaics (Powell et al. 2023, JGR Planets 128, doi:10.1029/2022JE007532). Hayne et al. find the regolith fines globally uniform, which is what the extrapolation rests on",
       "context.psr_share_50km (shown, not scored): share of the 50 km circle around the centre in permanent shadow, same model, PGDA PSR map LPSR_75S_120M_201608.JP2 - the cold traps within reach of a base here",
       "tmin_k / tmax_k / diurnal_amp_k: Diviner bolometric surface temperature, Global Cumulative Product 90S-80S (all nadir data Jul 2009 - Apr 2015 in 0.5 x 0.5 deg bins x 15 min local time; Williams et al. 2017, Icarus 283:300, doi:10.1016/j.icarus.2016.08.012; PDS bundle doi:10.17189/wj0s-w188). Per bin the coldest and warmest local time of the mean day, then the mean over the 30 km footprint. Seasons are averaged together, so against the warmest-/coldest-month definition tmax_k reads low and tmin_k high (the seasonal 240 m polar maps, Williams et al. 2019, JGR Planets 124:2505, would fix it but are ~30 GB)",
-      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)"
+      "context.tmin_coldest_k (shown, not scored): the coldest 0.5 deg bin in the footprint, same Diviner product; at full resolution the permanently shadowed floors are colder still (Paige et al. 2010, Science 330:479, doi:10.1126/science.1187726)",
+      "albedo: LOLA normal albedo at 1064 nm, GDR map LDAM_50S_1000M_FLOAT.LBL, mean over the 30 km footprint (Lucey et al. 2014, JGR Planets 119:1665, doi:10.1002/2013JE004592). LOLA lights the ground with its own laser at zero phase, so one definition works in polar shadow and at Apollo 17. Not the Earth column's quantity (MODIS broadband shortwave albedo): one wavelength at zero phase reads higher than a broadband albedo of the same ground"
     ],
     "blurb": "Slater Plain, one of NASA's nine candidate crew landing regions near the lunar south pole (announced for Artemis III, Oct 2024)."
   }

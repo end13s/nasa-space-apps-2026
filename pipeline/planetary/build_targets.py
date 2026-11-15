@@ -26,9 +26,10 @@ What it does, per target:
      north/south/east/west (5 km, or radius/3 for small targets) and taking
      the standard deviation.
   5. South-polar targets also get values from the polar products: ice_idx
-     (permanent-shadow share, PGDA PSR map), litho_class, and tmin_k /
-     tmax_k / diurnal_amp_k (Diviner). Numbers that are context only - shown,
-     not scored - go in a separate "context" block of the target.
+     (permanent-shadow share, PGDA PSR map), litho_class and ti_class
+     (regional calls), and tmin_k / tmax_k / diurnal_amp_k (Diviner). Every
+     lunar target gets albedo from LOLA (1064 nm normal albedo). Numbers that
+     are context only - shown, not scored - go in a separate "context" block.
   6. Adds the "0 by definition" features and any non-terrain values filled in
      OTHER below, gives every value an evidence grade (see GRADES), then
      writes contract/targets.json and checks it against the contract.
@@ -269,7 +270,7 @@ ZERO_GRADE = "DEF"
 # product values (TES/THEMIS, MCD, Diviner, LROC, USGS maps) once those reads
 # are in place. Still missing on purpose (no reliable number yet):
 #   mars_jezero    tmin_k, tmax_k  -> Mars Climate Database at 18.4N 77.5E
-#   moon_apollo17  albedo          -> LROC WAC 643 nm normalized reflectance
+# (Apollo 17's albedo now comes from LOLA, like every lunar target - albedo_values.)
 OTHER: dict[str, dict] = {
     "mars_jezero": {
         "features": {"ti_class": 2, "albedo": 0.16, "litho_class": 1, "ice_idx": 0.0},
@@ -364,8 +365,7 @@ OTHER: dict[str, dict] = {
 # small (Eduard, Sat 16:39). Both of his options are in: the sources say what
 # the number is, and context.psr_share_50km gives the shadow share within
 # 50 km of the centre - the cold traps a base there could reach. That one is
-# context only, not scored. Still to fold in: LEND hydrogen. Still to add for
-# these targets: albedo, ti_class.
+# context only, not scored. Still to fold in: LEND hydrogen.
 #
 # The same PSR map is published in several copies. On Sat 16:08-16:14 the
 # PGDA COG link would not open and the PGDA TIF opened but failed reading
@@ -441,6 +441,15 @@ def psr_reach_source(name: str) -> str:
 POLAR_LITHO_SOURCE = ("litho_class: south-polar terrain is feldspathic highland (crater, basin and massif "
                       "material, no mare) on the Unified Geologic Map of the Moon (Fortezzo et al. 2020) "
                       "-> class 2; regional call, per-target unit check still to do")
+# ti_class at the pole cannot be measured from the Diviner products we would
+# use: the H-parameter map and the rock-abundance mosaics both stop at 70 deg,
+# and the polar GDR level-3 files hold only bolometric temperature. So it is
+# extrapolated (grade C, sd 1 class), the same class as Apollo 17's regolith.
+POLAR_TI_SOURCE = ("ti_class: class 1 (fine regolith, as at Apollo 17), extrapolated, not measured here - no "
+                   "Diviner thermophysical map reaches the poles: the H-parameter map covers 70S-70N (Hayne et al. "
+                   "2017, JGR Planets 122:2371, doi:10.1002/2017JE005387) and so do the rock-abundance mosaics "
+                   "(Powell et al. 2023, JGR Planets 128, doi:10.1029/2022JE007532). Hayne et al. find the "
+                   "regolith fines globally uniform, which is what the extrapolation rests on")
 
 
 def read_local_raster(cfg: dict, lat: float, lon: float, half_m: float, nearest: bool = False) -> np.ndarray:
@@ -491,7 +500,7 @@ def read_local_dem(key: str, lat: float, lon: float, half_m: float) -> np.ndarra
 def polar_values(lat: float, lon: float, radius_km: float) -> tuple[dict, list | None]:
     """Non-terrain values for a south-polar target, in the same shape as OTHER.
 
-    litho_class is always set. ice_idx is the PSR share of the footprint, with
+    litho_class and ti_class are always set. ice_idx is the PSR share of the footprint, with
     sd from the same four shifted footprints as the terrain; it is left out
     (and `seen` is None) when no PSR map could be opened. The share is taken
     over ALL pixels of the window, so a map that stores "not shadowed" as
@@ -499,10 +508,11 @@ def polar_values(lat: float, lon: float, radius_km: float) -> tuple[dict, list |
     share over a 50 km circle.
     """
     values = {
-        "features": {"litho_class": 2},
-        "sd": {},
-        "grades": {"litho_class": "C"},  # regional call from the map, not yet checked target by target
-        "sources": [POLAR_LITHO_SOURCE],
+        "features": {"litho_class": 2, "ti_class": 1},
+        "sd": {"ti_class": 1.0},
+        # both regional calls, not yet checked target by target (see the two sources)
+        "grades": {"litho_class": "C", "ti_class": "C"},
+        "sources": [POLAR_LITHO_SOURCE, POLAR_TI_SOURCE],
     }
     half = radius_km * 1000.0
     shift = min(MAX_SHIFT_M, half / 3.0)
@@ -763,6 +773,125 @@ def diviner_values(lat: float, lon: float, radius_km: float) -> dict:
     }
 
 
+# ---------------------------------------------------------------------------
+# Lunar targets: LOLA normal albedo at 1064 nm
+# ---------------------------------------------------------------------------
+# One albedo definition for every lunar target (Eduard, Sat): LOLA measures
+# reflectance at zero phase with its own laser, so it works the same on a lit
+# ridge, in polar shadow and at Apollo 17 - camera mosaics (LROC WAC) need
+# sunlight and miss the polar shadows. Polar targets use the south polar
+# stereographic map (1 km, 50S to the pole), Apollo 17 the global 0.1 deg map
+# (~3 km); both are LOLA GDR products (Lucey et al. 2014). Not the Earth
+# column's quantity (MODIS broadband shortwave albedo): one wavelength at zero
+# phase reads higher than a broadband albedo of the same ground. The sources
+# say so too.
+# Same copy logic as the PSR maps: the first copy that passes a small real read
+# is used, a read failure later moves to the next copy, and if none works the
+# albedo is left out and the build goes on.
+LOLA_GDR = "http://imbrium.mit.edu/DATA/LOLA_GDR/"
+LOLA_GDR_WUSTL = "https://pds-geosciences.wustl.edu/lro/lro-l-lola-3-rdr-v1/lrolol_1xxx/data/lola_gdr/"
+ALBEDO_CANDIDATES = {
+    # key: [(url, metres per pixel of our sampling grid), ...] - best first
+    "moon_south": [
+        (LOLA_GDR + "POLAR/FLOAT_IMG/LDAM_50S_1000M_FLOAT.LBL", 1000.0),
+        (LOLA_GDR_WUSTL + "polar/float_img/ldam_50s_1000m_float.lbl", 1000.0),
+        (LOLA_GDR + "POLAR/FLOAT_IMG/LDAM_50S_3000M_FLOAT.LBL", 3000.0),
+    ],
+    "moon": [
+        (LOLA_GDR + "CYLINDRICAL/FLOAT_IMG/LDAM_10_FLOAT.LBL", 3000.0),
+        (LOLA_GDR_WUSTL + "cylindrical/float_img/ldam_10_float.lbl", 3000.0),
+        (LOLA_GDR + "CYLINDRICAL/FLOAT_IMG/LDAM_8_FLOAT.LBL", 4000.0),
+    ],
+}
+ALBEDO_TEST_POINT = {"moon_south": (-85.99, -0.24), "moon": (20.19, 30.77)}  # Malapert, Apollo 17
+ALBEDO_GRADE = "B"  # one orbital instrument, measured
+
+
+class RasterCopies:
+    """Several published copies of one map: use the first that passes a small
+    real read, and move to the next one if a later read fails."""
+
+    def __init__(self, label: str, candidates: list, test_point: tuple[float, float]):
+        self.label, self.candidates, self.test_point = label, candidates, test_point
+        self.bad: set[str] = set()
+        self.current: dict | None = None
+
+    def pick(self) -> dict | None:
+        if self.current is not None:
+            return self.current
+        for url, res in self.candidates:
+            if url in self.bad:
+                continue
+            cfg = {"url": "/vsicurl/" + url, "res_m": res, "sphere": "+R=1737400",
+                   "name": url.rsplit("/", 1)[-1]}
+            try:
+                test = read_local_raster(cfg, *self.test_point, 3 * res)
+                if not np.isfinite(test).any():
+                    raise ValueError("test read returned no data")
+            except Exception as e:  # noqa: BLE001 - any failure means "try the next copy"
+                print(f"  {self.label} not usable, trying the next copy: {url} ({type(e).__name__})")
+                self.bad.add(url)
+                continue
+            print(f"  using {self.label} {url}")
+            self.current = cfg
+            return cfg
+        return None
+
+    def read(self, lat: float, lon: float, half_m: float) -> tuple[dict | None, np.ndarray | None]:
+        while True:
+            m = self.pick()
+            if m is None:
+                return None, None
+            try:
+                return m, read_local_raster(m, lat, lon, half_m)
+            except Exception as e:  # noqa: BLE001
+                print(f"  {self.label} read failed on {m['name']} ({type(e).__name__}) - trying the next copy")
+                self.bad.add(m["url"].removeprefix("/vsicurl/"))
+                self.current = None
+
+
+ALBEDO_MAPS = {k: RasterCopies("LOLA albedo map", v, ALBEDO_TEST_POINT[k]) for k, v in ALBEDO_CANDIDATES.items()}
+
+
+def albedo_source(name: str, side_km: float) -> str:
+    return (f"albedo: LOLA normal albedo at 1064 nm, GDR map {name}, mean over the {side_km:g} km footprint "
+            "(Lucey et al. 2014, JGR Planets 119:1665, doi:10.1002/2013JE004592). LOLA lights the ground with "
+            "its own laser at zero phase, so one definition works in polar shadow and at Apollo 17. Not the Earth "
+            "column's quantity (MODIS broadband shortwave albedo): one wavelength at zero phase reads higher than "
+            "a broadband albedo of the same ground")
+
+
+def albedo_values(key: str, lat: float, lon: float, radius_km: float) -> dict:
+    """LOLA albedo for a lunar target, in the same shape as OTHER ({} if no map works)."""
+    half = radius_km * 1000.0
+    shift = min(MAX_SHIFT_M, half / 3.0)
+    m, big = ALBEDO_MAPS[key].read(lat, lon, half + shift)
+    if m is None:
+        print("  WARNING: no LOLA albedo map could be opened - albedo left out for this target")
+        return {}
+    res = m["res_m"]
+    n = int(round(2 * half / res))
+    p = int(round(shift / res))
+    means = []
+    for dx, dy in [(0, 0), (shift, 0), (-shift, 0), (0, shift), (0, -shift)]:
+        i0 = p - int(round(dy / res))
+        j0 = p + int(round(dx / res))
+        w = big[i0 : i0 + n, j0 : j0 + n]
+        ok = np.isfinite(w) & (w > 0) & (w < 2)  # 0 / negative = no data in these maps
+        means.append(float(w[ok].mean()) if ok.mean() >= 0.5 else np.nan)
+    if not np.isfinite(means[0]):
+        print("  WARNING: LOLA albedo covers less than half of the footprint - albedo left out")
+        return {}
+    shifted = [v for v in means if np.isfinite(v)]
+    print(f"  LOLA albedo (1064 nm normal albedo): {means[0]:.3f}")
+    return {
+        "features": {"albedo": means[0]},
+        "sd": {"albedo": float(np.std(shifted))} if len(shifted) >= 2 else {},
+        "grades": {"albedo": ALBEDO_GRADE},
+        "sources": [albedo_source(m["name"], 2 * radius_km)],
+    }
+
+
 def terrain_with_sd(key: str, lat: float, lon: float, radius_km: float) -> tuple[dict, dict, float]:
     """Terrain features at the target, sd from 4 shifted footprints, and the
     footprint's height range in km (a sanity check on the DEM read)."""
@@ -857,8 +986,15 @@ def build() -> list[dict]:
             except Exception as e:  # noqa: BLE001 - never lose the whole build over one product
                 print(f"  WARNING: Diviner temperatures left out - {e}")
 
+        alb = {}
+        if key in ("moon", "moon_south"):
+            try:
+                alb = albedo_values(key, lat, lon, radius_km)
+            except Exception as e:  # noqa: BLE001 - never lose the whole build over one product
+                print(f"  WARNING: LOLA albedo left out - {e}")
+
         extra = OTHER.get(t["id"], {})
-        parts = (polar, temps, extra)
+        parts = (polar, temps, alb, extra)
         feats.update(ZERO_BY_DEFINITION)
         for part in parts:
             feats.update(part.get("features", {}))
