@@ -19,8 +19,10 @@
       "precip_mm": 0.0,
       "ndvi_max": 0.0,
       "soil_moist": 0.0,
-      "ti_class": 2.0,
-      "albedo": 0.16,
+      "albedo": 0.1774,
+      "ti_class": 1.0,
+      "tmin_k": 189.0,
+      "tmax_k": 293.0,
       "litho_class": 1.0,
       "ice_idx": 0.0
     },
@@ -33,8 +35,10 @@
       "hypso_int": 0.0015,
       "flat_frac": 0.0,
       "steep_frac": 0.0,
+      "albedo": 0.0015,
       "ti_class": 0.5,
-      "albedo": 0.03,
+      "tmin_k": 8.0,
+      "tmax_k": 8.0,
       "ice_idx": 0.05
     },
     "grades": {
@@ -49,8 +53,10 @@
       "precip_mm": "DEF",
       "ndvi_max": "DEF",
       "soil_moist": "DEF",
-      "ti_class": "B",
       "albedo": "B",
+      "ti_class": "B",
+      "tmin_k": "B",
+      "tmax_k": "B",
       "litho_class": "B",
       "ice_idx": "C"
     },
@@ -60,8 +66,9 @@
     ],
     "sources": [
       "MOLA-HRSC blended DEM 200 m v2 (Fergason, Hare & Laura 2018, USGS Astrogeology)",
-      "ti_class: THEMIS TI ~200-400 around the rover traverse (Vicente-Retortillo et al., EPSC2026-1140); MEDA TI 180-605 (Martinez et al. 2023, JGR Planets, doi:10.1029/2022JE007537); Mars bins 100/250/600/1200 -> class 2",
-      "albedo: OMEGA regional mean ~0.16, MEDA noon albedo 0.10-0.23 (Vicente-Retortillo et al., EPSC2026-1140)",
+      "albedo: TES Lambert (bolometric) albedo, global map Mars_MGS_TES_Albedo_mosaic_global_7410m.tif (7.4 km/px), mean over the 30 km footprint (Christensen et al. 2001, JGR 106(E10):23823, doi:10.1029/2000JE001370; USGS Astrogeology mosaic). One definition for every Mars target; a 10 km footprint holds only a few TES pixels",
+      "ti_class: THEMIS-derived thermal inertia of Jezero crater (Edwards & Buz 2021, Zenodo, doi:10.5281/zenodo.4931348), median 226 SI over the 30 km footprint (100% covered) -> class 1 with the Mars bins 100/250/600/1200",
+      "tmin_k / tmax_k: MEDA ground temperature (TIRS) along Perseverance's traverse, Ls 13-203: daily max 273 / 277 / 293 K and min 192 / 191 / 189 K at Ls 25 / 90 / 180 (Munguira et al. 2023, JGR Planets 128, e2022JE007559, doi:10.1029/2022JE007559) -> warmest 293 K, coldest 189 K. Northern winter is not covered, so the coldest-month minimum is probably a little lower",
       "litho_class: crater floor is igneous - Seitah olivine cumulate, Maaz lava flows (Farley et al. 2022, Science, doi:10.1126/science.abo2196); the delta in the west of the window is sedimentary (class 3) - Sofia to confirm",
       "ice_idx: 18N is far equatorward of the near-surface ice stability zone (~50 deg; Morgan et al. 2021, Nature Astronomy, doi:10.1038/s41550-020-01290-z)"
     ],
@@ -87,10 +94,10 @@
       "precip_mm": 0.0,
       "ndvi_max": 0.0,
       "soil_moist": 0.0,
+      "albedo": 0.2225,
       "ti_class": 2.0,
       "tmin_k": 175.0,
       "tmax_k": 285.0,
-      "albedo": 0.2,
       "litho_class": 3.0,
       "ice_idx": 0.0
     },
@@ -103,10 +110,10 @@
       "hypso_int": 0.0014,
       "flat_frac": 0.1,
       "steep_frac": 0.0,
+      "albedo": 0.0008,
       "ti_class": 0.5,
       "tmin_k": 8.0,
       "tmax_k": 8.0,
-      "albedo": 0.05,
       "ice_idx": 0.05
     },
     "grades": {
@@ -121,10 +128,10 @@
       "precip_mm": "DEF",
       "ndvi_max": "DEF",
       "soil_moist": "DEF",
+      "albedo": "B",
       "ti_class": "B",
       "tmin_k": "A",
       "tmax_k": "A",
-      "albedo": "C",
       "litho_class": "A",
       "ice_idx": "C"
     },
@@ -134,9 +141,9 @@
     ],
     "sources": [
       "MOLA-HRSC blended DEM 200 m v2 (Fergason, Hare & Laura 2018, USGS Astrogeology)",
+      "albedo: TES Lambert (bolometric) albedo, global map Mars_MGS_TES_Albedo_mosaic_global_7410m.tif (7.4 km/px), mean over the 30 km footprint (Christensen et al. 2001, JGR 106(E10):23823, doi:10.1029/2000JE001370; USGS Astrogeology mosaic). One definition for every Mars target; a 10 km footprint holds only a few TES pixels",
       "ti_class: THEMIS TI 250-410 over most of the landing region, layered units 400-500 (Fergason et al. 2012, Space Sci Rev, doi:10.1007/s11214-012-9891-3) -> class 2",
       "tmin_k / tmax_k: REMS ground temperature, daily max ~250-290 K and daily min ~170-210 K over the year (Gomez-Elvira et al., Granada 2017 workshop) - measured on the crater floor; Mount Sharp is a bit colder",
-      "albedo: ~0.20 average for the Gale region, range 0.1-0.3 (used in REMS/Navcam radiative studies)",
       "litho_class: Aeolis Mons (Mount Sharp) is a thick stack of sedimentary rocks (Curiosity results) -> class 3",
       "ice_idx: 5S is far equatorward of the near-surface ice stability zone (Morgan et al. 2021)"
     ],
@@ -236,6 +243,10 @@
       "precip_mm": 0.0,
       "ndvi_max": 0.0,
       "soil_moist": 0.0,
+      "albedo": 0.1691,
+      "ti_class": 1.0,
+      "tmin_k": 189.0,
+      "tmax_k": 293.0,
       "litho_class": 3.0,
       "ice_idx": 0.0
     },
@@ -247,6 +258,10 @@
       "hypso_int": 0.0066,
       "flat_frac": 0.0,
       "steep_frac": 0.0,
+      "albedo": 0.0002,
+      "ti_class": 0.5,
+      "tmin_k": 10.0,
+      "tmax_k": 10.0,
       "ice_idx": 0.05
     },
     "grades": {
@@ -260,6 +275,10 @@
       "precip_mm": "DEF",
       "ndvi_max": "DEF",
       "soil_moist": "DEF",
+      "albedo": "B",
+      "ti_class": "B",
+      "tmin_k": "C",
+      "tmax_k": "C",
       "litho_class": "A",
       "ice_idx": "C"
     },
@@ -271,6 +290,9 @@
     "sources": [
       "MOLA-HRSC blended DEM 200 m v2 (Fergason, Hare & Laura 2018, USGS Astrogeology)",
       "centre: western fan unit NHjf2 (18.48N 77.39E) in Sun & Stack 2020, USGS SIM 3464, doi:10.3133/sim3464",
+      "albedo: TES Lambert (bolometric) albedo, global map Mars_MGS_TES_Albedo_mosaic_global_7410m.tif (7.4 km/px), mean over the 10 km footprint (Christensen et al. 2001, JGR 106(E10):23823, doi:10.1029/2000JE001370; USGS Astrogeology mosaic). One definition for every Mars target; a 10 km footprint holds only a few TES pixels",
+      "ti_class: THEMIS-derived thermal inertia of Jezero crater (Edwards & Buz 2021, Zenodo, doi:10.5281/zenodo.4931348), median 229 SI over the 10 km footprint (100% covered) -> class 1 with the Mars bins 100/250/600/1200",
+      "tmin_k / tmax_k: MEDA ground temperature (TIRS) along Perseverance's traverse, Ls 13-203: daily max 273 / 277 / 293 K and min 192 / 191 / 189 K at Ls 25 / 90 / 180 (Munguira et al. 2023, JGR Planets 128, e2022JE007559, doi:10.1029/2022JE007559) -> warmest 293 K, coldest 189 K. Northern winter is not covered, so the coldest-month minimum is probably a little lower - extrapolated to the delta front, a few km from the crater-floor traverse",
       "litho_class: deltaic sedimentary rocks of the western fan front, deposited in a lake (Perseverance Delta Front campaign; Sun & Stack 2020, USGS SIM 3464, unit NHjf2) -> class 3",
       "ice_idx: 18N is far equatorward of the near-surface ice stability zone (Morgan et al. 2021)"
     ],
